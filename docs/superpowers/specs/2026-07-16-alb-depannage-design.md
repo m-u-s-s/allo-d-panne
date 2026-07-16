@@ -149,9 +149,34 @@ Voile WebGL entre les routes. **Palier Full uniquement.** Lite et Static utilise
 
 ### Stack
 
-- **Next.js 15 App Router**, React Server Components par défaut
-- **React 19**, TypeScript strict
-- **next-intl** — routes `/fr`, `/nl`, `/en`, détection via middleware
+Versions vérifiées au 2026-07-16, non supposées.
+
+- **Next.js 16.2.10 App Router**, React Server Components par défaut
+- **React 19.2.7 — version exacte, pas `^19`**
+- **TypeScript strict**
+- **next-intl 4.13.2** — routes `/fr`, `/nl`, `/en`, négociation de langue via `proxy.ts`
+
+**Deux décisions de version qui méritent d'être tracées :**
+
+1. **Next 16, pas 15.** Le brief initial spécifiait Next 15, mais `next@15.5.20` porte le dist-tag `backport` — la branche est en maintenance, la version courante est 16.2.10. Démarrer un greenfield sur une branche en maintenance crée de la dette au premier commit. `next-intl@4.13.2` déclare `next: "^12 || ^13 || ^14 || ^15 || ^16"`, donc le choix n'est pas contraint par l'i18n.
+2. **React pinné en version exacte.** `@react-three/fiber@9.6.1` déclare `react: ">=19 <19.3"`. React est en 19.2.7 : ça passe aujourd'hui, mais une 19.3 casserait R3F. Un `^19` signifierait qu'un `npm install` dans trois mois casse le site sans que personne n'ait touché au code. React et React-DOM sont donc pinnés exactement, et la contrainte est documentée dans le `package.json`.
+
+### Contraintes Next.js 16 (vérifiées dans le guide de migration officiel)
+
+Ces points sont des ruptures par rapport à la 15 et conditionnent le code :
+
+| Contrainte | Conséquence |
+|---|---|
+| `middleware.ts` est déprécié, renommé **`proxy.ts`** ; l'export nommé devient `proxy` | La négociation de langue next-intl vit dans `src/proxy.ts` |
+| Le runtime **edge n'est pas supporté** dans `proxy` — c'est `nodejs`, non configurable | La négociation de langue tourne en Node |
+| Next 16 **n'override plus `scroll-behavior`** pendant la navigation | `data-scroll-behavior="smooth"` requis sur `<html>` — pertinent pour Lenis |
+| `next lint` **supprimé** ; `next build` ne linte plus | ESLint câblé manuellement, en flat config |
+| **Node 20.9+**, **TypeScript 5.1+** | Prérequis d'environnement |
+| **Turbopack par défaut** | Pas de flag `--turbopack` |
+| `params` / `searchParams` **async uniquement** | `params: Promise<{locale: string}>` partout |
+| `images.qualities` par défaut `[75]` ; `imageSizes` sans `16` | À configurer si d'autres qualités sont nécessaires |
+
+**Risque d'intégration à lever tôt (plan WebGL) :** Next 16 utilise en interne une release canary de React (fonctionnalités 19.2). R3F déclare `react: ">=19 <19.3"`. La résolution du peer se fait sur le paquet `react` installé (19.2.7), donc en théorie ça passe — mais c'est à vérifier par un test de rendu R3F réel dès la première tâche WebGL, pas à supposer.
 - **Tailwind CSS** + variables CSS pour les tokens
 - **Zustand** — palier de capacité, scène active, état UI
 - **React Three Fiber / Three.js** + shaders GLSL custom
@@ -222,23 +247,22 @@ CTA sticky dès le hero, plus un CTA après les preuves sociales.
 
 ### Tokens
 
-| Rôle | Valeur | Contraste |
-|---|---|---|
-| Fond | `#0A0E14` (nuit) | — |
-| Surface | `#141A23` | — |
-| CTA / accent | `#F97316` (ambre gyrophare) | 6,8:1 sur fond |
-| **Texte sur CTA** | `#0A0E14` | **10,1:1 sur ambre** |
-| Secondaire | `#3B82F6` | 4,6:1 sur fond — **grands textes uniquement** |
-| Texte | `#F8FAFC` | 18:1 sur fond |
-| Texte atténué | `#94A3B8` (sur fond sombre uniquement) | 7,1:1 sur fond |
-| Bordure | `#1E293B` | — |
+Ratios calculés, non estimés (formule WCAG 2.1 de luminance relative). Tous vérifiés par test automatisé — voir §10.
 
-Thème sombre par défaut. Contraste vérifié à 4,5:1 minimum sur tous les couples texte/fond.
+| Rôle | Valeur | Contraste | Verdict |
+|---|---|---|---|
+| Fond | `#0A0E14` (nuit) | — | — |
+| Surface | `#141A23` | — | — |
+| Texte | `#F8FAFC` | 18,48:1 sur fond · 16,70:1 sur surface | AA |
+| Texte atténué | `#94A3B8` (fond sombre uniquement) | 7,54:1 sur fond · 6,82:1 sur surface | AA |
+| CTA / accent | `#F97316` (ambre gyrophare) | 6,90:1 sur fond | AA |
+| **Texte sur CTA** | `#0A0E14` | **6,90:1 sur ambre** | AA |
+| Secondaire | `#3B82F6` | 5,26:1 sur fond | AA |
+| Bordure | `#1E293B` | — | — |
 
-**Deux contraintes non négociables issues du calcul de contraste :**
+Thème sombre par défaut. Contraste 4,5:1 minimum sur tous les couples texte/fond.
 
-1. **Le texte du CTA est sombre (`#0A0E14`), jamais blanc.** Du blanc sur l'ambre `#F97316` ne donne que 2,7:1 et échoue au WCAG AA. C'est le bouton le plus important du site — il ne peut pas être le seul élément non conforme.
-2. **Le bleu secondaire `#3B82F6` est réservé aux grands textes et aux éléments non textuels** (4,6:1). Il ne doit pas porter de texte courant.
+**Contrainte non négociable :** le texte du CTA est **sombre (`#0A0E14`), jamais blanc**. Du blanc `#F8FAFC` sur l'ambre `#F97316` ne donne que **2,68:1** et échoue au WCAG AA. C'est le bouton le plus important du site — il ne peut pas être le seul élément non conforme. Un test de non-régression verrouille ce point explicitement.
 
 ### Typographie
 
