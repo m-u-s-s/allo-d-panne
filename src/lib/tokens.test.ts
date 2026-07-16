@@ -25,6 +25,17 @@ describe('Contraste WCAG des tokens', () => {
     expect(contrastRatio(tokens.cta, tokens.bg)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 
+  /**
+   * Le lien telephone du footer (SiteFooter.tsx) utilise text-cta sur
+   * bg-surface, pas bg-bg. Cette paire (~6,23:1) n'etait verrouillee par
+   * aucun test — seule cta-vs-bg l'etait. Sans ce test, un futur
+   * changement de token pourrait faire regresser silencieusement le lien
+   * telephone du footer sous le seuil AA.
+   */
+  it('CTA sur surface passe AA', () => {
+    expect(contrastRatio(tokens.cta, tokens.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
   it('secondaire sur fond passe AA', () => {
     expect(contrastRatio(tokens.secondary, tokens.bg)).toBeGreaterThanOrEqual(AA_NORMAL);
   });

@@ -10,7 +10,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     // pb-24 sur mobile : la barre d'appel fixe ne doit pas masquer le footer.
     <footer className="border-t border-border bg-surface pb-24 md:pb-0">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-3">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-4">
         <div>
           <p className="font-display text-sm font-bold tracking-widest">
             {company.displayName}
@@ -50,6 +50,34 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             <p className="mt-2 text-sm text-muted">TVA {company.vat.value}</p>
           ) : null}
         </div>
+
+        {/*
+          Le header masque sa nav principale sous md:flex (hidden en dessous).
+          Sans ce bloc, un visiteur mobile n'a aucun moyen d'atteindre
+          Transport Europe, Tarifs ou Contact — seul le footer reste
+          accessible. Pas de hamburger, pas de client component : le footer
+          est le repli conventionnel, sans JS, au niveau statique du site.
+        */}
+        <nav aria-label="Navigation" className="flex flex-col gap-2 text-sm">
+          <Link
+            href="/transport-europe"
+            className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
+          >
+            {c.nav.transport}
+          </Link>
+          <Link
+            href="/tarifs"
+            className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
+          >
+            {c.nav.pricing}
+          </Link>
+          <Link
+            href="/contact"
+            className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
+          >
+            {c.nav.contact}
+          </Link>
+        </nav>
 
         <nav aria-label="Légal" className="flex flex-col gap-2 text-sm">
           <Link
