@@ -1,0 +1,115 @@
+import type { SiteContent } from './types';
+
+export const en: SiteContent = {
+  meta: {
+    title: 'ALB Depannage — 24/7 breakdown and towing in Brussels',
+    description:
+      'Car breakdown assistance and towing, 24/7, in Brussels and surroundings. Battery, flat tyre, out of fuel, vehicle unlocking. Vehicle transport across Europe. Approved and insured.',
+  },
+  nav: {
+    home: 'Home',
+    transport: 'Europe transport',
+    pricing: 'Pricing',
+    contact: 'Contact',
+  },
+  hero: {
+    eyebrow: 'Available 24/7',
+    title: 'Broken down? We are on our way.',
+    subtitle:
+      'Breakdown assistance and towing in Brussels and surroundings. One call is all it takes.',
+    callCta: 'Call now',
+    quoteCta: 'Request a quote',
+    availability: 'Nights, weekends and public holidays included',
+    posterAlt:
+      'Wet road at night lit by the amber beacon of a tow truck',
+  },
+  problem: {
+    title: 'Nobody plans a breakdown',
+    body: 'Dead battery on a Monday morning, flat tyre on the ring road, keys locked inside. It always happens at the worst moment. You call, we come — day or night, weekends included.',
+  },
+  servicesSection: {
+    title: 'What we do',
+    subtitle: 'Light vehicles and heavy goods vehicles.',
+  },
+  services: [
+    {
+      id: 'towing',
+      title: 'Towing',
+      description: 'Your vehicle to the garage of your choice, or to ours.',
+    },
+    {
+      id: 'battery',
+      title: 'Battery',
+      description: 'Jump start on site, replacement if needed.',
+    },
+    {
+      id: 'tyre',
+      title: 'Flat tyre',
+      description: 'Spare wheel fitted on site, or towing.',
+    },
+    {
+      id: 'fuel',
+      title: 'Out of fuel',
+      description: 'Delivered on site, petrol or diesel.',
+    },
+    {
+      id: 'unlock',
+      title: 'Vehicle unlocking',
+      description: 'Keys locked inside? We open it without damage.',
+    },
+    {
+      id: 'transport',
+      title: 'Vehicle transport',
+      description: 'Long-distance transport across Europe, on quote.',
+    },
+    {
+      id: 'heavy',
+      title: 'Light and heavy vehicles',
+      description: 'Equipment suited to heavy goods vehicles.',
+    },
+    {
+      id: 'accident',
+      title: 'Accident recovery',
+      description: 'Removal and handling after an accident.',
+    },
+  ],
+  proof: {
+    title: 'Why trust us',
+    approved: 'Approved company',
+    insured: 'Insured intervention',
+    available: 'Reachable 24/7',
+  },
+  coverage: {
+    title: 'Where we operate',
+    emergency: {
+      scope: 'brussels-region',
+      title: 'Emergency — Brussels and surroundings',
+      body: 'For emergency breakdown assistance we cover Brussels and its surroundings. That is the area we can reach quickly — and quickly is all that matters when you are stranded.',
+    },
+    transport: {
+      scope: 'europe',
+      title: 'Transport — across Europe',
+      body: 'For vehicle transport there is no distance limit: we deliver anywhere in Europe, on quote.',
+    },
+  },
+  pricing: {
+    title: 'Our pricing',
+    subtitle: 'Stated upfront. No surprises on the invoice.',
+    rangeLabel: 'Intervention in Brussels',
+    perKmLabel: 'Outside Brussels',
+    quoteLabel: 'Transport and special cases',
+    disclaimer:
+      'The final price depends on the type of intervention and the distance. It is confirmed before we set off.',
+  },
+  finalCta: {
+    title: 'Stranded? Do not stay there.',
+    body: 'One call and we are on our way.',
+    button: 'Call now',
+  },
+  footer: {
+    rights: 'All rights reserved.',
+    legal: 'Legal notice',
+    terms: 'Terms and conditions',
+    privacy: 'Privacy',
+  },
+};
