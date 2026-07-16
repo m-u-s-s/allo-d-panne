@@ -14,8 +14,13 @@
   --color-secondary: #3b82f6;
   --color-border: #1e293b;
 
-  --font-display: 'Syncopate', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  /* Les variables next/font incluent la famille de repli aux metriques
+     ajustees (Syncopate Fallback, Inter Fallback) qui empeche le CLS
+     pendant le swap de police. Nommer les polices litteralement ('Syncopate')
+     saute ce repli et tombe direct sur system-ui, dont les metriques ne
+     correspondent pas — donc du decalage evitable. */
+  --font-display: var(--font-syncopate), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
 }
 
 html {
