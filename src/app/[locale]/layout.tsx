@@ -3,6 +3,10 @@ import { Inter, Syncopate } from 'next/font/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { SiteFooter } from '@/components/ui/SiteFooter';
+import { SiteHeader } from '@/components/ui/SiteHeader';
+import { StickyCallBar } from '@/components/ui/StickyCallBar';
+import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
 
@@ -40,6 +44,7 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
+  const typedLocale = locale as Locale;
 
   return (
     <html
@@ -48,7 +53,12 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="bg-bg text-text antialiased">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <SiteHeader locale={typedLocale} />
+          {children}
+          <SiteFooter locale={typedLocale} />
+          <StickyCallBar locale={typedLocale} />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
