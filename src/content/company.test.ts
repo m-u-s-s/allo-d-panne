@@ -56,7 +56,10 @@ describe('Donnees NON confirmees — protection contre l invention', () => {
   it('chaque todo explique ce qui manque', () => {
     for (const field of [company.vat, company.address, company.motorwayZone]) {
       expect(field.status).toBe('todo');
-      if (!isResolved(field)) {
+      // Narrowing par discriminant, pas via isResolved() : sur un tableau
+      // heterogene Field<string> | Field<Address>, le guard generique ne
+      // reduit pas la branche negative et `.reason` n'existe alors pas.
+      if (field.status === 'todo') {
         expect(field.reason.length).toBeGreaterThan(20);
       }
     }
