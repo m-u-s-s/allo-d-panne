@@ -354,8 +354,17 @@ Remplacer `src/app/globals.css` :
   --color-secondary: #3b82f6;
   --color-border: #1e293b;
 
-  --font-display: 'Syncopate', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  /*
+   * Chainer via les variables de next/font, pas via le nom litteral.
+   * next/font genere une famille de repli aux metriques ajustees
+   * (« Syncopate Fallback ») que --font-syncopate inclut. Nommer la
+   * police litteralement resout bien, mais saute ce repli et tombe
+   * direct sur system-ui, dont les metriques ne correspondent pas —
+   * d ou du decalage evitable pendant le swap, contre un budget CLS < 0,1.
+   * Les variables sont definies par le layout [locale] (Task 3).
+   */
+  --font-display: var(--font-syncopate), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
 }
 
 html {
@@ -777,6 +786,7 @@ Le perimetre est scinde : urgence locale, transport europeen."
 **Files:**
 - Create: `src/i18n/routing.ts`, `src/i18n/navigation.ts`, `src/i18n/request.ts`, `src/proxy.ts`
 - Create: `src/app/[locale]/layout.tsx`, `src/app/[locale]/page.tsx`
+- Modify: `next.config.ts` (wrapper `createNextIntlPlugin` — voir Step 3b)
 - Delete: `src/app/page.tsx`, `src/app/layout.tsx` (remplacés par les versions `[locale]`)
 - Test: `src/i18n/routing.test.ts`
 
@@ -857,6 +867,32 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return { locale, messages: {} };
 });
 ```
+
+- [ ] **Step 3b: Envelopper `next.config.ts` avec le plugin next-intl — obligatoire**
+
+Modifier `next.config.ts` :
+
+```ts
+import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const nextConfig: NextConfig = {
+  images: {
+    // Next 16 : defaut [75]. On ajoute 90 pour le poster du hero (LCP).
+    qualities: [75, 90],
+  },
+};
+
+// Sans ce wrapper, next-intl/config (importe en interne par
+// NextIntlClientProvider et getRequestConfig) reste un stub qui leve
+// "Couldn't find next-intl config file" : c'est ce plugin qui alias
+// next-intl/config vers src/i18n/request.ts (detecte par defaut).
+const withNextIntl = createNextIntlPlugin();
+
+export default withNextIntl(nextConfig);
+```
+
+> **Ne pas sauter cette étape.** La documentation next-intl laisse entendre qu'aucun plugin n'est nécessaire pour un routage i18n de base — c'est faux. Sans le wrapper, `typecheck`, `lint` et les tests passent tous, et le site renvoie une **500 à l'exécution** : `Couldn't find next-intl config file`. L'échec ne se voit qu'en lançant réellement le serveur, d'où le contrôle manuel du Step 8.
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
