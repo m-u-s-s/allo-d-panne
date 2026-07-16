@@ -1687,6 +1687,14 @@ Aucune langue ne promet d'urgence a l'echelle europeenne."
 
 **C'est le cœur de la conversion.** La barre d'appel est le meilleur apport de l'approche C : visible sur 100 % des vues, à portée de pouce.
 
+> **Trois corrections issues de la revue** (commit `4bf7490`), à intégrer aux étapes ci-dessous :
+>
+> 1. **Le footer porte aussi la navigation principale**, pas seulement les liens légaux. Un second `<nav aria-label="Navigation">` avec `/transport-europe`, `/tarifs`, `/contact` (clés `c.nav.*`, déjà traduites). Sans lui, le header masquant sa nav en `hidden md:flex`, ces trois pages étaient **inatteignables sur mobile** : le client en panne appelle, mais le prospect transport arrivait dans une impasse. Le footer est le repli conventionnel — zéro JS, zéro composant client.
+> 2. **`src/components/ui/SiteFooter.test.tsx` verrouille le rendu des champs `todo`.** Tester que `company.vat.status === 'todo'` ne prouve pas que l'UI ne l'affiche pas. Le test de rendu ferme la boucle — c'est la raison d'être de ce footer.
+> 3. **`tokens.test.ts` couvre la paire `cta` / `surface`** (6,23:1 mesuré) : le lien téléphone du footer l'utilise, et elle n'était verrouillée par aucun test.
+>
+> **Note d'infra :** Vitest 4 / Vite 8 ne résout pas `next/navigation` pour `next-intl` (paquet sans `exports`). Contourné par `test.server.deps.inline: ['next', 'next-intl']` dans `vitest.config.ts`. Sans ça, tout test rendant un composant qui importe `Link` échoue à la résolution. `next build` n'est pas affecté.
+
 - [ ] **Step 1: Écrire le test du bouton d'appel qui échoue**
 
 Créer `src/components/ui/CallButton.test.tsx` :
