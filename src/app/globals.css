@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind v4 CSS-first. Ces valeurs DOIVENT rester synchrones avec
+ * src/lib/tokens.ts, qui est la source verifiee par les tests.
+ */
+@theme {
+  --color-bg: #0a0e14;
+  --color-surface: #141a23;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  --color-cta: #f97316;
+  --color-cta-fg: #0a0e14;
+  --color-secondary: #3b82f6;
+  --color-border: #1e293b;
+
+  --font-display: 'Syncopate', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  /* line-height 1.5-1.75 pour le corps de texte (regle UX) */
+  line-height: 1.6;
+}
+
+/* Focus visible sur tout element interactif (regle a11y CRITICAL) */
+:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
