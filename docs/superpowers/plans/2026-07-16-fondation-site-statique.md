@@ -31,6 +31,7 @@ Ces règles s'appliquent à **toutes** les tâches. Chaque tâche les inclut imp
 - **Contraste minimum 4,5:1** sur tout couple texte/fond.
 - **Cibles tactiles 44×44 px minimum.**
 - **Langues : `fr` (défaut), `nl`, `en`.** Une clé manquante dans une langue = erreur de compilation.
+- **Aucune tâche ne commite sans `npm run typecheck && npm run lint && npm test` au vert.** Les tests seuls ne suffisent pas : Vitest transpile sans vérifier les types, donc une suite verte peut coexister avec un arbre qui ne compile pas. Si une étape d'une tâche ne mentionne que Vitest, cette règle s'applique quand même.
 
 ---
 
@@ -629,7 +630,10 @@ describe('Donnees NON confirmees — protection contre l invention', () => {
   it('chaque todo explique ce qui manque', () => {
     for (const field of [company.vat, company.address, company.motorwayZone]) {
       expect(field.status).toBe('todo');
-      if (!isResolved(field)) {
+      // Narrowing par discriminant, pas via isResolved() : sur un tableau
+      // heterogene Field<string> | Field<Address>, le guard generique ne
+      // reduit pas la branche negative et `.reason` n'existe alors pas.
+      if (field.status === 'todo') {
         expect(field.reason.length).toBeGreaterThan(20);
       }
     }
@@ -742,7 +746,15 @@ export const company = {
 - [ ] **Step 8: Lancer le test pour vérifier qu'il passe**
 
 Run: `npx vitest run`
-Expected: PASS — 33 tests
+Expected: PASS — 32 tests
+
+- [ ] **Step 8b: Vérifier types et lint avant de commiter**
+
+```bash
+npm run typecheck && npm run lint
+```
+
+Expected: les deux passent. Vitest transpile sans vérifier les types — une suite verte ne prouve pas que l'arbre compile.
 
 - [ ] **Step 9: Commit**
 
@@ -2063,10 +2075,13 @@ Et typer le `locale` après la garde `hasLocale` :
 
 Puis utiliser `typedLocale` dans les trois composants.
 
-- [ ] **Step 11: Lancer tous les tests**
+- [ ] **Step 11: Lancer tous les tests, types et lint**
 
-Run: `npx vitest run`
-Expected: PASS — 48 tests
+```bash
+npm test && npm run typecheck && npm run lint
+```
+
+Expected: les trois passent (48 tests). Vitest transpile sans vérifier les types — une suite verte ne prouve pas que l'arbre compile.
 
 - [ ] **Step 12: Vérifier à la main sur mobile**
 
