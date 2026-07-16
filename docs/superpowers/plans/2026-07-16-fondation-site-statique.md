@@ -426,13 +426,16 @@ export default tseslint.config(
     /**
      * La couche WebGL doit rester supprimable : c'est ce qui garantit que
      * le palier Static fonctionne reellement plutot que d'etre suppose.
-     * Un composant UI qui importe Three.js casse cette garantie en
-     * silence — la regle le rattrape a l'edition, pas au test.
+     * Un composant qui importe Three.js casse cette garantie en silence —
+     * la regle le rattrape a l'edition, pas au test.
      *
-     * Le canvas racine du Plan 2 vivra dans src/components/canvas/**,
-     * qui n'est pas couvert par cette regle.
+     * Restreint PARTOUT sous src/, sauf les deux repertoires qui possedent
+     * legitimement ce code (crees au Plan 2). Scoper la regle aux seuls
+     * composants UI laisserait passer un import depuis src/app/**, ce qui
+     * suffirait a defaire la garantie.
      */
-    files: ['src/components/ui/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/components/canvas/**', 'src/components/motion/**'],
     rules: {
       'no-restricted-imports': [
         'error',
