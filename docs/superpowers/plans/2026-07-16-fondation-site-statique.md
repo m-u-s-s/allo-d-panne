@@ -422,6 +422,32 @@ export default tseslint.config(
       ...nextPlugin.configs['core-web-vitals'].rules,
     },
   },
+  {
+    /**
+     * La couche WebGL doit rester supprimable : c'est ce qui garantit que
+     * le palier Static fonctionne reellement plutot que d'etre suppose.
+     * Un composant UI qui importe Three.js casse cette garantie en
+     * silence — la regle le rattrape a l'edition, pas au test.
+     *
+     * Le canvas racine du Plan 2 vivra dans src/components/canvas/**,
+     * qui n'est pas couvert par cette regle.
+     */
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['three', 'three/*', '@react-three/*', 'gsap', 'gsap/*', 'lenis'],
+              message:
+                'Les composants UI ne doivent dependre d aucun module WebGL/animation : le palier Static doit fonctionner sans eux. Placez ce code dans src/components/canvas/ ou src/components/motion/.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
 ```
 
@@ -3024,15 +3050,29 @@ langues avant traduction : la garantie du modele de contenu tient."
 ### Task 8: Contact et demande de devis
 
 **Files:**
-- Create: `src/app/[locale]/contact/page.tsx`, `src/components/ui/QuoteForm.tsx`, `src/app/[locale]/contact/actions.ts`
+- Create: `src/app/[locale]/contact/page.tsx`, `src/components/ui/QuoteForm.tsx`, `src/app/[locale]/contact/actions.ts`, `src/lib/quote.ts`, `.env.example`
 - Modify: `src/content/types.ts`, `src/content/{fr,nl,en}.ts`
-- Test: `src/components/ui/QuoteForm.test.tsx`
+- Test: `src/components/ui/QuoteForm.test.tsx`, `src/lib/quote.test.ts`, `src/app/[locale]/contact/actions.test.ts`
 
 **Interfaces:**
-- Consumes: `getContent` (Task 4), `CallButton` (Task 5), `SERVICE_IDS` (Task 4)
-- Produces: `<QuoteForm locale />`, `submitQuote(prev: QuoteState, formData: FormData): Promise<QuoteState>` où `QuoteState = { status: 'idle' | 'success' | 'error'; message?: string }`
+- Consumes: `getContent` (Task 4), `CallButton` (Task 5), `SERVICE_IDS`, `ServiceId` (Task 4)
+- Produces:
+  - `type Quote = { name: string; phone: string; email: string | null; service: ServiceId; location: string; message: string }`
+  - `type ParseResult = { ok: true; data: Quote } | { ok: false; field: 'name' | 'phone' | 'email' | 'service' }`
+  - `parseQuote(formData: FormData): ParseResult`, `renderQuoteEmail(q: Quote): string`
+  - `submitQuote(prev: QuoteState, formData: FormData): Promise<QuoteState>` où `QuoteState = { status: 'idle' | 'success' | 'error'; field?: string }`
+  - `<QuoteForm locale />`
 
-**Décision :** le formulaire utilise une Server Action, mais **l'envoi d'email n'est pas branché dans ce plan** — aucun fournisseur (Resend, SMTP) n'a été choisi avec le client. L'action valide et journalise ; le branchement est un `TODO` explicite et testé comme tel. Un formulaire qui prétend envoyer sans envoyer serait pire que pas de formulaire.
+**Variables d'environnement requises :** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — à fournir par le client. Leur absence est un échec testé, pas un crash.
+
+**Décision :** le formulaire utilise une Server Action qui envoie réellement l'email, via **SMTP (nodemailer)** sur la boîte existante `contact@alb-depannage.com`. Choix du client : pas de service tiers, pas de DNS à modifier.
+
+**Deux conséquences à traiter dans le code, pas à espérer :**
+
+1. **SMTP en serverless est lent et faillible.** Une connexion SMTP depuis une fonction Vercel peut prendre plusieurs secondes ou expirer. L'action doit avoir un timeout explicite et, en cas d'échec, renvoyer l'utilisateur vers le téléphone — jamais afficher un faux succès.
+2. **Les identifiants n'existent pas encore.** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` sont à fournir par le client. Le code est écrit et testé avec nodemailer mocké ; l'absence d'identifiants est un échec explicite et testé, pas un crash.
+
+**Sécurité :** aucune donnée du formulaire n'est interpolée dans du HTML d'email. Le corps est en texte brut, ce qui supprime la question de l'injection HTML. Les en-têtes (`Reply-To`) sont validés avant usage : un `\r\n` dans un champ email permettrait une injection d'en-tête SMTP.
 
 - [ ] **Step 1: Étendre le contenu**
 
@@ -3055,8 +3095,10 @@ Ajouter à `SiteContent` dans `src/content/types.ts` :
     };
     submit: string;
     success: string;
+    /** Echec d'envoi SMTP — oriente vers le telephone. */
     error: string;
-    required: string;
+    /** Erreur de validation d'un champ — distincte d'un echec d'envoi. */
+    invalidFields: string;
   };
 ```
 
@@ -3082,7 +3124,7 @@ Dans `src/content/fr.ts` :
     submit: 'Envoyer la demande',
     success: 'Demande reçue. Nous vous rappelons rapidement.',
     error: 'L’envoi a échoué. Appelez-nous, c’est plus sûr.',
-    required: 'Champ obligatoire',
+    invalidFields: 'Vérifiez les champs du formulaire.',
   },
 ```
 
@@ -3106,7 +3148,7 @@ Dans `src/content/nl.ts` :
     submit: 'Aanvraag versturen',
     success: 'Aanvraag ontvangen. Wij bellen u snel terug.',
     error: 'Verzenden mislukt. Bel ons, dat is zekerder.',
-    required: 'Verplicht veld',
+    invalidFields: 'Controleer de velden van het formulier.',
   },
 ```
 
@@ -3130,7 +3172,7 @@ Dans `src/content/en.ts` :
     submit: 'Send request',
     success: 'Request received. We will call you back shortly.',
     error: 'Sending failed. Call us, it is safer.',
-    required: 'Required field',
+    invalidFields: 'Please check the form fields.',
   },
 ```
 
@@ -3190,59 +3232,408 @@ describe('QuoteForm', () => {
 Run: `npx vitest run src/components/ui/QuoteForm.test.tsx`
 Expected: FAIL — `Failed to resolve import "./QuoteForm"`
 
-- [ ] **Step 5: Implémenter la Server Action**
+- [ ] **Step 5a: Installer nodemailer et écrire le test de validation**
+
+```bash
+npm install nodemailer@^7.0.0
+npm install -D @types/nodemailer@^6.4.17
+```
+
+Créer `src/lib/quote.test.ts` :
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { parseQuote, renderQuoteEmail } from './quote';
+
+const valid = () => {
+  const fd = new FormData();
+  fd.set('name', 'Jean Dupont');
+  fd.set('phone', '0470 12 34 56');
+  fd.set('email', 'jean@example.com');
+  fd.set('service', 'towing');
+  fd.set('location', 'Ring de Bruxelles, sortie 9');
+  fd.set('message', 'Voiture immobilisee, roue avant droite.');
+  return fd;
+};
+
+describe('parseQuote', () => {
+  it('accepte une demande complete', () => {
+    const r = parseQuote(valid());
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.data.name).toBe('Jean Dupont');
+  });
+
+  it('rejette un nom trop court', () => {
+    const fd = valid();
+    fd.set('name', 'J');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('name');
+  });
+
+  it('rejette un telephone trop court', () => {
+    const fd = valid();
+    fd.set('phone', '123');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('phone');
+  });
+
+  it('rejette un service inconnu', () => {
+    const fd = valid();
+    fd.set('service', 'teleportation');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('service');
+  });
+
+  it('accepte une demande sans email — le telephone suffit', () => {
+    const fd = valid();
+    fd.delete('email');
+    expect(parseQuote(fd).ok).toBe(true);
+  });
+
+  /**
+   * Injection d'en-tete SMTP : un \r\n dans un champ qui finit en
+   * Reply-To permettrait d'ajouter des en-tetes arbitraires (Bcc vers
+   * une liste de spam, par exemple). Le champ email doit etre rejete,
+   * pas nettoye — une adresse contenant un retour chariot n'est pas une
+   * adresse.
+   */
+  it('rejette un email contenant un retour chariot', () => {
+    const fd = valid();
+    fd.set('email', 'a@b.com\r\nBcc: victime@example.com');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('email');
+  });
+
+  it('rejette un email contenant un saut de ligne', () => {
+    const fd = valid();
+    fd.set('email', 'a@b.com\nBcc: victime@example.com');
+    expect(parseQuote(fd).ok).toBe(false);
+  });
+
+  it('rejette un email sans arobase', () => {
+    const fd = valid();
+    fd.set('email', 'pas-une-adresse');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('email');
+  });
+});
+
+describe('renderQuoteEmail', () => {
+  it('produit du texte brut contenant les champs', () => {
+    const r = parseQuote(valid());
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const body = renderQuoteEmail(r.data);
+    expect(body).toContain('Jean Dupont');
+    expect(body).toContain('0470 12 34 56');
+    expect(body).toContain('Ring de Bruxelles');
+  });
+
+  /**
+   * Le corps est en texte brut : pas de HTML, donc pas de question
+   * d'echappement. Ce test verrouille ce choix — si quelqu'un passe
+   * l'email en HTML sans echapper, il devra d'abord casser ce test.
+   */
+  it('n interpole jamais de HTML', () => {
+    const fd = valid();
+    fd.set('message', '<img src=x onerror=alert(1)>');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const body = renderQuoteEmail(r.data);
+    // Le contenu arrive tel quel dans un corps text/plain : ni balise
+    // interpretee, ni echappement HTML a maintenir.
+    expect(body).toContain('<img src=x onerror=alert(1)>');
+    expect(body).not.toContain('&lt;');
+  });
+});
+```
+
+- [ ] **Step 5b: Lancer le test pour vérifier qu'il échoue**
+
+Run: `npx vitest run src/lib/quote.test.ts`
+Expected: FAIL — `Failed to resolve import "./quote"`
+
+- [ ] **Step 5c: Implémenter la validation et le rendu**
+
+Créer `src/lib/quote.ts` :
+
+```ts
+import { SERVICE_IDS, type ServiceId } from '@/content';
+
+export type Quote = {
+  name: string;
+  phone: string;
+  email: string | null;
+  service: ServiceId;
+  location: string;
+  message: string;
+};
+
+export type ParseResult =
+  | { ok: true; data: Quote }
+  | { ok: false; field: 'name' | 'phone' | 'email' | 'service' };
+
+/** Rejette tout ce qui pourrait injecter un en-tete SMTP. */
+const hasHeaderInjection = (value: string) => /[\r\n]/.test(value);
+
+export function parseQuote(formData: FormData): ParseResult {
+  const get = (key: string) => String(formData.get(key) ?? '').trim();
+
+  const name = get('name');
+  if (name.length < 2) return { ok: false, field: 'name' };
+
+  const phone = get('phone');
+  if (phone.replace(/[\s.\-()+]/g, '').length < 6) {
+    return { ok: false, field: 'phone' };
+  }
+
+  const rawEmail = get('email');
+  let email: string | null = null;
+  if (rawEmail.length > 0) {
+    // Rejeter, pas nettoyer : une adresse avec un retour chariot n'est
+    // pas une adresse mal formatee, c'est une tentative d'injection.
+    if (hasHeaderInjection(rawEmail)) return { ok: false, field: 'email' };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+      return { ok: false, field: 'email' };
+    }
+    email = rawEmail;
+  }
+
+  const service = get('service');
+  if (!SERVICE_IDS.includes(service as ServiceId)) {
+    return { ok: false, field: 'service' };
+  }
+
+  return {
+    ok: true,
+    data: {
+      name,
+      phone,
+      email,
+      service: service as ServiceId,
+      location: get('location'),
+      message: get('message'),
+    },
+  };
+}
+
+/**
+ * Corps en texte brut. Aucun HTML n'est genere, ce qui supprime la
+ * question de l'echappement : le contenu utilisateur ne peut pas
+ * devenir du balisage.
+ */
+export function renderQuoteEmail(q: Quote): string {
+  return [
+    'Nouvelle demande de devis — alb-depannage.com',
+    '',
+    `Nom        : ${q.name}`,
+    `Telephone  : ${q.phone}`,
+    `Email      : ${q.email ?? '(non fourni)'}`,
+    `Service    : ${q.service}`,
+    `Localisation : ${q.location || '(non fournie)'}`,
+    '',
+    'Message :',
+    q.message || '(aucun)',
+  ].join('\n');
+}
+```
+
+- [ ] **Step 5d: Lancer le test pour vérifier qu'il passe**
+
+Run: `npx vitest run src/lib/quote.test.ts`
+Expected: PASS — 11 tests
+
+- [ ] **Step 5e: Écrire le test de la Server Action qui échoue**
+
+Créer `src/app/[locale]/contact/actions.test.ts` :
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const sendMail = vi.fn();
+vi.mock('nodemailer', () => ({
+  default: { createTransport: () => ({ sendMail }) },
+}));
+
+import { submitQuote } from './actions';
+
+const valid = () => {
+  const fd = new FormData();
+  fd.set('name', 'Jean Dupont');
+  fd.set('phone', '0470 12 34 56');
+  fd.set('service', 'towing');
+  return fd;
+};
+
+const withSmtpEnv = () => {
+  vi.stubEnv('SMTP_HOST', 'smtp.example.com');
+  vi.stubEnv('SMTP_PORT', '587');
+  vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+  vi.stubEnv('SMTP_PASS', 'secret');
+};
+
+describe('submitQuote', () => {
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+    sendMail.mockReset();
+  });
+
+  it('renvoie une erreur de champ sans tenter d envoyer', async () => {
+    withSmtpEnv();
+    const fd = valid();
+    fd.set('name', 'J');
+    const r = await submitQuote({ status: 'idle' }, fd);
+    expect(r.status).toBe('error');
+    expect(sendMail).not.toHaveBeenCalled();
+  });
+
+  it('envoie et renvoie success quand SMTP repond', async () => {
+    withSmtpEnv();
+    sendMail.mockResolvedValue({ messageId: '1' });
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).toBe('success');
+    expect(sendMail).toHaveBeenCalledOnce();
+  });
+
+  /**
+   * Le coeur du sujet : SMTP en serverless echoue reellement. Si l'envoi
+   * rate, l'utilisateur DOIT etre renvoye vers le telephone, jamais voir
+   * un faux succes — sinon il attend un rappel qui ne viendra pas.
+   */
+  it('renvoie error si SMTP echoue', async () => {
+    withSmtpEnv();
+    sendMail.mockRejectedValue(new Error('ECONNREFUSED'));
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).toBe('error');
+  });
+
+  it('renvoie error si les identifiants SMTP sont absents', async () => {
+    // Pas de withSmtpEnv() : simule un deploiement mal configure.
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).toBe('error');
+    expect(sendMail).not.toHaveBeenCalled();
+  });
+
+  it('n affiche jamais success quand sendMail n a pas ete appele', async () => {
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).not.toBe('success');
+  });
+});
+```
+
+- [ ] **Step 5f: Lancer le test pour vérifier qu'il échoue**
+
+Run: `npx vitest run src/app/[locale]/contact/actions.test.ts`
+Expected: FAIL — `Failed to resolve import "./actions"`
+
+- [ ] **Step 5g: Implémenter la Server Action**
 
 Créer `src/app/[locale]/contact/actions.ts` :
 
 ```ts
 'use server';
 
-import { SERVICE_IDS } from '@/content';
+import nodemailer from 'nodemailer';
+import { parseQuote, renderQuoteEmail } from '@/lib/quote';
 
 export type QuoteState = {
   status: 'idle' | 'success' | 'error';
-  message?: string;
+  field?: string;
 };
 
+/** SMTP en serverless peut pendre : on coupe court plutot que faire attendre. */
+const SMTP_TIMEOUT_MS = 8_000;
+
+function readSmtpConfig() {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !port || !user || !pass) return null;
+  return { host, port: Number(port), user, pass };
+}
+
 /**
- * TODO PRODUIT — l'envoi d'email n'est PAS branche.
+ * Envoie la demande de devis par SMTP sur la boite existante.
  *
- * Aucun fournisseur (Resend, Postmark, SMTP) n'a ete choisi avec le
- * client. Cette action valide et journalise, mais n'expedie rien.
- *
- * Un formulaire qui affiche "demande recue" sans que personne ne la
- * recoive est pire que pas de formulaire du tout : le client croit
- * qu'on va le rappeler et attend. Tant que l'expedition n'est pas
- * branchee, l'action renvoie 'error' et renvoie vers le telephone.
+ * Regle non negociable : on ne renvoie 'success' QUE si sendMail a
+ * resolu. Un faux succes laisse le client attendre un rappel qui ne
+ * viendra jamais — pour une entreprise de depannage, c'est un client
+ * perdu et une reputation abimee. En cas d'echec, l'UI renvoie vers le
+ * telephone.
  */
 export async function submitQuote(
   _prev: QuoteState,
   formData: FormData,
 ): Promise<QuoteState> {
-  const name = String(formData.get('name') ?? '').trim();
-  const phone = String(formData.get('phone') ?? '').trim();
-  const service = String(formData.get('service') ?? '').trim();
-
-  if (name.length < 2) {
-    return { status: 'error', message: 'name' };
-  }
-  if (phone.replace(/[\s.-]/g, '').length < 6) {
-    return { status: 'error', message: 'phone' };
-  }
-  if (!SERVICE_IDS.includes(service as (typeof SERVICE_IDS)[number])) {
-    return { status: 'error', message: 'service' };
+  const parsed = parseQuote(formData);
+  if (!parsed.ok) {
+    return { status: 'error', field: parsed.field };
   }
 
-  console.info('[quote] demande valide, expedition non branchee', {
-    name,
-    phone,
-    service,
+  const config = readSmtpConfig();
+  if (!config) {
+    console.error('[quote] identifiants SMTP absents — envoi impossible');
+    return { status: 'error', field: 'smtp' };
+  }
+
+  const transport = nodemailer.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.port === 465,
+    auth: { user: config.user, pass: config.pass },
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS,
   });
 
-  // Ne pas passer a 'success' avant que l'expedition soit reelle.
-  return { status: 'error', message: 'not-wired' };
+  try {
+    await transport.sendMail({
+      from: config.user,
+      to: config.user,
+      // parseQuote a rejete tout \r\n : pas d'injection d'en-tete possible.
+      replyTo: parsed.data.email ?? undefined,
+      subject: `Devis — ${parsed.data.service} — ${parsed.data.name}`,
+      text: renderQuoteEmail(parsed.data),
+    });
+    return { status: 'success' };
+  } catch (error) {
+    console.error('[quote] echec SMTP', error);
+    return { status: 'error', field: 'smtp' };
+  }
 }
 ```
+
+- [ ] **Step 5h: Lancer le test pour vérifier qu'il passe**
+
+Run: `npx vitest run src/app/[locale]/contact/actions.test.ts`
+Expected: PASS — 5 tests
+
+- [ ] **Step 5i: Documenter les variables d'environnement**
+
+Créer `.env.example` :
+
+```bash
+# SMTP de la boite contact@alb-depannage.com.
+# A fournir par le client — sans eux, le formulaire de devis renvoie
+# une erreur et oriente vers le telephone (comportement teste, pas un crash).
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=contact@alb-depannage.com
+SMTP_PASS=
+
+# URL publique, utilisee pour les canonical et le sitemap.
+NEXT_PUBLIC_SITE_URL=https://alb-depannage.com
+```
+
+Vérifier que `.gitignore` contient bien `.env*.local`.
 
 - [ ] **Step 6: Implémenter le formulaire**
 
@@ -3326,13 +3717,23 @@ export function QuoteForm({ locale }: { locale: Locale }) {
         {pending ? '…' : c.contactPage.submit}
       </button>
 
-      {/* aria-live : le retour est annonce aux lecteurs d'ecran. */}
+      {/*
+        aria-live : le retour est annonce aux lecteurs d'ecran.
+
+        Un echec d'envoi et un champ invalide ne disent pas la meme chose.
+        Afficher « l'envoi a echoue, appelez-nous » parce qu'un nom fait
+        une lettre enverrait le client au telephone pour rien.
+      */}
       <p aria-live="polite" className="mt-4 text-sm">
         {state.status === 'success' ? (
           <span className="text-secondary">{c.contactPage.success}</span>
         ) : null}
         {state.status === 'error' ? (
-          <span className="text-cta">{c.contactPage.error}</span>
+          <span className="text-cta">
+            {state.field === 'smtp'
+              ? c.contactPage.error
+              : c.contactPage.invalidFields}
+          </span>
         ) : null}
       </p>
     </form>
@@ -3435,18 +3836,26 @@ npm run typecheck && npm run lint && npm test && npm run build
 
 ```bash
 git add -A
-git commit -m "feat: page contact et demande de devis
+git commit -m "feat: page contact et demande de devis par SMTP
 
 L'urgence passe avant le formulaire : appeler est toujours plus rapide
 que remplir six champs quand on est immobilise.
 
-L'expedition d'email n'est PAS branchee — aucun fournisseur n'a ete
-choisi avec le client. L'action valide, journalise, et renvoie 'error'
-vers le telephone. Un formulaire qui affiche « demande recue » sans que
-personne ne la recoive laisse le client attendre un rappel qui ne vient
-pas : c'est pire que pas de formulaire.
+Envoi via SMTP (nodemailer) sur la boite existante. 'success' n'est
+renvoye QUE si sendMail resout : un faux succes laisse le client
+attendre un rappel qui ne viendra jamais. SMTP en serverless echoue
+reellement — timeout explicite a 8s, et l'echec oriente vers le
+telephone.
 
-Tous les champs ont un label associe, verifie par getByLabelText."
+Le corps de l'email est en text/plain : le contenu utilisateur ne peut
+pas devenir du balisage, la question de l'echappement disparait.
+Les emails contenant \\r\\n sont rejetes, pas nettoyes : c'est une
+injection d'en-tete SMTP, pas une faute de frappe.
+
+Champ invalide et echec d'envoi affichent des messages distincts.
+
+Sans identifiants SMTP, l'action echoue proprement et oriente vers le
+telephone — comportement teste, pas un crash."
 ```
 
 ---
@@ -4523,7 +4932,7 @@ passera pas en 4G reelle."
 | §1 Tarifs affichés | 2, 6, 7 |
 | §2 Numéro atteignable < 1 s | 5, 6, 11 |
 | §2 LCP < 1,5 s | 6, 11 |
-| §2 Fonctionnel sans WebGL | 6 (test anti-import), 11 (step 8) |
+| §2 Fonctionnel sans WebGL | 1 (règle ESLint), 6 (test anti-import), 11 (step 8) |
 | §2 Trilingue SEO propre | 3, 4, 10 |
 | §3 SSR toujours en Static | 6 (le poster est le LCP) |
 | §4 Fallback Static de la carte Europe | 7 |
@@ -4541,7 +4950,7 @@ passera pas en 4G reelle."
 **Lacunes assumées, hors périmètre de ce plan :**
 - Paliers Full/Lite, détection de capacité, Zustand, canvas R3F → **Plan 2**.
 - Poster réel du hero → dépend du shader (Plan 2). Placeholder + `TODO` en Task 6.
-- Envoi d'email du formulaire → aucun fournisseur choisi. `TODO` explicite en Task 8, l'action renvoie vers le téléphone plutôt que de mentir.
+- Identifiants SMTP → à fournir par le client. Le code est complet et testé avec nodemailer mocké ; leur absence produit un échec propre orientant vers le téléphone. Bloque la mise en ligne du formulaire, pas l'implémentation.
 - Section avis clients → attend la réponse du client (question ouverte n° 5).
 - Wordmark → question ouverte n° 4 ; le header utilise le nom en Syncopate.
 

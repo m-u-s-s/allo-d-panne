@@ -22,3 +22,6 @@ Thumbs.db
 
 # Local DB artifacts
 ruvector.db
+
+# Superpowers scratch
+.superpowers/
