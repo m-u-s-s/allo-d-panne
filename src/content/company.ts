@@ -98,15 +98,16 @@ export const company = {
    * numero de telephone confirme.
    */
   socials: {
-    facebook: todo(
-      'URL de la page Facebook a fournir par le client (ex. https://www.facebook.com/…). Aucun handle connu — ne pas deviner.',
-    ) as Field<string>,
-    linkedin: todo(
-      'URL du profil/page LinkedIn a fournir par le client (ex. https://www.linkedin.com/company/…).',
-    ) as Field<string>,
-    tiktok: todo(
-      'URL du compte TikTok a fournir par le client (ex. https://www.tiktok.com/@…).',
-    ) as Field<string>,
+    /*
+     * TEMPORAIRE (decision client, 2026-07-18) : accueils des
+     * plateformes pour afficher les reseaux sur le podium — vraies
+     * destinations, aucun handle invente qui risquerait de pointer
+     * vers le profil d'un tiers. A remplacer par les URLs des profils
+     * reels des qu'elles existent.
+     */
+    facebook: resolved('https://www.facebook.com/') as Field<string>,
+    linkedin: resolved('https://www.linkedin.com/') as Field<string>,
+    tiktok: resolved('https://www.tiktok.com/') as Field<string>,
   },
 } as const;
 
