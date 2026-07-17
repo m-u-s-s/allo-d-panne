@@ -78,6 +78,17 @@ export type SiteContent = {
     body: string;
     button: string;
   };
+  transportPage: {
+    title: string;
+    intro: string;
+    mapAlt: string;
+    routesTitle: string;
+    ctaTitle: string;
+  };
+  pricingPage: {
+    title: string;
+    intro: string;
+  };
   footer: {
     rights: string;
     legal: string;

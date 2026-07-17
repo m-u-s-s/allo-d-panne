@@ -106,6 +106,20 @@ export const en: SiteContent = {
     body: 'One call and we are on our way.',
     button: 'Call now',
   },
+  transportPage: {
+    title: 'Vehicle transport across Europe',
+    intro:
+      'Car bought abroad, classic vehicle, machinery to move, fleet to reposition: we transport anywhere in Europe. Every trip is quoted, based on distance and vehicle type.',
+    mapAlt:
+      'Map of Europe showing the main transport routes from Brussels',
+    routesTitle: 'Our frequent routes',
+    ctaTitle: 'A vehicle to move?',
+  },
+  pricingPage: {
+    title: 'Pricing',
+    intro:
+      'Our prices are stated upfront and confirmed before we set off. No unpleasant surprises on the invoice.',
+  },
   footer: {
     rights: 'All rights reserved.',
     legal: 'Legal notice',

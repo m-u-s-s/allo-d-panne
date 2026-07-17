@@ -108,6 +108,20 @@ export const fr: SiteContent = {
     body: 'Un appel, et on est en route.',
     button: 'Appeler maintenant',
   },
+  transportPage: {
+    title: "Transport de véhicule dans toute l'Europe",
+    intro:
+      "Voiture achetée à l'étranger, véhicule de collection, engin à déplacer, flotte à repositionner : nous transportons partout en Europe. Chaque trajet fait l'objet d'un devis, calculé sur la distance et le type de véhicule.",
+    mapAlt:
+      "Carte de l'Europe montrant les principaux trajets de transport au départ de Bruxelles",
+    routesTitle: 'Nos trajets fréquents',
+    ctaTitle: 'Un véhicule à déplacer ?',
+  },
+  pricingPage: {
+    title: 'Tarifs',
+    intro:
+      "Nos prix sont annoncés à l'avance et confirmés avant tout déplacement. Pas de mauvaise surprise sur la facture.",
+  },
   footer: {
     rights: 'Tous droits réservés.',
     legal: 'Mentions légales',

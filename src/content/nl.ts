@@ -106,6 +106,20 @@ export const nl: SiteContent = {
     body: 'Eén telefoontje en wij zijn onderweg.',
     button: 'Bel nu',
   },
+  transportPage: {
+    title: 'Voertuigtransport in heel Europa',
+    intro:
+      'Auto gekocht in het buitenland, oldtimer, machine te verplaatsen, vloot te herpositioneren: wij transporteren overal in Europa. Elk traject krijgt een offerte, berekend op afstand en voertuigtype.',
+    mapAlt:
+      'Kaart van Europa met de belangrijkste transporttrajecten vanuit Brussel',
+    routesTitle: 'Onze frequente trajecten',
+    ctaTitle: 'Een voertuig te verplaatsen?',
+  },
+  pricingPage: {
+    title: 'Tarieven',
+    intro:
+      'Onze prijzen worden vooraf aangekondigd en bevestigd vóór elke verplaatsing. Geen onaangename verrassingen op de factuur.',
+  },
   footer: {
     rights: 'Alle rechten voorbehouden.',
     legal: 'Wettelijke vermeldingen',
