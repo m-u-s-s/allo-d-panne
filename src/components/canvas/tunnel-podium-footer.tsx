@@ -345,7 +345,7 @@ function ParticleSculpture({
   });
 
   return (
-    <group position={[0, PODIUM_Y + 3.4, 0]}>
+    <group position={[0, PODIUM_Y + 3.3, 0]}>
       <points geometry={geometry} material={material} ref={points} />
       {/* Proxy de clic : sphere invisible — on ne raycaste JAMAIS les
           30k points. Clic = pointerup a moins de 8 px / 300 ms du down,
@@ -488,10 +488,10 @@ function Podium() {
   return (
     <group position={[0, PODIUM_Y, 0]}>
       {[
-        [6.5, 0.5, 0],
-        [5.2, 0.55, 0.42],
-        [3.9, 0.6, 0.86],
-        [2.6, 0.65, 1.3],
+        [6.5, 0.28, 0],
+        [5.2, 0.28, 0.24],
+        [3.9, 0.28, 0.48],
+        [2.6, 0.28, 0.72],
       ].map(([r, h, y], i) => (
         <mesh key={i} position={[0, y + h / 2, 0]}>
           <cylinderGeometry args={[r, r * 1.04, h, 72]} />
@@ -502,8 +502,8 @@ function Podium() {
           />
         </mesh>
       ))}
-      <mesh position={[0, 2.15, 0]}>
-        <cylinderGeometry args={[1.5, 1.62, 1.1, 64]} />
+      <mesh position={[0, 1.28, 0]}>
+        <cylinderGeometry args={[1.5, 1.62, 0.6, 64]} />
         <meshStandardMaterial color={PALETTE.metal} metalness={0.75} roughness={0.35} />
       </mesh>
       {/* couture lumineuse du pourtour */}
@@ -527,8 +527,8 @@ function Podium() {
           fog={false}
         />
       </mesh>
-      <mesh position={[0, 5.2, 0]}>
-        <coneGeometry args={[3.9, 6.6, 48, 1, true]} />
+      <mesh position={[0, 5, 0]}>
+        <coneGeometry args={[3.9, 6.8, 48, 1, true]} />
         <meshBasicMaterial
           color={PALETTE.emberSoft}
           transparent
@@ -570,7 +570,7 @@ function Rig() {
     // dans l'axe ; C : pose face au podium (tenue a p=1)
     if (C > 0) {
       camera.position.set(0, -44 - 6.4 * C, 7.4 * C);
-      look.set(0, -50 + (PODIUM_Y + 2.6 + 50) * C, 0);
+      look.set(0, -50 + (PODIUM_Y + 2.9 + 50) * C, 0);
     } else if (B > 0) {
       camera.position.set(0, -4 - 40 * B, 2.4 * (1 - B));
       look.set(0, camera.position.y - 6, 0);
