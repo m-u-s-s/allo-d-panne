@@ -17,9 +17,9 @@
            C 100 430 170 396 240 380
            L 244 306
            C 256 322 278 330 300 330 Z"
-        fill="#16180F"/>
+        fill="#111112"/>
   <!-- tete -->
-  <ellipse cx="300" cy="204" rx="112" ry="132" fill="#16180F"/>
+  <ellipse cx="300" cy="204" rx="112" ry="132" fill="#111112"/>
   <!-- reflet discret pour casser l'aplat -->
   <path d="M232 140 C 244 96 280 72 316 74 C 284 84 256 108 244 148 Z"
         fill="#3A3E2C" opacity="0.6"/>

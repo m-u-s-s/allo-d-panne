@@ -96,15 +96,19 @@ const seeded = (i: number, k: number) =>
   Math.floor(Math.sin(i * 12.9898 + k * 78.233) * 43758.5453);
 
 function contourPath(ring: number): string {
-  const cx = 720;
-  const cy = 400;
-  const r = 90 + ring * 88;
+  // Centre decale hors cadre et rayons larges : sur le site de
+  // reference (verifie sur la video du client), les contours sont
+  // d'immenses courbes qui balayent tout l'ecran — pas des anneaux
+  // concentriques au centre.
+  const cx = 420;
+  const cy = 980;
+  const r = 340 + ring * 210;
   const pts: Array<[number, number]> = [];
-  const n = 10;
+  const n = 9;
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2;
-    const wob = 0.78 + seeded(ring, i) * 0.42;
-    pts.push([cx + Math.cos(a) * r * wob * 1.5, cy + Math.sin(a) * r * wob * 0.82]);
+    const wob = 0.72 + seeded(ring, i) * 0.5;
+    pts.push([cx + Math.cos(a) * r * wob * 1.45, cy + Math.sin(a) * r * wob * 0.85]);
   }
   let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
   for (let i = 1; i <= n; i++) {
@@ -237,8 +241,8 @@ function MarqueeRow({
     <motion.div
       className={
         serif
-          ? 'whitespace-nowrap text-[9vw] leading-none text-[#C0CD5C] will-change-transform'
-          : 'whitespace-nowrap font-black uppercase tracking-tight text-[8vw] leading-none text-[#EDEDE6] will-change-transform'
+          ? 'whitespace-nowrap text-[9vw] leading-none text-[#B2C73A] will-change-transform'
+          : 'whitespace-nowrap font-black uppercase tracking-tight text-[8vw] leading-none text-[#EBEEE0] will-change-transform'
       }
       style={{
         x,
@@ -311,12 +315,12 @@ export default function ScrollAssemblyHero({
   const backgroundColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#F1F0EA', '#282C20'],
+    ['#EFEFE5', '#282C20'],
   );
   const chromeColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#16180F', '#F1F0EA'],
+    ['#111112', '#EFEFE5'],
   );
   const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 0]);
   const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 1]);
@@ -350,7 +354,7 @@ export default function ScrollAssemblyHero({
   if (reduced) {
     return (
       <section
-        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F1F0EA] ${className}`}
+        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#EFEFE5] ${className}`}
       >
         <ContourLayer stroke="rgba(0,0,0,0.06)" />
         <div className="relative flex h-[92vh] items-end justify-center">
@@ -367,7 +371,7 @@ export default function ScrollAssemblyHero({
             className="absolute left-1/2 top-[3%] w-[46%] -translate-x-1/2 object-contain"
           />
         </div>
-        <div className="absolute left-6 top-24 text-[#16180F]">
+        <div className="absolute left-6 top-24 text-[#111112]">
           <p
             className="text-2xl tracking-wide"
             style={{ fontFamily: 'var(--font-instrument), serif', fontStyle: 'italic' }}
@@ -378,7 +382,7 @@ export default function ScrollAssemblyHero({
         </div>
         <a
           href={callHref}
-          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D6FF3B] px-4 py-2 text-sm font-bold uppercase text-[#16180F]"
+          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
         >
           <PhoneIcon />
           {callLabel} <span className="font-mono tabular-nums">{callNumber}</span>
@@ -396,29 +400,84 @@ export default function ScrollAssemblyHero({
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor }}
       >
-        {/* ----- Fond : contours topographiques + blobs parallaxe. ---- */}
+        {/* ----- Fond : contours topographiques en derive CONTINUE et
+               VISIBLE. Le site de reference anime son fond en
+               permanence (Rive sur canvas) — la premiere version ici
+               derivait de 40px en 60s, techniquement animee,
+               perceptuellement immobile (retour client). Deux nappes en
+               sens opposes + une respiration d'echelle : le fond vit
+               sans jamais distraire. -------------------------------- */}
         <motion.div
-          className="absolute inset-[-3%]"
-          animate={{ x: [0, -40, 0] }}
-          transition={{ duration: 60, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-[-8%]"
+          animate={{ x: [0, -110, 20, 0], y: [0, 36, -18, 0] }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
         >
           <motion.div className="absolute inset-0" style={{ opacity: lightPattern }}>
-            <ContourLayer stroke="rgba(0,0,0,0.06)" />
+            <ContourLayer stroke="rgba(17,17,18,0.08)" />
           </motion.div>
           <motion.div className="absolute inset-0" style={{ opacity: darkPattern }}>
-            <ContourLayer stroke="rgba(255,255,255,0.05)" />
+            <ContourLayer stroke="rgba(244,244,237,0.06)" />
           </motion.div>
         </motion.div>
         <motion.div
-          className="absolute left-[8%] top-[16%] h-[42vh] w-[30vw] bg-black/[0.04]"
-          style={{ x: blobX, y: blobY, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }}
-          aria-hidden="true"
-        />
+          className="absolute inset-[-10%]"
+          animate={{ x: [0, 90, -30, 0], scale: [1.18, 1.24, 1.18] }}
+          transition={{ duration: 34, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <motion.div className="absolute inset-0" style={{ opacity: lightPattern }}>
+            <ContourLayer stroke="rgba(17,17,18,0.05)" />
+          </motion.div>
+          <motion.div className="absolute inset-0" style={{ opacity: darkPattern }}>
+            <ContourLayer stroke="rgba(244,244,237,0.04)" />
+          </motion.div>
+        </motion.div>
+
+        {/* Nappes organiques : la vague sauge du site de reference,
+            en derive lente + parallaxe souris. Une copie claire, une
+            copie sombre, en fondu croise avec le theme. */}
+        {/* Deux ecrivains sur un meme x = conflit : la parallaxe souris
+            (MotionValue) vit sur le conteneur, la derive (keyframes)
+            sur l'enfant. */}
         <motion.div
-          className="absolute bottom-[10%] right-[6%] h-[36vh] w-[26vw] bg-black/[0.04]"
-          style={{ x: blobXInv, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }}
+          className="absolute left-[-6%] top-[12%] h-[48vh] w-[42vw]"
+          style={{ x: blobX, y: blobY }}
           aria-hidden="true"
-        />
+        >
+          <motion.div
+            className="h-full w-full blur-3xl"
+            animate={{ x: [0, 120, 0] }}
+            transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <motion.div
+              className="h-full w-full bg-[#DDE1D2]"
+              style={{ opacity: lightPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }}
+            />
+            <motion.div
+              className="-mt-[48vh] h-full w-full bg-[#3B3C38]"
+              style={{ opacity: darkPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }}
+            />
+          </motion.div>
+        </motion.div>
+        <motion.div
+          className="absolute bottom-[6%] right-[-4%] h-[40vh] w-[34vw]"
+          style={{ x: blobXInv, y: blobY }}
+          aria-hidden="true"
+        >
+          <motion.div
+            className="h-full w-full blur-3xl"
+            animate={{ x: [0, -100, 0] }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <motion.div
+              className="h-full w-full bg-[#DDE1D2]"
+              style={{ opacity: lightPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }}
+            />
+            <motion.div
+              className="-mt-[40vh] h-full w-full bg-[#3B3C38]"
+              style={{ opacity: darkPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }}
+            />
+          </motion.div>
+        </motion.div>
 
         {/* ----- Marquees (phase C), DERRIERE la carte portrait. ------ */}
         <div className="absolute inset-x-0 top-1/2 z-10 -translate-y-1/2">
@@ -429,20 +488,23 @@ export default function ScrollAssemblyHero({
         {/* ----- Portrait → carte. ------------------------------------ */}
         <div className="absolute inset-0 z-20 flex items-end justify-center">
           <motion.div
-            className="relative flex items-end justify-center overflow-hidden"
+            className="relative flex items-start justify-center overflow-hidden"
             style={{ width: cardW, height: cardH, maxWidth: cardMaxW, y: cardY, x: portraitX }}
           >
+            {/* h-[112%] : sur la video de reference le visage domine le
+                cadre — le buste depasse du bas, seul le haut compte.
+                Easing = --cubic-default / --duration-default du site. */}
             <motion.img
               src={portraitSrc}
               alt=""
-              className="h-[92%] max-h-full object-contain object-bottom"
+              className="h-[112%] max-h-none object-contain object-top"
               style={{ filter: portraitFilter }}
               initial={{ scale: 1.06, opacity: 0 }}
               animate={{ scale: 1, opacity: 1, y: [0, -6, 0] }}
               transition={{
-                scale: { duration: 1.1, ease: 'easeOut' },
-                opacity: { duration: 0.9 },
-                y: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1.1 },
+                scale: { duration: 0.75, ease: [0.65, 0.05, 0, 1] },
+                opacity: { duration: 0.75, ease: [0.65, 0.05, 0, 1] },
+                y: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.9 },
               }}
             />
             <motion.div
@@ -454,7 +516,7 @@ export default function ScrollAssemblyHero({
 
         {/* ----- Dome fantome + eclats du casque, sur la tete. -------- */}
         <motion.div
-          className="absolute left-1/2 top-[6%] z-20 aspect-square w-[34vh] -translate-x-1/2"
+          className="absolute left-1/2 top-[3%] z-20 aspect-square w-[46vh] -translate-x-1/2"
           style={{ x: shardsX, y: shardsY }}
         >
           <motion.div className="absolute inset-x-0 top-[10%] h-[55%]" style={{ opacity: domeOpacity }}>
@@ -475,29 +537,29 @@ export default function ScrollAssemblyHero({
           >
             <motion.path
               d="M40 150 C 60 60 90 40 100 70 C 108 92 96 128 82 150 C 70 168 60 160 66 140 L 150 60 C 160 50 168 54 162 70 L 130 150 C 126 160 132 164 140 156 C 168 130 200 120 210 140 C 222 162 200 186 178 178 C 160 172 164 148 186 142"
-              stroke="#D6FF3B" strokeWidth="10" strokeLinecap="round"
+              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig1 }}
             />
             <motion.path
               d="M30 200 C 120 230 260 220 330 180"
-              stroke="#D6FF3B" strokeWidth="10" strokeLinecap="round"
+              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig2 }}
             />
             <motion.path
               d="M360 70 C 380 50 404 56 404 76 C 404 96 372 108 360 124 L 408 124 M446 60 L 424 104 L 462 104 M452 84 L 452 128 M486 130 L 512 56 M520 60 L 560 60 L 534 130"
-              stroke="#D6FF3B" strokeWidth="10" strokeLinecap="round"
+              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig3 }}
             />
           </svg>
         </div>
         <motion.div
-          className="absolute inset-x-0 bottom-[7%] z-30 flex flex-col items-center gap-1 text-[#EDEDE6]"
+          className="absolute inset-x-0 bottom-[7%] z-30 flex flex-col items-center gap-1 text-[#EBEEE0]"
           style={{ opacity: laurelOpacity }}
         >
           <LaurelIcon className="h-6 w-6" />
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]">{caption}</p>
           <motion.div
-            className="h-0.5 w-24 origin-left bg-[#D6FF3B]"
+            className="h-0.5 w-24 origin-left bg-[#D2FF00]"
             style={{ scaleX: barScale }}
           />
         </motion.div>
@@ -520,7 +582,7 @@ export default function ScrollAssemblyHero({
 
         <motion.a
           href={callHref}
-          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D6FF3B] px-4 py-2 text-sm font-bold uppercase text-[#16180F]"
+          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300, damping: 18 }}
         >
