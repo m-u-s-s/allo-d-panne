@@ -42,6 +42,62 @@ body {
 }
 
 /*
+ * Defilement horizontal (palier Full uniquement).
+ *
+ * Le HTML est ecrit VERTICAL : sans JavaScript, en Static, en Lite ou en
+ * reduced-motion, les sections s'empilent normalement et rien ici ne
+ * s'applique. Quand ScrollExperience active le mode (attribut
+ * data-hscroll="on"), la piste devient une rangee de panneaux plein
+ * ecran que GSAP translate en X pendant que la page defile en Y — le
+ * pattern des sites de reference. C'est le JS qui pose l'attribut, donc
+ * l'etat degrade est l'etat par defaut, pas un repli calcule.
+ */
+[data-hscroll] {
+  position: relative;
+}
+
+[data-hscroll='on'] {
+  overflow: hidden;
+}
+
+[data-hscroll='on'] [data-hscroll-track] {
+  display: flex;
+  width: max-content;
+}
+
+/* « Adapter la taille des sections » : en mode horizontal chaque panneau
+   est calibre exactement plein ecran, contenu centre verticalement. */
+[data-hscroll='on'] [data-panel] {
+  display: flex;
+  width: 100vw;
+  height: 100svh;
+  flex-shrink: 0;
+  align-items: center;
+  overflow: hidden;
+}
+
+[data-hscroll='on'] [data-panel] > * {
+  width: 100%;
+}
+
+/* Les sections gardent leurs py-16/20 genereux en flux vertical ; dans un
+   panneau calibre 100svh ce padding pousse le contenu hors ecran. */
+[data-hscroll='on'] [data-panel] section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* Rubans de chevrons : invisibles tant que le mode horizontal n'est pas
+   actif — ils n'ont aucun sens en flux vertical. */
+.hscroll-ribbon {
+  display: none;
+}
+
+[data-hscroll='on'] .hscroll-ribbon {
+  display: block;
+}
+
+/*
  * Indicateur de scroll du hero : deux chevrons qui pulsent vers le bas,
  * le second avec un temps de retard — l'onde descend, le sens de lecture
  * est immediat. L'etat de repos (0 % / 100 %) est semi-transparent mais

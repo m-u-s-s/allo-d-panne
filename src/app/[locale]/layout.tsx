@@ -5,6 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LocalBusinessJsonLd } from '@/components/seo/LocalBusinessJsonLd';
 import { SceneMount } from '@/components/canvas/SceneMount';
+import { TierBadge } from '@/components/canvas/TierBadge';
 import { ScrollExperience } from '@/components/motion/ScrollExperience';
 import { getContent } from '@/content';
 import { company } from '@/content/company';
@@ -122,6 +123,8 @@ export default async function LocaleLayout({
           lies aux sections de la page courante). En Static il rend null.
         */}
         <ScrollExperience />
+        {/* Diagnostic de palier, uniquement si l'URL contient ?debug. */}
+        <TierBadge />
         {children}
       </body>
     </html>

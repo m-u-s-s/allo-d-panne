@@ -57,26 +57,65 @@ export default async function HomePage({
           <Hero locale={l} />
         </div>
 
-        {/* Section "probleme" : la situation du client, avant les services. */}
-        <section data-stage="" className="mx-auto max-w-7xl px-4 py-20">
-          <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
-            {c.problem.title}
-          </h2>
-          <p className="mt-4 max-w-[60ch] text-lg text-muted">{c.problem.body}</p>
-        </section>
+        {/*
+          Piste horizontale. Ecrite VERTICALE : les data-panel s'empilent
+          normalement sans JavaScript, en Static, en Lite et en
+          reduced-motion. En palier Full, ScrollExperience pose
+          data-hscroll="on" : les panneaux passent plein ecran en rangee
+          (globals.css) et GSAP epingle la piste puis la translate vers la
+          GAUCHE pendant le defilement vertical. Hero et FinalCta restent
+          hors piste : l'entree du site et son CTA de conversion ne
+          passent jamais dans le scrolljack.
+        */}
+        <div data-hscroll="">
+          <div data-hscroll-track="">
+            {/* Section "probleme" : la situation du client, avant les services. */}
+            <div data-panel="">
+              <section className="mx-auto max-w-7xl px-4 py-20">
+                <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
+                  {c.problem.title}
+                </h2>
+                <p className="mt-4 max-w-[60ch] text-lg text-muted">
+                  {c.problem.body}
+                </p>
+              </section>
+            </div>
+            <div data-panel="">
+              <ServicesSection locale={l} />
+            </div>
+            <div data-panel="">
+              <ProofSection locale={l} />
+            </div>
+            <div data-panel="">
+              <CoverageSection locale={l} />
+            </div>
+            <div data-panel="">
+              <PricingSection locale={l} />
+            </div>
+          </div>
 
-        <div data-stage="">
-          <ServicesSection locale={l} />
+          {/*
+            Les grands « ‹ » transparents qui derivent au scroll — deux
+            rubans a vitesses differentes (parallaxe), pilotes par le meme
+            scrub que la piste. Purement decoratifs : aria-hidden, aucun
+            evenement pointeur, invisibles hors mode horizontal.
+          */}
+          <div
+            aria-hidden="true"
+            data-ribbon="fast"
+            className="hscroll-ribbon pointer-events-none absolute left-0 top-[8%] z-10 select-none whitespace-nowrap font-display text-[22svh] font-bold leading-none text-cta opacity-[0.07]"
+          >
+            {'‹ '.repeat(40)}
+          </div>
+          <div
+            aria-hidden="true"
+            data-ribbon="slow"
+            className="hscroll-ribbon pointer-events-none absolute bottom-[6%] left-0 z-10 select-none whitespace-nowrap font-display text-[30svh] font-bold leading-none text-text opacity-[0.04]"
+          >
+            {'‹ '.repeat(30)}
+          </div>
         </div>
-        <div data-stage="">
-          <ProofSection locale={l} />
-        </div>
-        <div data-stage="">
-          <CoverageSection locale={l} />
-        </div>
-        <div data-stage="">
-          <PricingSection locale={l} />
-        </div>
+
         <div data-stage="">
           <FinalCta locale={l} />
         </div>

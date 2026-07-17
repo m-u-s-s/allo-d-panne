@@ -64,6 +64,7 @@ export function ScrollExperience() {
 
       const teardown: Array<() => void> = [];
       const stages = gsap.utils.toArray<HTMLElement>('[data-stage]');
+      const panels = gsap.utils.toArray<HTMLElement>('[data-panel]');
 
       // ----- Lenis : palier Full uniquement (spec). ------------------
       if (tier === 'full') {
@@ -106,6 +107,67 @@ export function ScrollExperience() {
 
       // ----- Transitions de sections. ---------------------------------
       const tweens: gsap.core.Tween[] = [];
+
+      // ----- Defilement horizontal (Full) : les sections du milieu ----
+      // glissent vers la GAUCHE pendant que la page defile en Y. La
+      // piste est epinglee le temps de sa traversee ; la distance de
+      // scroll vertical consommee egale la distance horizontale
+      // parcourue, donc la vitesse percue reste celle de la molette.
+      if (tier === 'full') {
+        const wrapper = document.querySelector<HTMLElement>('[data-hscroll]');
+        const track = wrapper?.querySelector<HTMLElement>(
+          '[data-hscroll-track]',
+        );
+        if (wrapper && track) {
+          // C'est CET attribut qui fait passer la mise en page en rangee
+          // de panneaux plein ecran (globals.css). Le HTML reste vertical
+          // pour tous les autres paliers — l'etat degrade est l'etat par
+          // defaut, pas un repli.
+          wrapper.setAttribute('data-hscroll', 'on');
+          teardown.push(() => wrapper.setAttribute('data-hscroll', ''));
+
+          // Fonctionnel + invalidateOnRefresh : recalcule au resize, la
+          // piste ne se decadre jamais.
+          const dist = () => track.scrollWidth - window.innerWidth;
+
+          tweens.push(
+            gsap.to(track, {
+              x: () => -dist(),
+              ease: 'none',
+              scrollTrigger: {
+                trigger: wrapper,
+                start: 'top top',
+                end: () => `+=${dist()}`,
+                scrub: 0.7,
+                pin: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            }),
+          );
+
+          // Les rubans de chevrons derivent avec la piste mais a des
+          // vitesses differentes : c'est l'ecart de vitesse qui cree la
+          // profondeur, pas les rubans eux-memes.
+          for (const ribbon of wrapper.querySelectorAll<HTMLElement>(
+            '[data-ribbon]',
+          )) {
+            const fast = ribbon.getAttribute('data-ribbon') === 'fast';
+            tweens.push(
+              gsap.to(ribbon, {
+                xPercent: fast ? -55 : -22,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: wrapper,
+                  start: 'top top',
+                  end: () => `+=${dist()}`,
+                  scrub: fast ? 0.4 : 1.1,
+                },
+              }),
+            );
+          }
+        }
+      }
 
       for (const el of stages) {
         const isHero = el.dataset.stage === 'hero';
@@ -185,6 +247,22 @@ export function ScrollExperience() {
         }
       }
 
+      // Lite : la piste reste verticale (pas de scrub par frame), mais
+      // chaque panneau garde le vocabulaire d'entree, joue une fois.
+      if (tier === 'lite') {
+        for (const el of panels) {
+          tweens.push(
+            gsap.from(el, {
+              opacity: 0,
+              y: 48,
+              duration: 0.9,
+              ease: 'power3.out',
+              scrollTrigger: { trigger: el, start: 'top 88%' },
+            }),
+          );
+        }
+      }
+
       teardown.push(() => {
         for (const t of tweens) {
           t.scrollTrigger?.kill();
@@ -193,7 +271,7 @@ export function ScrollExperience() {
         // Rend le DOM tel que le serveur l'avait produit : sans ca, un
         // changement de palier a chaud laisserait des sections figees en
         // demi-transition.
-        gsap.set(stages, { clearProps: 'all' });
+        gsap.set([...stages, ...panels], { clearProps: 'all' });
       });
 
       // Les polices (next/font, swap) et images arrivent apres l'init et
