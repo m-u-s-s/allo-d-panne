@@ -58,7 +58,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           accessible. Pas de hamburger, pas de client component : le footer
           est le repli conventionnel, sans JS, au niveau statique du site.
         */}
-        <nav aria-label="Navigation" className="flex flex-col gap-2 text-sm">
+        <nav aria-label={c.footer.navLabel} className="flex flex-col gap-2 text-sm">
           <Link
             href="/transport-europe"
             className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
@@ -79,7 +79,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </Link>
         </nav>
 
-        <nav aria-label="Légal" className="flex flex-col gap-2 text-sm">
+        <nav aria-label={c.footer.legalNavLabel} className="flex flex-col gap-2 text-sm">
           <Link
             href="/mentions-legales"
             className="text-muted transition-colors duration-200 hover:text-text"

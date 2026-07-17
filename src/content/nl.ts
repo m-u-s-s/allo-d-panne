@@ -11,6 +11,10 @@ export const nl: SiteContent = {
     transport: 'Transport Europa',
     pricing: 'Tarieven',
     contact: 'Contact',
+    primaryLabel: 'Hoofdnavigatie',
+  },
+  localeSwitcher: {
+    label: 'Taal',
   },
   hero: {
     eyebrow: '24/7 bereikbaar',
@@ -114,6 +118,8 @@ export const nl: SiteContent = {
       'Kaart van Europa met de belangrijkste transporttrajecten vanuit Brussel',
     routesTitle: 'Onze frequente trajecten',
     ctaTitle: 'Een voertuig te verplaatsen?',
+    routesCaptionFrom: 'Ritten vanuit',
+    routesCaptionTo: 'naar',
   },
   pricingPage: {
     title: 'Tarieven',
@@ -144,6 +150,8 @@ export const nl: SiteContent = {
     legal: 'Wettelijke vermeldingen',
     terms: 'Algemene voorwaarden',
     privacy: 'Privacy',
+    navLabel: 'Navigatie',
+    legalNavLabel: 'Juridisch',
   },
   legal: {
     noticeTitle: 'Wettelijke vermeldingen',

@@ -18,7 +18,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           {company.displayName}
         </Link>
 
-        <nav aria-label="Principale" className="hidden items-center gap-6 md:flex">
+        <nav aria-label={c.nav.primaryLabel} className="hidden items-center gap-6 md:flex">
           <Link
             href="/transport-europe"
             className="text-sm text-muted transition-colors duration-200 hover:text-text"

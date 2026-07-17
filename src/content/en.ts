@@ -11,6 +11,10 @@ export const en: SiteContent = {
     transport: 'Europe transport',
     pricing: 'Pricing',
     contact: 'Contact',
+    primaryLabel: 'Primary',
+  },
+  localeSwitcher: {
+    label: 'Language',
   },
   hero: {
     eyebrow: 'Available 24/7',
@@ -114,6 +118,8 @@ export const en: SiteContent = {
       'Map of Europe showing the main transport routes from Brussels',
     routesTitle: 'Our frequent routes',
     ctaTitle: 'A vehicle to move?',
+    routesCaptionFrom: 'Trips from',
+    routesCaptionTo: 'to',
   },
   pricingPage: {
     title: 'Pricing',
@@ -144,6 +150,8 @@ export const en: SiteContent = {
     legal: 'Legal notice',
     terms: 'Terms and conditions',
     privacy: 'Privacy',
+    navLabel: 'Navigation',
+    legalNavLabel: 'Legal',
   },
   legal: {
     noticeTitle: 'Legal notice',

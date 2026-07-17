@@ -11,6 +11,10 @@ export const fr: SiteContent = {
     transport: 'Transport Europe',
     pricing: 'Tarifs',
     contact: 'Contact',
+    primaryLabel: 'Principale',
+  },
+  localeSwitcher: {
+    label: 'Langue',
   },
   hero: {
     eyebrow: 'Disponible 24h/24, 7j/7',
@@ -116,6 +120,8 @@ export const fr: SiteContent = {
       "Carte de l'Europe montrant les principaux trajets de transport au départ de Bruxelles",
     routesTitle: 'Nos trajets fréquents',
     ctaTitle: 'Un véhicule à déplacer ?',
+    routesCaptionFrom: 'Trajets au départ de',
+    routesCaptionTo: 'vers',
   },
   pricingPage: {
     title: 'Tarifs',
@@ -146,6 +152,8 @@ export const fr: SiteContent = {
     legal: 'Mentions légales',
     terms: 'Conditions générales',
     privacy: 'Confidentialité',
+    navLabel: 'Navigation',
+    legalNavLabel: 'Légal',
   },
   legal: {
     noticeTitle: 'Mentions légales',

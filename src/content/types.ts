@@ -27,6 +27,12 @@ export type SiteContent = {
     transport: string;
     pricing: string;
     contact: string;
+    /** Nom accessible de la region <nav> principale du header. */
+    primaryLabel: string;
+  };
+  /** Nom accessible du selecteur de langue (nav dans le header). */
+  localeSwitcher: {
+    label: string;
   };
   hero: {
     eyebrow: string;
@@ -84,6 +90,14 @@ export type SiteContent = {
     mapAlt: string;
     routesTitle: string;
     ctaTitle: string;
+    /**
+     * Connecteurs du figcaption sr-only d'EuropeRoutesStatic : "{routesCaptionFrom} Bruxelles
+     * {routesCaptionTo} Paris, Amsterdam...". Les noms de villes restent
+     * tels quels (exonymes hors perimetre) ; seuls ces connecteurs sont
+     * localises pour eviter un figcaption moitie francais moitie NL/EN.
+     */
+    routesCaptionFrom: string;
+    routesCaptionTo: string;
   };
   pricingPage: {
     title: string;
@@ -115,6 +129,10 @@ export type SiteContent = {
     legal: string;
     terms: string;
     privacy: string;
+    /** Nom accessible de la region <nav> "liens du site" du footer. */
+    navLabel: string;
+    /** Nom accessible de la region <nav> "liens legaux" du footer. */
+    legalNavLabel: string;
   };
   legal: {
     noticeTitle: string;

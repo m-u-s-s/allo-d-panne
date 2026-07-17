@@ -1,5 +1,6 @@
 'use client';
 
+import { getContent } from '@/content';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing, type Locale } from '@/i18n/routing';
 
@@ -8,9 +9,10 @@ const LABELS: Record<Locale, string> = { fr: 'FR', nl: 'NL', en: 'EN' };
 export function LocaleSwitcher({ current }: { current: Locale }) {
   const router = useRouter();
   const pathname = usePathname();
+  const c = getContent(current);
 
   return (
-    <nav aria-label="Langue" className="flex items-center gap-1">
+    <nav aria-label={c.localeSwitcher.label} className="flex items-center gap-1">
       {routing.locales.map((locale) => {
         const isActive = locale === current;
         return (

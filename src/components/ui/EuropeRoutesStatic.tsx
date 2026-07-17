@@ -19,7 +19,17 @@ const CITIES = [
 
 const HUB = CITIES[0];
 
-export function EuropeRoutesStatic({ alt }: { alt: string }) {
+export function EuropeRoutesStatic({
+  alt,
+  fromLabel,
+  toLabel,
+}: {
+  alt: string;
+  /** Connecteur localise avant le nom de la ville de depart ("Trajets au depart de"). */
+  fromLabel: string;
+  /** Connecteur localise avant la liste des villes de destination ("vers"). */
+  toLabel: string;
+}) {
   return (
     <figure className="w-full">
       <svg
@@ -63,7 +73,7 @@ export function EuropeRoutesStatic({ alt }: { alt: string }) {
       </svg>
 
       <figcaption className="sr-only">
-        {alt}. Trajets au départ de {HUB.name} vers{' '}
+        {alt}. {fromLabel} {HUB.name} {toLabel}{' '}
         {CITIES.slice(1)
           .map((c) => c.name)
           .join(', ')}

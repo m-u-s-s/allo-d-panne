@@ -46,7 +46,11 @@ export default async function TransportPage({
         {c.transportPage.routesTitle}
       </h2>
       <div className="mt-6 rounded-lg border border-border bg-surface p-4">
-        <EuropeRoutesStatic alt={c.transportPage.mapAlt} />
+        <EuropeRoutesStatic
+          alt={c.transportPage.mapAlt}
+          fromLabel={c.transportPage.routesCaptionFrom}
+          toLabel={c.transportPage.routesCaptionTo}
+        />
       </div>
 
       <section className="mt-16 text-center">
