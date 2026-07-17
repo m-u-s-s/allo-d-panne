@@ -25,3 +25,12 @@ ruvector.db
 
 # Superpowers scratch
 .superpowers/
+
+# Lighthouse
+lighthouse-*.json
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

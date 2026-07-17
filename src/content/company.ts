@@ -61,8 +61,13 @@ export const company = {
 
   // --- En attente de confirmation client. Ne pas resoudre sans reponse. ---
 
+  // Le numero fourni par le client comporte 11 chiffres apres BE ; le
+  // format belge en exige exactement 10, commencant par 0 ou 1. Le motif
+  // public (PendingDataNotice, rendu sur /mentions-legales) ne doit
+  // jamais reciter ce numero errone tel quel : l'afficher publiquement,
+  // meme comme exemple de ce qui cloche, reviendrait a le publier.
   vat: todo(
-    "Le client a fourni BE06922715996 : 11 chiffres apres BE, or le format belge en exige exactement 10 commencant par 0 ou 1. Un chiffre est en trop. A verifier sur la Banque-Carrefour des Entreprises avant publication.",
+    'Le numero de TVA communique par le client ne respecte pas le format belge (BE suivi de 10 chiffres commencant par 0 ou 1). A confirmer aupres du client puis verifier sur la Banque-Carrefour des Entreprises avant publication.',
   ) as Field<string>,
 
   address: todo(

@@ -41,9 +41,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
         <div className="flex items-center gap-3">
           <LocaleSwitcher current={locale} />
-          <div className="hidden md:block">
-            <CallButton label={c.hero.callCta} variant="primary" />
-          </div>
+          <CallButton label={c.hero.callCta} variant="header" />
         </div>
       </div>
     </header>

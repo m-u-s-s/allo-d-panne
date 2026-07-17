@@ -2,7 +2,7 @@ import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
 
 type Props = {
   label: string;
-  variant: 'primary' | 'bar';
+  variant: 'primary' | 'bar' | 'header';
   showNumber?: boolean;
 };
 
@@ -15,14 +15,41 @@ type Props = {
  */
 export function CallButton({ label, variant, showNumber = false }: Props) {
   const base =
-    'inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 ' +
+    'inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center gap-2 ' +
     'bg-cta font-semibold text-cta-fg transition-opacity duration-200 ' +
     'hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2';
 
   const byVariant = {
     primary: 'rounded-md px-6 py-3 text-base',
     bar: 'w-full rounded-none px-4 py-4 text-lg',
+    // Le CTA du header : icone seule sous md, icone + libelle (+ numero)
+    // des md. Contrairement a une paire de liens bascules par `hidden` /
+    // `md:hidden`, ce <a> n'est JAMAIS display:none — seul son PADDING et
+    // son CONTENU changent de taille. Un second lien tel: masque par
+    // breakpoint serait invisible a l'AUTRE breakpoint et romprait la
+    // promesse "numero atteignable sans scroll" pour l'un des deux : le
+    // premier a[href="tel:..."] du DOM est celui teste, sans connaitre le
+    // viewport (voir e2e/conversion.spec.ts).
+    header: 'rounded-md px-0 py-3 md:px-6',
   } as const;
+
+  if (variant === 'header') {
+    return (
+      <a
+        href={TEL_HREF}
+        aria-label={label}
+        className={`${base} ${byVariant.header}`}
+      >
+        <PhoneIcon />
+        <span className="hidden md:inline">{label}</span>
+        {showNumber ? (
+          <span className="hidden font-mono tabular-nums md:inline">
+            {PHONE_NATIONAL}
+          </span>
+        ) : null}
+      </a>
+    );
+  }
 
   return (
     <a href={TEL_HREF} className={`${base} ${byVariant[variant]}`}>
