@@ -44,4 +44,24 @@ describe('LocalBusinessJsonLd', () => {
     const data = parse(container);
     expect(JSON.stringify(data.areaServed)).toMatch(/Brussels/i);
   });
+
+  /**
+   * `description` vient de `c.meta.description` (texte libre), pas d'un
+   * `Field<T>` : la garde `isResolved` qui protege address/vatID ne le
+   * couvre pas. Avant ce fix, meta.description se terminait par "Agréé et
+   * assuré" — la meme pretention que company.motorwayZone.reason dit non
+   * publiable telle quelle (l'agrement autoroutier belge est concede par
+   * zone). Cette phrase atterrissait donc, verbatim, dans le meme objet
+   * JSON structure que l'adresse et la TVA qu'on refuse d'y inventer.
+   */
+  it('ne publie pas la pretention agrement/assurance non qualifiee dans le schema.org', () => {
+    const banned = /agréé et assuré|erkend en verzekerd|approved and insured/i;
+    for (const locale of ['fr', 'nl', 'en'] as const) {
+      const { container, unmount } = render(<LocalBusinessJsonLd locale={locale} />);
+      const data = parse(container);
+      expect(typeof data.description).toBe('string');
+      expect(data.description).not.toMatch(banned);
+      unmount();
+    }
+  });
 });

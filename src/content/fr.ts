@@ -3,8 +3,15 @@ import type { SiteContent } from './types';
 export const fr: SiteContent = {
   meta: {
     title: 'ALB Dépannage — Dépannage et remorquage 24h/24 à Bruxelles',
+    // "Agréé et assuré" volontairement absent : cette phrase de la
+    // description nourrit schema.org (LocalBusinessJsonLd.description) et
+    // les extraits de recherche, des surfaces machine-lisibles. L'agrement
+    // autoroutier belge est concede par zone (voir company.motorwayZone) —
+    // la mention non qualifiee y est trompeuse. Le reste de la description
+    // reste factuel et utile ; ProofSection porte la version humaine,
+    // volontairement laissee telle quelle (voir son commentaire).
     description:
-      "Dépannage auto et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie. Batterie, crevaison, panne de carburant, ouverture de véhicule. Transport de véhicule dans toute l'Europe. Agréé et assuré.",
+      "Dépannage auto et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie. Batterie, crevaison, panne de carburant, ouverture de véhicule. Transport de véhicule dans toute l'Europe.",
   },
   nav: {
     home: 'Accueil',

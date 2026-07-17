@@ -3,8 +3,16 @@ import type { SiteContent } from './types';
 export const nl: SiteContent = {
   meta: {
     title: 'ALB Depannage — Pechverhelping en takeldienst 24/7 in Brussel',
+    // "Erkend en verzekerd" bewust weggelaten : deze zin uit de
+    // beschrijving voedt schema.org (LocalBusinessJsonLd.description) en
+    // zoekresultaten, machineleesbare oppervlakken. De Belgische
+    // snelwegerkenning is per zone toegekend (zie company.motorwayZone) —
+    // de ongenuanceerde vermelding is daar misleidend. De rest van de
+    // beschrijving blijft feitelijk en nuttig ; ProofSection draagt de
+    // menselijke versie, bewust ongewijzigd gelaten (zie het commentaar
+    // daar).
     description:
-      'Pechverhelping en takeldienst 24/7 in Brussel en omgeving. Batterij, lekke band, brandstofpech, voertuig openen. Voertuigtransport in heel Europa. Erkend en verzekerd.',
+      'Pechverhelping en takeldienst 24/7 in Brussel en omgeving. Batterij, lekke band, brandstofpech, voertuig openen. Voertuigtransport in heel Europa.',
   },
   nav: {
     home: 'Home',

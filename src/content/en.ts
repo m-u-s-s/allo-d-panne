@@ -3,8 +3,15 @@ import type { SiteContent } from './types';
 export const en: SiteContent = {
   meta: {
     title: 'ALB Depannage — 24/7 breakdown and towing in Brussels',
+    // "Approved and insured" deliberately dropped: this closing sentence
+    // of the description feeds schema.org (LocalBusinessJsonLd.description)
+    // and search snippets — machine-readable surfaces. Belgian motorway
+    // approval is zone-conceded (see company.motorwayZone), so the
+    // unqualified claim is misleading there. The rest of the description
+    // stays factual and useful; ProofSection carries the human-facing
+    // version, deliberately left as-is (see its comment).
     description:
-      'Car breakdown assistance and towing, 24/7, in Brussels and surroundings. Battery, flat tyre, out of fuel, vehicle unlocking. Vehicle transport across Europe. Approved and insured.',
+      'Car breakdown assistance and towing, 24/7, in Brussels and surroundings. Battery, flat tyre, out of fuel, vehicle unlocking. Vehicle transport across Europe.',
   },
   nav: {
     home: 'Home',
