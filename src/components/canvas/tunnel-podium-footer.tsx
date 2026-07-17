@@ -21,7 +21,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
  * roche, chambre du podium ou une sculpture de particules morphe entre
  * les CANAUX DE CONTACT reels (telephone, email, devis — l'entreprise
  * n'a aucun reseau social connu et la regle du projet interdit d'en
- * inventer). Scroll NATIF : wrapper 400svh + viewport sticky, aucun
+ * inventer). Scroll NATIF : wrapper 520svh + viewport sticky, aucun
  * evenement capture, remonter c'est juste... remonter.
  *
  * Adaptations au brief, assumees :
@@ -559,9 +559,12 @@ function Rig() {
     store.velocity = (store.current - prev) / Math.max(delta, 1e-4);
 
     const p = store.current;
-    const A = THREE.MathUtils.smoothstep(p, 0, 0.35);
-    const B = THREE.MathUtils.smoothstep(p, 0.35, 0.75);
-    const C = THREE.MathUtils.smoothstep(p, 0.75, 1);
+    // Fenetres reequilibrees apres retour client (« la plongee va trop
+    // vite ») : le tunnel occupe 48 % du parcours au lieu de 40 %, sur
+    // un wrapper passe de 400 a 520svh.
+    const A = THREE.MathUtils.smoothstep(p, 0, 0.3);
+    const B = THREE.MathUtils.smoothstep(p, 0.3, 0.78);
+    const C = THREE.MathUtils.smoothstep(p, 0.78, 1);
 
     // zone A : approche des debris vers la bouche du puits ; B : plongee
     // dans l'axe ; C : pose face au podium (tenue a p=1)
@@ -715,7 +718,7 @@ export default function TunnelPodiumFooter({
   return (
     <div
       ref={wrapper}
-      className={`relative h-[400svh] ${className}`}
+      className={`relative h-[520svh] ${className}`}
       style={{ backgroundColor: PALETTE.bg }}
     >
       <div
