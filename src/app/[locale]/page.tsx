@@ -117,7 +117,7 @@ export default async function HomePage({
         </div>
 
         <div data-stage="">
-          <FinalCta locale={l} />
+          <FinalCta locale={l} videoReveal />
         </div>
       </main>
     </PageShell>
