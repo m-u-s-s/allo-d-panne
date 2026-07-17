@@ -7,8 +7,9 @@ import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CoverageSection } from '@/components/ui/CoverageSection';
 import { FinalCta } from '@/components/ui/FinalCta';
-import { Hero } from '@/components/ui/Hero';
+import ScrollAssemblyHero from '@/components/ui/scroll-assembly-hero';
 import { PageShell } from '@/components/ui/PageShell';
+import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
 import { PricingSection } from '@/components/ui/PricingSection';
 import { ProofSection } from '@/components/ui/ProofSection';
 import { ServicesSection } from '@/components/ui/ServicesSection';
@@ -53,9 +54,26 @@ export default async function HomePage({
         la sortie en profondeur.
       */}
       <main>
-        <div data-stage="hero">
-          <Hero locale={l} />
-        </div>
+        {/*
+          Hero a assemblage au scroll (remplace l'ancien hero WebGL +
+          camion filaire — les composants restent dans le depot). Pas de
+          data-stage : sa choregraphie interne (sticky 300vh) est pilotee
+          par framer-motion, le scrub GSAP de sortie se battrait avec.
+          Les placeholders portrait/casque sont a remplacer par de
+          vraies images (voir les commentaires des SVG dans public/).
+        */}
+        <ScrollAssemblyHero
+          portraitSrc="/hero-portrait.svg"
+          helmetSrc="/hero-helmet.svg"
+          marqueeSerif="Alo-Dépannage"
+          marqueeSans={c.hero.title}
+          caption={c.hero.eyebrow}
+          cardTitle="24/7"
+          cardCaption={c.hero.availability}
+          callHref={TEL_HREF}
+          callLabel={c.hero.callCta}
+          callNumber={PHONE_NATIONAL}
+        />
 
         {/*
           Piste horizontale. Ecrite VERTICALE : les data-panel s'empilent

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" fill="none">
+  <!--
+    PLACEHOLDER a remplacer : buste en silhouette, faute de portrait
+    studio reel. Remplacer par une photo (fond transparent ou clair)
+    cadree comme ici : tete centree en haut, epaules pleine largeur en
+    bas. Le casque (hero-helmet.svg) est dessine sur le meme gabarit —
+    sa boite s'aligne sur la tete par construction.
+  -->
+  <!-- cou + epaules -->
+  <path d="M300 330
+           C 322 330 344 322 356 306
+           L 360 380
+           C 430 396 500 430 540 500
+           C 575 562 590 660 594 900
+           L 6 900
+           C 10 660 25 562 60 500
+           C 100 430 170 396 240 380
+           L 244 306
+           C 256 322 278 330 300 330 Z"
+        fill="#16180F"/>
+  <!-- tete -->
+  <ellipse cx="300" cy="204" rx="112" ry="132" fill="#16180F"/>
+  <!-- reflet discret pour casser l'aplat -->
+  <path d="M232 140 C 244 96 280 72 316 74 C 284 84 256 108 244 148 Z"
+        fill="#3A3E2C" opacity="0.6"/>
+</svg>

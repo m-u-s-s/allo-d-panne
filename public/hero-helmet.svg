@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!--
+    PLACEHOLDER a remplacer : casque integral en vecteur, faute de PNG
+    reel. Remplacer par une image detouree (PNG/WebP transparent) a la
+    meme echelle visuelle que la tete du portrait — le composant empile
+    12 copies decoupees au clip-path, n'importe quelle image detouree
+    fonctionne telle quelle.
+  -->
+  <!-- coque -->
+  <path d="M200 36
+           C 104 36 44 112 40 208
+           C 38 258 42 302 52 330
+           C 58 348 74 358 94 358
+           L 268 358
+           C 322 358 360 330 360 282
+           L 360 208
+           C 356 112 296 36 200 36 Z"
+        fill="#16180F"/>
+  <!-- decoupe visiere -->
+  <path d="M96 176
+           C 150 156 250 156 322 176
+           L 322 232
+           C 322 250 308 260 288 258
+           L 130 246
+           C 108 244 96 232 96 214 Z"
+        fill="#F1F0EA"/>
+  <!-- visiere -->
+  <path d="M104 182
+           C 158 164 248 164 314 182
+           L 314 228
+           C 314 242 302 250 286 248
+           L 134 238
+           C 116 236 104 226 104 210 Z"
+        fill="#282C20"/>
+  <!-- bande lime -->
+  <path d="M60 118 C 120 84 280 84 340 118 L 330 142 C 272 112 128 112 70 142 Z"
+        fill="#D6FF3B"/>
+  <!-- prise d'air -->
+  <path d="M170 62 L 230 62 L 222 88 L 178 88 Z" fill="#3A3E2C"/>
+  <!-- liseret de jugulaire -->
+  <path d="M70 320 L 330 320 L 330 336 L 70 336 Z" fill="#3A3E2C"/>
+  <!-- reflet -->
+  <path d="M92 120 C 108 84 140 60 176 52 C 140 76 116 100 104 132 Z"
+        fill="#4A4E38" opacity="0.7"/>
+</svg>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Syncopate } from 'next/font/google';
+import { Instrument_Serif, Inter, Syncopate } from 'next/font/google';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -24,6 +24,17 @@ const syncopate = Syncopate({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-syncopate',
+  display: 'swap',
+});
+
+/* Serif display italique du hero a assemblage (remplace la Brier
+   commerciale du site de reference). Chargee comme les autres via
+   next/font : sous-ensemble latin, swap, variable CSS. */
+const instrument = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: 'italic',
+  variable: '--font-instrument',
   display: 'swap',
 });
 
@@ -93,7 +104,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${syncopate.variable}`}
+      className={`${inter.variable} ${syncopate.variable} ${instrument.variable}`}
       suppressHydrationWarning
     >
       {/*
