@@ -4354,8 +4354,16 @@ disparait automatiquement des que le client confirme TVA et adresse."
 - Test: `src/lib/seo.test.ts`, `src/components/seo/LocalBusinessJsonLd.test.tsx`
 
 **Interfaces:**
-- Consumes: `routing` (Task 3), `company`, `isResolved` (Task 2), `getContent` (Task 4)
-- Produces: `SITE_URL`, `alternatesFor(path: string): {canonical: string; languages: Record<string, string>}`, `<LocalBusinessJsonLd locale />`
+- Consumes: `routing`, `Locale` (Task 3), `company`, `isResolved` (Task 2), `getContent` (Task 4)
+- Produces: `SITE_URL`, `alternatesFor(path: string, locale: Locale): {canonical: string; languages: Record<string, string>}`, `<LocalBusinessJsonLd locale />`, `isLegalComplete()` (dans `company.ts`)
+
+> **Trois corrections issues de la revue** (commits `5277fbf`, `aa2ac67`) — les deux premières sont des bugs SEO sérieux que ni le typecheck ni les tests ne pouvaient voir :
+>
+> 1. **`alternatesFor` prend la langue courante et le canonical est auto-référent.** La version initiale codait `canonical` vers `routing.defaultLocale`, donc `/nl/tarifs` émettait un canonical vers `/fr/tarifs`. Un canonical inter-langues dit à Google que la page NL est un doublon de la FR et ne doit pas être indexée séparément — **ça jetait l'indexation NL et EN**, alors que le trilingue est la raison d'être du site. `seo.test.ts` n'assertait rien sur `canonical`, seulement sur `languages` : c'est pour ça que c'est passé. Désormais couvert.
+> 2. **Chaque page passe son propre chemin à `alternatesFor`.** Câbler `alternatesFor('/')` dans le seul layout ne suffit pas : Next.js fait hériter les métadonnées, donc les six autres routes reprenaient les alternates de l'accueil. `alternates` est retiré du layout plutôt que d'y laisser un repli : le layout n'a jamais le chemin de la feuille en portée, donc tout repli y serait faux ailleurs qu'à la racine — un échec bruyant vaut mieux qu'un silence faux.
+> 3. **`isLegalComplete()` est un prédicat exporté partagé** par le sitemap et la page des mentions légales, qui le re-dérivaient chacun de leur côté. Ajouter un champ requis à l'un désynchronisait l'autre en silence.
+>
+> `x-default` vers le français et l'omission d'`address`/`vatID` restent inchangés. `openGraph.locale` est au format `language_TERRITORY` (`fr_BE`, `nl_BE`, `en_GB`).
 
 - [ ] **Step 1: Écrire le test SEO qui échoue**
 
