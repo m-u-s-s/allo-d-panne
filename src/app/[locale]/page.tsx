@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CoverageSection } from '@/components/ui/CoverageSection';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { Hero } from '@/components/ui/Hero';
@@ -24,6 +24,7 @@ export async function generateMetadata({
     title: c.meta.title,
     description: c.meta.description,
     alternates: alternatesFor('/', locale as Locale),
+    openGraph: openGraphFor(c, '/', locale as Locale),
   };
 }
 

@@ -5,7 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { company, isResolved } from '@/content/company';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CallButton } from '@/components/ui/CallButton';
 import { QuoteForm } from '@/components/ui/QuoteForm';
 
@@ -21,6 +21,7 @@ export async function generateMetadata({
     title: c.contactPage.title,
     description: c.contactPage.intro,
     alternates: alternatesFor('/contact', locale as Locale),
+    openGraph: openGraphFor(c, '/contact', locale as Locale),
   };
 }
 

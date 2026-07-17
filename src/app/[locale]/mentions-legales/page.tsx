@@ -7,7 +7,7 @@ import { company, isLegalComplete, isResolved } from '@/content/company';
 import { routing, type Locale } from '@/i18n/routing';
 import { PendingDataNotice } from '@/components/ui/PendingDataNotice';
 import { PHONE_INTERNATIONAL } from '@/lib/phone';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor } from '@/lib/seo';
 
 export async function generateMetadata({
   params,
@@ -20,6 +20,7 @@ export async function generateMetadata({
   return {
     title: c.legal.noticeTitle,
     alternates: alternatesFor('/mentions-legales', locale as Locale),
+    openGraph: openGraphFor(c, '/mentions-legales', locale as Locale),
     // noindex tant que la page est incomplete : une page de mentions
     // legales fausse, indexee, est pire qu'absente. Meme predicat que le
     // sitemap (qui exclut cette page tant qu'elle est incomplete).

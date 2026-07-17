@@ -13,14 +13,20 @@ const SMTP_TIMEOUT_MS = 8_000;
 
 function readSmtpConfig() {
   const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT;
+  // .trim() avant tout : Number(' ') vaut 0 (pas NaN — ToNumber sur une
+  // chaine ne contenant que des espaces la traite comme vide, donc 0),
+  // donc un SMTP_PORT blanc passerait le garde-fou ci-dessous tel quel et
+  // produirait `port: 0`, `secure: false` en silence. Trimmer d'abord fait
+  // qu'une chaine blanche redevient '', rejetee par le `!port` juste en
+  // dessous — le meme chemin qu'une variable absente.
+  const port = process.env.SMTP_PORT?.trim();
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
   if (!host || !port || !user || !pass) return null;
 
   const parsedPort = Number(port);
-  // Un SMTP_PORT malforme (espaces, non numerique) ne doit pas degrader
+  // Un SMTP_PORT malforme (non numerique) ne doit pas degrader
   // silencieusement `secure: config.port === 465` a false : un deploiement
   // mal configure doit echouer de la meme facon, testee, qu'un deploiement
   // sans configuration du tout.
@@ -72,9 +78,12 @@ export async function submitQuote(
       to: config.user,
       // parseQuote rejette tout \r\n sur email (Reply-To) et name
       // (Subject) : ces deux champs ne peuvent pas injecter d'en-tete
-      // arbitraire. Les autres champs parses n'atteignent que le corps
-      // text/plain (voir renderQuoteEmail), ou service est deja restreint
-      // a une liste blanche — aucun d'eux n'a besoin de ce controle.
+      // arbitraire. `service` atteint lui aussi le Subject (juste en
+      // dessous), mais SERVICE_IDS le restreint a une liste blanche :
+      // aucune valeur qu'il peut prendre ne contient de retour chariot,
+      // donc pas besoin du meme controle. `location` et `message`
+      // n'atteignent que le corps text/plain (voir renderQuoteEmail) et
+      // n'ont besoin d'aucun controle d'injection d'en-tete.
       replyTo: parsed.data.email ?? undefined,
       subject: `Devis — ${parsed.data.service} — ${parsed.data.name}`,
       text: renderQuoteEmail(parsed.data),

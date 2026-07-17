@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { EuropeRoutesStatic } from './EuropeRoutesStatic';
+import { CITIES, EuropeRoutesStatic } from './EuropeRoutesStatic';
 
 describe('EuropeRoutesStatic', () => {
   it('expose un role image avec un label accessible', () => {
@@ -19,17 +19,10 @@ describe('EuropeRoutesStatic', () => {
     // suppression du figcaption ne vaudrait rien, puisque le figcaption est
     // la raison d'etre de cette exigence.
     render(<EuropeRoutesStatic alt="Carte" fromLabel="Depuis" toLabel="vers" />);
-    const cities = [
-      'Bruxelles',
-      'Paris',
-      'Amsterdam',
-      'Cologne',
-      'Milan',
-      'Madrid',
-      'Berlin',
-      'Vienne',
-    ];
-    for (const city of cities) {
+    // Liste importee du composant (CITIES exporte), pas dupliquee ici : une
+    // ville ajoutee/retiree dans EuropeRoutesStatic.tsx ne peut plus faire
+    // diverger silencieusement ce test de la realite du composant.
+    for (const city of CITIES.map((c) => c.name)) {
       expect(
         screen.getByText(new RegExp(city, 'i'), { selector: 'figcaption' })
       ).toBeInTheDocument();

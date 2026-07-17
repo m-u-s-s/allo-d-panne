@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { PricingSection } from '@/components/ui/PricingSection';
 
@@ -20,6 +20,7 @@ export async function generateMetadata({
     title: c.pricingPage.title,
     description: c.pricingPage.intro,
     alternates: alternatesFor('/tarifs', locale as Locale),
+    openGraph: openGraphFor(c, '/tarifs', locale as Locale),
   };
 }
 

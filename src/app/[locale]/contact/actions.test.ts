@@ -103,6 +103,23 @@ describe('submitQuote', () => {
     expect(createTransport).not.toHaveBeenCalled();
   });
 
+  it('renvoie error quand SMTP_PORT ne contient que des espaces', async () => {
+    // Regression : Number(' ') vaut 0, pas NaN (ToNumber traite une
+    // chaine blanche comme vide, donc 0). Sans .trim() prealable, ce
+    // port blanc passait le garde `!port` (chaine non vide) PUIS le
+    // garde Number.isFinite (0 est fini), et produisait silencieusement
+    // `port: 0, secure: false` au lieu d'echouer comme un deploiement
+    // mal configure.
+    vi.stubEnv('SMTP_HOST', 'smtp.example.com');
+    vi.stubEnv('SMTP_PORT', '   ');
+    vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+    vi.stubEnv('SMTP_PASS', 'secret');
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).toBe('error');
+    expect(sendMail).not.toHaveBeenCalled();
+    expect(createTransport).not.toHaveBeenCalled();
+  });
+
   /**
    * Verrouille deux choses qui ne doivent pas regresser silencieusement :
    * les timeouts SMTP (serverless peut pendre indefiniment sans eux), et

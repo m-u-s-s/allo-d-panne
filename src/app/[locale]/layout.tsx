@@ -53,10 +53,21 @@ export async function generateMetadata({
     // propres alternates se retrouverait sans canonical du tout (visible,
     // detectable), plutot qu'avec un canonical pointant vers l'accueil
     // (silencieux, trompeur).
+    // Pas d'`openGraph.url` ici, meme raisonnement que pour `alternates`
+    // juste au-dessus : le layout ne connait que la locale, jamais le
+    // chemin de la page enfant. Un `url` fige sur l'accueil serait FAUX
+    // pour toute autre page (og:url = /nl sur /nl/tarifs) — silencieux et
+    // trompeur pour les crawlers de reseaux sociaux. Les 7 pages feuilles
+    // fixent chacune leur propre openGraph complet via openGraphFor()
+    // (Next.js ne fusionne pas `openGraph` en profondeur : des qu'une page
+    // le definit, cet objet layout est entierement remplace — voir
+    // lib/seo.ts). title/description/siteName/locale/type restent ici
+    // comme repli generique pour toute route qui n'aurait pas encore son
+    // propre openGraph ; seul `url`, qui n'a pas de repli correct possible
+    // a ce niveau, est absent plutot que faux.
     openGraph: {
       title: c.meta.title,
       description: c.meta.description,
-      url: `${SITE_URL}/${locale}`,
       siteName: company.displayName,
       locale: ogLocaleFor(locale as Locale),
       type: 'website',

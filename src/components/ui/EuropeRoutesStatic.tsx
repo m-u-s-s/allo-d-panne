@@ -6,7 +6,7 @@
  * Les villes sont listees en texte sous la carte : le graphique n'est
  * jamais le seul porteur d'information.
  */
-const CITIES = [
+export const CITIES = [
   { name: 'Bruxelles', x: 300, y: 210 },
   { name: 'Paris', x: 250, y: 260 },
   { name: 'Amsterdam', x: 315, y: 175 },

@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor } from '@/lib/seo';
 
 export async function generateMetadata({
   params,
@@ -13,9 +13,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
+  const c = getContent(locale as Locale);
   return {
-    title: getContent(locale as Locale).legal.termsTitle,
+    title: c.legal.termsTitle,
     alternates: alternatesFor('/cgv', locale as Locale),
+    openGraph: openGraphFor(c, '/cgv', locale as Locale),
   };
 }
 
