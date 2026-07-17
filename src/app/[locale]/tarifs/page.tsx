@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
+import { alternatesFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { PricingSection } from '@/components/ui/PricingSection';
 
@@ -15,7 +16,11 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
-  return { title: c.pricingPage.title, description: c.pricingPage.intro };
+  return {
+    title: c.pricingPage.title,
+    description: c.pricingPage.intro,
+    alternates: alternatesFor('/tarifs'),
+  };
 }
 
 export default async function PricingPage({

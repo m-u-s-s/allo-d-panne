@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
+import { alternatesFor } from '@/lib/seo';
 import { CallButton } from '@/components/ui/CallButton';
 import { EuropeRoutesStatic } from '@/components/ui/EuropeRoutesStatic';
 
@@ -15,7 +16,11 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
-  return { title: c.transportPage.title, description: c.transportPage.intro };
+  return {
+    title: c.transportPage.title,
+    description: c.transportPage.intro,
+    alternates: alternatesFor('/transport-europe'),
+  };
 }
 
 export default async function TransportPage({

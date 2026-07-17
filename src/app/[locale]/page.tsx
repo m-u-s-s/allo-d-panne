@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
+import { alternatesFor } from '@/lib/seo';
 import { CoverageSection } from '@/components/ui/CoverageSection';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { Hero } from '@/components/ui/Hero';
@@ -19,7 +20,11 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
-  return { title: c.meta.title, description: c.meta.description };
+  return {
+    title: c.meta.title,
+    description: c.meta.description,
+    alternates: alternatesFor('/'),
+  };
 }
 
 export default async function HomePage({

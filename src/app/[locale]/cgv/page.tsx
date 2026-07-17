@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
+import { alternatesFor } from '@/lib/seo';
 
 export async function generateMetadata({
   params,
@@ -12,7 +13,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
-  return { title: getContent(locale as Locale).legal.termsTitle };
+  return {
+    title: getContent(locale as Locale).legal.termsTitle,
+    alternates: alternatesFor('/cgv'),
+  };
 }
 
 export default async function TermsPage({

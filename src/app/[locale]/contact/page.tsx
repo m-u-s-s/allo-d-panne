@@ -5,6 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { company, isResolved } from '@/content/company';
 import { routing, type Locale } from '@/i18n/routing';
+import { alternatesFor } from '@/lib/seo';
 import { CallButton } from '@/components/ui/CallButton';
 import { QuoteForm } from '@/components/ui/QuoteForm';
 
@@ -16,7 +17,11 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
-  return { title: c.contactPage.title, description: c.contactPage.intro };
+  return {
+    title: c.contactPage.title,
+    description: c.contactPage.intro,
+    alternates: alternatesFor('/contact'),
+  };
 }
 
 export default async function ContactPage({

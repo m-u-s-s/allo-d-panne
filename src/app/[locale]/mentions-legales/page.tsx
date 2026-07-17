@@ -7,6 +7,7 @@ import { company, isResolved } from '@/content/company';
 import { routing, type Locale } from '@/i18n/routing';
 import { PendingDataNotice } from '@/components/ui/PendingDataNotice';
 import { PHONE_INTERNATIONAL } from '@/lib/phone';
+import { alternatesFor } from '@/lib/seo';
 
 /**
  * noindex tant que la page est incomplete : une page de mentions legales
@@ -26,6 +27,7 @@ export async function generateMetadata({
   const c = getContent(locale as Locale);
   return {
     title: c.legal.noticeTitle,
+    alternates: alternatesFor('/mentions-legales'),
     robots: isComplete() ? undefined : { index: false, follow: false },
   };
 }
