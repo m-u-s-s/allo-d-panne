@@ -3,7 +3,9 @@ import tseslint from 'typescript-eslint';
 import nextPlugin from '@next/eslint-plugin-next';
 
 export default tseslint.config(
-  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts'] },
+  // scripts/ : outillage Node execute hors app (compositeur d'assets,
+  // code navigateur dans page.evaluate) — pas du code applicatif.
+  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', 'scripts/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
