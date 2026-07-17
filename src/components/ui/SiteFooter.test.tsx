@@ -52,8 +52,8 @@ describe('SiteFooter — le todo ne s affiche jamais', () => {
 
   it('affiche l email de contact, confirme donc autorise a s afficher', () => {
     renderFooter();
-    const link = screen.getByRole('link', { name: /contact@alo-depannage\.com/ });
-    expect(link).toHaveAttribute('href', 'mailto:contact@alo-depannage.com');
+    const link = screen.getByRole('link', { name: /contact@alb-depannage\.com/ });
+    expect(link).toHaveAttribute('href', 'mailto:contact@alb-depannage.com');
   });
 });
 
