@@ -137,6 +137,130 @@ function ContourLayer({ stroke }: { stroke: string }) {
   );
 }
 
+/**
+ * Contours topographiques en MORPHING reel — l'equivalent canvas 2D de
+ * l'animation Rive du site de reference.
+ *
+ * La version precedente derivait des chemins SVG rigides : les lignes
+ * bougeaient en bloc, sans se deformer. Ici chaque point de controle
+ * ondule dans le temps (sinus dephases par anneau et par point) : les
+ * courbes respirent et se deforment organiquement, comme dans Rive.
+ * Un vrai .riv exigerait leur editeur ; quatorze traits en quadratiques
+ * redessines a 30 fps donnent le meme resultat pour zero dependance.
+ *
+ * La couleur suit le theme en lisant la MotionValue de progression par
+ * frame — aucun re-rendu React, exactement comme le reste du hero.
+ */
+function MorphingContours({ progress }: { progress: MotionValue<number> }) {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let raf = 0;
+    let last = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    const mid = (a: number[], b: number[]) => [
+      (a[0] + b[0]) / 2,
+      (a[1] + b[1]) / 2,
+    ];
+
+    const family = (
+      time: number,
+      w: number,
+      h: number,
+      rings: number,
+      baseR: number,
+      speed: number,
+      alphaMul: number,
+      phase: number,
+    ) => {
+      // Derive d'ensemble lente, en plus du morphing par point.
+      const gx = Math.sin(time * 0.05 + phase) * 0.06 * w;
+      const gy = Math.cos(time * 0.04 + phase) * 0.03 * h;
+      ctx.globalAlpha = alphaMul;
+      for (let ring = 0; ring < rings; ring++) {
+        const cx = w * 0.3 + gx;
+        const cy = h * 1.15 + gy;
+        const r = (baseR + ring * 0.15) * Math.max(w, h);
+        const n = 9;
+        const pts: number[][] = [];
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2;
+          // LE morphing : l'amplitude de chaque point ondule.
+          const wob =
+            0.72 +
+            seeded(ring + phase, i) * 0.5 +
+            Math.sin(time * speed + ring * 1.7 + i * 2.1) * 0.09;
+          pts.push([
+            cx + Math.cos(a) * r * wob * 1.45,
+            cy + Math.sin(a) * r * wob * 0.85,
+          ]);
+        }
+        ctx.beginPath();
+        let m = mid(pts[n - 1], pts[0]);
+        ctx.moveTo(m[0], m[1]);
+        for (let i = 0; i < n; i++) {
+          m = mid(pts[i], pts[(i + 1) % n]);
+          ctx.quadraticCurveTo(pts[i][0], pts[i][1], m[0], m[1]);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const draw = (t: number) => {
+      raf = requestAnimationFrame(draw);
+      // 30 fps suffisent largement pour des lignes lentes — la moitie
+      // du budget d'un rAF plein pour un resultat indistinguable.
+      if (t - last < 33) return;
+      last = t;
+      const time = t / 1000;
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Couleur du trait : encre sur creme → blanc casse sur olive,
+      // pilotee par la meme fenetre [0.40, 0.55] que le theme.
+      const p = progress.get();
+      const themeT = Math.min(1, Math.max(0, (p - 0.4) / 0.15));
+      const c = [17 + (244 - 17) * themeT, 17 + (244 - 17) * themeT, 18 + (237 - 18) * themeT];
+      const alpha = 0.08 * (1 - themeT) + 0.06 * themeT;
+      ctx.strokeStyle = `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${alpha})`;
+      ctx.lineWidth = 1 * dpr;
+
+      family(time, w, h, 7, 0.24, 0.35, 1, 0);
+      family(time, w, h, 5, 0.34, 0.27, 0.6, 3.1);
+    };
+    raf = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [progress]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 h-full w-full"
+      aria-hidden="true"
+    />
+  );
+}
+
 /* Dome filaire fantome au-dessus du crane : 8 latitudes × 10 arcs.
    Toutes les valeurs passent par toFixed : un flottant a precision non
    bornee dans un attribut SVG differe d'un ulp entre le rendu serveur
@@ -400,37 +524,12 @@ export default function ScrollAssemblyHero({
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor }}
       >
-        {/* ----- Fond : contours topographiques en derive CONTINUE et
-               VISIBLE. Le site de reference anime son fond en
-               permanence (Rive sur canvas) — la premiere version ici
-               derivait de 40px en 60s, techniquement animee,
-               perceptuellement immobile (retour client). Deux nappes en
-               sens opposes + une respiration d'echelle : le fond vit
-               sans jamais distraire. -------------------------------- */}
-        <motion.div
-          className="absolute inset-[-8%]"
-          animate={{ x: [0, -110, 20, 0], y: [0, 36, -18, 0] }}
-          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <motion.div className="absolute inset-0" style={{ opacity: lightPattern }}>
-            <ContourLayer stroke="rgba(17,17,18,0.08)" />
-          </motion.div>
-          <motion.div className="absolute inset-0" style={{ opacity: darkPattern }}>
-            <ContourLayer stroke="rgba(244,244,237,0.06)" />
-          </motion.div>
-        </motion.div>
-        <motion.div
-          className="absolute inset-[-10%]"
-          animate={{ x: [0, 90, -30, 0], scale: [1.18, 1.24, 1.18] }}
-          transition={{ duration: 34, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <motion.div className="absolute inset-0" style={{ opacity: lightPattern }}>
-            <ContourLayer stroke="rgba(17,17,18,0.05)" />
-          </motion.div>
-          <motion.div className="absolute inset-0" style={{ opacity: darkPattern }}>
-            <ContourLayer stroke="rgba(244,244,237,0.04)" />
-          </motion.div>
-        </motion.div>
+        {/* ----- Fond : contours topographiques en MORPHING (canvas 2D,
+               equivalent de l'animation Rive du site de reference).
+               Deux familles de courbes dont chaque point ondule dans le
+               temps — les lignes se deforment, elles ne derivent pas en
+               bloc. Couleur asservie au theme par frame. ------------- */}
+        <MorphingContours progress={scrollYProgress} />
 
         {/* Nappes organiques : la vague sauge du site de reference,
             en derive lente + parallaxe souris. Une copie claire, une
@@ -445,7 +544,13 @@ export default function ScrollAssemblyHero({
         >
           <motion.div
             className="h-full w-full blur-3xl"
-            animate={{ x: [0, 120, 0] }}
+            animate={{
+              x: [0, 120, 0],
+              // La nappe se deforme en plus de deriver — meme logique
+              // organique que les contours.
+              scaleX: [1, 1.14, 1],
+              scaleY: [1, 0.92, 1],
+            }}
             transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
           >
             <motion.div
@@ -465,7 +570,11 @@ export default function ScrollAssemblyHero({
         >
           <motion.div
             className="h-full w-full blur-3xl"
-            animate={{ x: [0, -100, 0] }}
+            animate={{
+              x: [0, -100, 0],
+              scaleX: [1, 0.9, 1],
+              scaleY: [1, 1.12, 1],
+            }}
             transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
           >
             <motion.div
