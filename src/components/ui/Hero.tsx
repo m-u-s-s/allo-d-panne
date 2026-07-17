@@ -42,14 +42,38 @@ export function Hero({ locale }: { locale: Locale }) {
         className="-z-20 object-cover"
       />
       {/*
-        Voile lateral plutot que vertical : le texte vit a gauche, on
-        l'assombrit ; la droite reste claire pour laisser passer le
-        gyrophare. Un voile vertical opaque en bas masquait tout le canvas.
+        Depanneuse filaire en ARRIERE-PLAN du hero, pleine surface. Le
+        canvas est transparent (variant backdrop) : la brume et le
+        gyrophare WebGL transparaissent entre les fils. Elle vit sous le
+        voile et sous le texte ; le drag fonctionne sur le vide, jamais
+        au detriment du texte, et la molette y est desactivee — le
+        scroll de page gagne toujours. Palier Full uniquement, chargee
+        apres hydratation, invisible au LCP.
       */}
-      <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/75 to-bg/10" />
-      <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+      {/*
+        opacity-50 : un fond doit rester un fond. A pleine intensite, les
+        fils blancs traversent le sous-titre et les CTA — verifie en
+        capture, illisible.
+      */}
+      <div className="absolute inset-0 z-0 opacity-50">
+        <TruckMount variant="backdrop" />
+      </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-16">
+      {/*
+        Deux voiles AU-DESSUS du camion, SOUS le texte : un vertical pour
+        l'assise generale, un radial cale sur le bloc de texte centre —
+        c'est lui qui garantit la lisibilite quoi que dessinent le shader
+        et le filaire. pointer-events-none : les clics traversent
+        jusqu'au canvas du camion.
+      */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-bg via-bg/40 to-bg/15" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(58%_62%_at_50%_52%,rgba(10,14,20,0.8),transparent_72%)]" />
+
+      {/*
+        Le texte s'integre PAR-DESSUS l'arriere-plan (z-10), centre,
+        au lieu d'occuper une colonne a gauche.
+      */}
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center px-4 py-16 text-center">
         <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-cta">
           <span
             className="inline-block h-2 w-2 rounded-full bg-cta"
@@ -67,7 +91,7 @@ export function Hero({ locale }: { locale: Locale }) {
           {c.hero.subtitle}
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <CallButton label={c.hero.callCta} variant="primary" showNumber />
           <a
             href={getPathname({ href: '/contact', locale })}
@@ -78,26 +102,6 @@ export function Hero({ locale }: { locale: Locale }) {
         </div>
 
         <p className="mt-4 text-sm text-muted">{c.hero.availability}</p>
-      </div>
-
-      {/*
-        Depanneuse filaire interactive, cote droit — le texte vit a
-        gauche, les deux ne se disputent jamais l'espace. La zone court
-        du bord du texte (calc 50% + 72px : l'aplomb du titre aux
-        largeurs xl) jusqu'au bord droit de l'ecran ; TruckMount la
-        mesure et donne au camion tout ce qu'elle contient. Palier Full
-        uniquement (jamais en reduced-motion ni sur mobile), charge
-        apres hydratation, invisible au LCP. Le xl:flex est une garde de
-        mise en page : sous 1280 px le camion empieterait sur les CTA —
-        et masque, il n'est plus monte du tout (mesure nulle).
-        NOTE : la molette zoome le camion au lieu de faire defiler la
-        page quand le curseur est dessus — comportement du composant,
-        garde tel quel par spec.
-      */}
-      <div className="pointer-events-none absolute inset-y-8 left-[calc(50%+72px)] right-6 z-10 hidden xl:block">
-        <div className="pointer-events-auto h-full w-full">
-          <TruckMount />
-        </div>
       </div>
 
       {/*

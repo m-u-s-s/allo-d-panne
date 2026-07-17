@@ -21,6 +21,16 @@ interface RotatingTowTruckProps {
   width?: number;
   height?: number;
   className?: string;
+  /**
+   * 'card' : la vitrine autonome du spec d'origine — fond noir opaque,
+   * coins arrondis, puce d'aide, molette pour zoomer.
+   * 'backdrop' : couche d'arriere-plan integree — canvas TRANSPARENT
+   * (le decor derriere transparait), pas de molette (le scroll de page
+   * doit gagner), pas de puce, pas de carte. Le drag reste : le texte
+   * au-dessus intercepte ses propres clics, le canvas ne recoit que
+   * ceux du vide.
+   */
+  variant?: 'card' | 'backdrop';
 }
 
 type Vec3 = [number, number, number];
@@ -98,6 +108,7 @@ export default function RotatingTowTruck({
   width = 800,
   height = 600,
   className = '',
+  variant = 'card',
 }: RotatingTowTruckProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -326,9 +337,13 @@ export default function RotatingTowTruck({
           const scaleNow = projection.scale();
           const scaleFactor = scaleNow / radius;
 
-          // 1. Fond noir profond.
-          context.fillStyle = '#000000';
-          context.fillRect(0, 0, containerWidth, containerHeight);
+          // 1. Fond noir profond — en mode carte seulement. En backdrop
+          // le canvas reste transparent : le gyrophare WebGL et la brume
+          // du site SONT le fond.
+          if (variant === 'card') {
+            context.fillStyle = '#000000';
+            context.fillRect(0, 0, containerWidth, containerHeight);
+          }
 
           // 2. Ombre de contact elliptique sous les roues — le seul
           // remplissage non-pointille de la scene. La cote vient de la
@@ -474,18 +489,23 @@ export default function RotatingTowTruck({
         };
         canvas.addEventListener('mousedown', onMouseDown);
 
-        onWheel = (event: WheelEvent) => {
-          event.preventDefault();
-          const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1;
-          projection.scale(
-            Math.max(
-              radius * 0.5,
-              Math.min(radius * 3, projection.scale() * scaleFactor),
-            ),
-          );
-          render();
-        };
-        canvas.addEventListener('wheel', onWheel, { passive: false });
+        // La molette n'existe qu'en mode carte : un arriere-plan qui
+        // preventDefault le wheel serait un piege a scroll sur toute la
+        // surface du hero.
+        if (variant === 'card') {
+          onWheel = (event: WheelEvent) => {
+            event.preventDefault();
+            const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1;
+            projection.scale(
+              Math.max(
+                radius * 0.5,
+                Math.min(radius * 3, projection.scale() * scaleFactor),
+              ),
+            );
+            render();
+          };
+          canvas.addEventListener('wheel', onWheel, { passive: false });
+        }
 
         render();
         setIsLoading(false);
@@ -506,9 +526,12 @@ export default function RotatingTowTruck({
       if (onDocMove) document.removeEventListener('mousemove', onDocMove);
       if (onDocUp) document.removeEventListener('mouseup', onDocUp);
     };
-  }, [width, height]);
+  }, [width, height, variant]);
 
   if (error) {
+    // Un arriere-plan decoratif ne montre jamais de carte d'erreur : il
+    // disparait, le hero reste intact.
+    if (variant === 'backdrop') return null;
     return (
       <div className="dark flex items-center justify-center rounded-2xl bg-card p-8">
         <p className="text-sm text-muted-foreground">{error}</p>
@@ -520,11 +543,20 @@ export default function RotatingTowTruck({
     <div className={`relative ${className}`}>
       <canvas
         ref={canvasRef}
-        className="dark h-auto w-full rounded-2xl bg-background"
+        className={
+          variant === 'card'
+            ? 'dark h-auto w-full rounded-2xl bg-background'
+            : 'h-auto w-full'
+        }
         style={{ maxWidth: '100%', height: 'auto' }}
-        aria-label="Dépanneuse en fil de fer, rotation interactive"
+        aria-hidden={variant === 'backdrop' || undefined}
+        aria-label={
+          variant === 'card'
+            ? 'Dépanneuse en fil de fer, rotation interactive'
+            : undefined
+        }
       />
-      {!isLoading && (
+      {!isLoading && variant === 'card' && (
         <div className="dark absolute bottom-4 left-4 rounded-md bg-neutral-900 px-2 py-1 text-xs text-muted-foreground">
           Glisser pour pivoter · Molette pour zoomer
         </div>

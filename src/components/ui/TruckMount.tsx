@@ -35,10 +35,15 @@ const MIN_WIDTH = 360;
 
 /* Le camion est long et plat : au-dela de ~0.55 de ratio, la hauteur
    supplementaire n'agrandit plus le vehicule (la largeur est la
-   contrainte), elle n'ajoute que du noir. */
+   contrainte), elle n'ajoute que du noir. Ne vaut que pour la carte —
+   en backdrop, le canvas epouse la zone entiere. */
 const CARD_RATIO = 0.55;
 
-export function TruckMount() {
+export function TruckMount({
+  variant = 'card',
+}: {
+  variant?: 'card' | 'backdrop';
+}) {
   const tier = useTier();
   const zone = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
@@ -55,13 +60,12 @@ export function TruckMount() {
         setSize(null);
         return;
       }
-      const cardW = w;
-      const cardH = Math.min(h, Math.round(w * CARD_RATIO));
+      const cardH = variant === 'card' ? Math.min(h, Math.round(w * CARD_RATIO)) : h;
       // Grille de 16 px : chaque changement de taille reconstruit le
       // canvas (regeneration du nuage) — on ne le fait pas au pixel pres
       // pendant un redimensionnement de fenetre.
       setSize({
-        w: Math.round(cardW / 16) * 16,
+        w: Math.round(w / 16) * 16,
         h: Math.round(cardH / 16) * 16,
       });
     };
@@ -70,7 +74,7 @@ export function TruckMount() {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [tier]);
+  }, [tier, variant]);
 
   if (tier !== 'full') return null;
 
@@ -79,7 +83,9 @@ export function TruckMount() {
       ref={zone}
       className="flex h-full w-full items-center justify-center"
     >
-      {size && <RotatingTowTruck width={size.w} height={size.h} />}
+      {size && (
+        <RotatingTowTruck width={size.w} height={size.h} variant={variant} />
+      )}
     </div>
   );
 }
