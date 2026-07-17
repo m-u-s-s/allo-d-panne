@@ -46,6 +46,10 @@ export function ScrollExperience() {
   // orphelins, la re-execution decouvre les nouvelles sections.
   const pathname = usePathname();
   const progressBar = useRef<HTMLDivElement>(null);
+  // Premiere execution = chargement initial de la page (le HTML etait
+  // visible avant l'hydratation). Les suivantes = navigations client,
+  // ou le DOM arrive avec JS deja pret.
+  const firstRun = useRef(true);
 
   useEffect(() => {
     if (tier === 'static') return;
@@ -104,6 +108,52 @@ export function ScrollExperience() {
         },
       });
       teardown.push(() => progressTrigger.kill());
+
+      // ----- Entree du hero. -------------------------------------------
+      // Le HTML sert le texte VISIBLE : le LCP est mesure sur le premier
+      // rendu, l'entree se rejoue par-dessus apres hydratation. Garde
+      // anti-blink : au chargement initial, si l'hydratation arrive
+      // tard (page lente, texte deja lu depuis des secondes), cacher le
+      // texte pour rejouer l'entree serait pire que pas d'animation —
+      // on s'abstient. En navigation client, le DOM et JS arrivent
+      // ensemble : on joue toujours.
+      let intro: gsap.core.Timeline | undefined;
+      const revealEls = gsap.utils.toArray<HTMLElement>('[data-hero-reveal]');
+      const maskEls = gsap.utils.toArray<HTMLElement>('[data-hero-reveal-mask]');
+      const revealBg = document.querySelector<HTMLElement>('[data-hero-reveal-bg]');
+      const playIntro = !firstRun.current || performance.now() < 2500;
+      firstRun.current = false;
+
+      if (playIntro && (revealEls.length || maskEls.length)) {
+        const introTargets = [
+          ...revealEls,
+          ...maskEls,
+          ...(revealBg ? [revealBg] : []),
+        ];
+        intro = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          // Rend le DOM vierge de tout style inline une fois l'entree
+          // finie : l'etat final EST l'etat serveur.
+          onComplete: () => gsap.set(introTargets, { clearProps: 'all' }),
+        });
+        if (revealBg) {
+          intro.from(revealBg, { opacity: 0, duration: 1.6, ease: 'power2.out' }, 0);
+        }
+        // Montee masquee du titre : l'overflow-hidden du parent (dans le
+        // JSX du hero) fait le masque, on ne deplace que le texte.
+        if (maskEls.length) {
+          intro.from(
+            maskEls,
+            { yPercent: 112, duration: 1.05, ease: 'power4.out' },
+            0.2,
+          );
+        }
+        intro.from(
+          revealEls,
+          { y: 26, opacity: 0, duration: 0.8, stagger: 0.11 },
+          0.12,
+        );
+      }
 
       // ----- Transitions de sections. ---------------------------------
       const tweens: gsap.core.Tween[] = [];
@@ -264,6 +314,15 @@ export function ScrollExperience() {
       }
 
       teardown.push(() => {
+        // Une navigation en pleine entree ne doit pas laisser du texte
+        // fige a moitie cache.
+        if (intro) {
+          intro.kill();
+          gsap.set(
+            [...revealEls, ...maskEls, ...(revealBg ? [revealBg] : [])],
+            { clearProps: 'all' },
+          );
+        }
         for (const t of tweens) {
           t.scrollTrigger?.kill();
           t.kill();

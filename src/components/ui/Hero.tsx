@@ -53,9 +53,11 @@ export function Hero({ locale }: { locale: Locale }) {
       {/*
         opacity-50 : un fond doit rester un fond. A pleine intensite, les
         fils blancs traversent le sous-titre et les CTA — verifie en
-        capture, illisible.
+        capture, illisible. data-hero-reveal-bg : la couche motion le
+        fond de 0 a son opacite de classe a l'arrivee, ce qui masque
+        aussi le pop de montage du canvas.
       */}
-      <div className="absolute inset-0 z-0 opacity-50">
+      <div data-hero-reveal-bg="" className="absolute inset-0 z-0 opacity-50">
         <TruckMount variant="backdrop" />
       </div>
 
@@ -73,8 +75,19 @@ export function Hero({ locale }: { locale: Locale }) {
         Le texte s'integre PAR-DESSUS l'arriere-plan (z-10), centre,
         au lieu d'occuper une colonne a gauche.
       */}
+      {/*
+        data-hero-reveal / data-hero-reveal-mask : contrat avec la couche
+        motion (ScrollExperience). Le HTML sert TOUT visible — le LCP et
+        le palier Static ne connaissent pas ces attributs. Apres
+        hydratation, la couche motion rejoue l'entree : montee masquee
+        pour le titre (l'overflow-hidden est le masque), fondu-montee
+        etage pour le reste.
+      */}
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center px-4 py-16 text-center">
-        <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-cta">
+        <p
+          data-hero-reveal=""
+          className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-cta"
+        >
           <span
             className="inline-block h-2 w-2 rounded-full bg-cta"
             aria-hidden="true"
@@ -82,16 +95,24 @@ export function Hero({ locale }: { locale: Locale }) {
           {c.hero.eyebrow}
         </p>
 
-        <h1 className="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-          {c.hero.title}
-        </h1>
+        <div className="overflow-hidden">
+          <h1
+            data-hero-reveal-mask=""
+            className="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight md:text-6xl"
+          >
+            {c.hero.title}
+          </h1>
+        </div>
 
         {/* max-w-[60ch] : 65-75 caracteres par ligne max (regle UX) */}
-        <p className="mt-6 max-w-[60ch] text-lg text-muted">
+        <p data-hero-reveal="" className="mt-6 max-w-[60ch] text-lg text-muted">
           {c.hero.subtitle}
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <div
+          data-hero-reveal=""
+          className="mt-8 flex flex-wrap items-center justify-center gap-4"
+        >
           <CallButton label={c.hero.callCta} variant="primary" showNumber />
           <a
             href={getPathname({ href: '/contact', locale })}
@@ -101,7 +122,9 @@ export function Hero({ locale }: { locale: Locale }) {
           </a>
         </div>
 
-        <p className="mt-4 text-sm text-muted">{c.hero.availability}</p>
+        <p data-hero-reveal="" className="mt-4 text-sm text-muted">
+          {c.hero.availability}
+        </p>
       </div>
 
       {/*
