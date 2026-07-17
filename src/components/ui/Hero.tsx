@@ -82,17 +82,20 @@ export function Hero({ locale }: { locale: Locale }) {
 
       {/*
         Depanneuse filaire interactive, cote droit — le texte vit a
-        gauche, les deux ne se disputent jamais l'espace. Montee par
-        TruckMount : palier Full uniquement (jamais en reduced-motion ni
-        sur mobile), chargee apres hydratation, invisible au LCP. Le
-        xl:flex est une garde de mise en page : meme en Full, sous
-        1280 px le camion empieterait sur les CTA.
+        gauche, les deux ne se disputent jamais l'espace. La zone court
+        du bord du texte (calc 50% + 72px : l'aplomb du titre aux
+        largeurs xl) jusqu'au bord droit de l'ecran ; TruckMount la
+        mesure et donne au camion tout ce qu'elle contient. Palier Full
+        uniquement (jamais en reduced-motion ni sur mobile), charge
+        apres hydratation, invisible au LCP. Le xl:flex est une garde de
+        mise en page : sous 1280 px le camion empieterait sur les CTA —
+        et masque, il n'est plus monte du tout (mesure nulle).
         NOTE : la molette zoome le camion au lieu de faire defiler la
         page quand le curseur est dessus — comportement du composant,
         garde tel quel par spec.
       */}
-      <div className="pointer-events-none absolute inset-y-0 right-8 z-10 hidden items-center xl:flex">
-        <div className="pointer-events-auto w-[560px]">
+      <div className="pointer-events-none absolute inset-y-8 left-[calc(50%+72px)] right-6 z-10 hidden xl:block">
+        <div className="pointer-events-auto h-full w-full">
           <TruckMount />
         </div>
       </div>

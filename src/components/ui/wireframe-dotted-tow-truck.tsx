@@ -177,6 +177,36 @@ export default function RotatingTowTruck({
           edges: p.mesh.edges,
         }));
 
+        /* ----- Centrage geometrique : la boite englobante est ramenee a
+           l'origine. Sans ce recalage, le camion tourne autour d'un
+           point qui n'est pas son centre visuel et parait decale dans le
+           cadre — le crochet arriere depasse plus que le pare-chocs
+           avant. */
+        let minX = Infinity, minY = Infinity, minZ = Infinity;
+        let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+        for (const part of parts) {
+          for (const [x, y, z] of part.vertices) {
+            minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+            minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
+          }
+        }
+        const midX = (minX + maxX) / 2;
+        const midY = (minY + maxY) / 2;
+        const midZ = (minZ + maxZ) / 2;
+        let maxRxz = 0;
+        for (const part of parts) {
+          for (const v of part.vertices) {
+            v[0] -= midX;
+            v[1] -= midY;
+            v[2] -= midZ;
+            maxRxz = Math.max(maxRxz, Math.hypot(v[0], v[2]));
+          }
+        }
+        const halfY = (maxY - minY) / 2;
+        // Le sol vit juste sous les roues ; l'ombre a besoin de cette cote.
+        const groundLevel = -(halfY + 0.06);
+
         /* ----- Nuage halftone : marche a pas constant le long de chaque
            arete, emis UNE fois ici — jamais par frame. */
         let dotSpacing = 16;
@@ -236,7 +266,21 @@ export default function RotatingTowTruck({
            scale/rotate facon d3 pour garder le code d'interaction
            identique a l'original. */
         let rotation: [number, number] = [0, -12];
-        let currentScale = radius;
+
+        /* Echelle initiale ajustee au cadre plutot que radius brut : le
+           camion est long et plat, un cadrage spherique (min/2.5) le
+           laissait flotter petit au milieu de noir. On remplit la
+           largeur ET la hauteur disponibles — maxRxz borne l'extension
+           horizontale a n'importe quel lacet, halfY (+ ombre) la
+           verticale — puis on reste dans la plage de zoom du spec. */
+        const fitScale = Math.min(
+          (containerWidth / 2 - 12) / maxRxz,
+          (containerHeight / 2 - 12) / (halfY + 0.28),
+        );
+        let currentScale = Math.max(
+          radius * 0.5,
+          Math.min(radius * 3, fitScale),
+        );
 
         const rotatePoint = (
           x: number,
@@ -287,8 +331,10 @@ export default function RotatingTowTruck({
           context.fillRect(0, 0, containerWidth, containerHeight);
 
           // 2. Ombre de contact elliptique sous les roues — le seul
-          // remplissage non-pointille de la scene.
-          const groundY = cy + 0.52 * scaleNow;
+          // remplissage non-pointille de la scene. La cote vient de la
+          // geometrie reelle (bas de la boite englobante), pas d'un
+          // nombre magique.
+          const groundY = cy - groundLevel * scaleNow;
           context.save();
           context.translate(cx, groundY);
           context.scale(1, 0.26);
