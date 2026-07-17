@@ -3,6 +3,7 @@ import { getContent } from '@/content';
 import { getPathname } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { CallButton } from './CallButton';
+import { TruckMount } from './TruckMount';
 
 /**
  * Le poster est le LCP. Le WebGL (Plan 2) se pose PAR-DESSUS via le
@@ -77,6 +78,23 @@ export function Hero({ locale }: { locale: Locale }) {
         </div>
 
         <p className="mt-4 text-sm text-muted">{c.hero.availability}</p>
+      </div>
+
+      {/*
+        Depanneuse filaire interactive, cote droit — le texte vit a
+        gauche, les deux ne se disputent jamais l'espace. Montee par
+        TruckMount : palier Full uniquement (jamais en reduced-motion ni
+        sur mobile), chargee apres hydratation, invisible au LCP. Le
+        xl:flex est une garde de mise en page : meme en Full, sous
+        1280 px le camion empieterait sur les CTA.
+        NOTE : la molette zoome le camion au lieu de faire defiler la
+        page quand le curseur est dessus — comportement du composant,
+        garde tel quel par spec.
+      */}
+      <div className="pointer-events-none absolute inset-y-0 right-8 z-10 hidden items-center xl:flex">
+        <div className="pointer-events-auto w-[560px]">
+          <TruckMount />
+        </div>
       </div>
 
       {/*

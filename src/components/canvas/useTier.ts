@@ -23,6 +23,10 @@ export function useTier(): Tier {
   const [tier, setTier] = useState<Tier>('static');
 
   useEffect(() => {
+    // Meme garde que detectTier : sans matchMedia (jsdom, navigateur
+    // exotique), on reste en Static plutot que de planter le rendu.
+    if (typeof window.matchMedia !== 'function') return;
+
     let cancelled = false;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 

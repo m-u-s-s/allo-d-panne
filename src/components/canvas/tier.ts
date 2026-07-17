@@ -32,7 +32,11 @@ export function supportsWebGL2(): boolean {
  * est asynchrone, donc elle est traitee dans useTier.
  */
 export function detectTier(): Tier {
-  if (typeof window === 'undefined') return 'static';
+  // matchMedia absent : environnement de test jsdom ou navigateur
+  // exotique. Dans le doute, le palier sur — c'est le contrat du site.
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return 'static';
+  }
 
   // prefers-reduced-motion d'abord, et sans appel : c'est une demande
   // explicite de l'utilisateur, pas une heuristique de capacite. Aucune

@@ -14,6 +14,16 @@
   --color-secondary: #3b82f6;
   --color-border: #1e293b;
 
+  /* Alias facon shadcn : les composants integres depuis des bibliotheques
+     externes (ex. wireframe-dotted-tow-truck) utilisent bg-background,
+     bg-card, text-muted-foreground. Plutot que d'importer leur bloc de
+     tokens oklch — un second systeme de design en conflit avec celui-ci —
+     ces alias les font resoudre sur NOS couleurs. */
+  --color-background: var(--color-bg);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-text);
+  --color-muted-foreground: var(--color-muted);
+
   /* Les variables next/font incluent la famille de repli aux metriques
      ajustees (Syncopate Fallback, Inter Fallback) qui empeche le CLS
      pendant le swap de police. Nommer les polices litteralement ('Syncopate')
