@@ -87,6 +87,27 @@ export const company = {
   motorwayZone: todo(
     "Le client annonce « agree autoroute » sans preciser la zone. Le depannage autoroutier belge est concede par zone : la mention ne peut pas etre publiee telle quelle.",
   ) as Field<string>,
+
+  /**
+   * Reseaux sociaux du carrousel de la page contact. Le rendu est
+   * entierement cable (glyphes, morph de particules, liens) : resoudre
+   * un champ avec l'URL reelle du profil suffit a le faire apparaitre
+   * sur le podium. Un lien vers un handle invente pourrait pointer vers
+   * le profil d'un tiers — meme regime que la TVA : rien ne se publie
+   * sans confirmation. WhatsApp n'est pas ici : wa.me se derive du
+   * numero de telephone confirme.
+   */
+  socials: {
+    facebook: todo(
+      'URL de la page Facebook a fournir par le client (ex. https://www.facebook.com/…). Aucun handle connu — ne pas deviner.',
+    ) as Field<string>,
+    linkedin: todo(
+      'URL du profil/page LinkedIn a fournir par le client (ex. https://www.linkedin.com/company/…).',
+    ) as Field<string>,
+    tiktok: todo(
+      'URL du compte TikTok a fournir par le client (ex. https://www.tiktok.com/@…).',
+    ) as Field<string>,
+  },
 } as const;
 
 /**

@@ -32,6 +32,20 @@ const QUOTE_SHORT: Record<Locale, string> = {
   en: 'Quote',
 };
 
+/*
+ * Glyphes de marque des reseaux (traces pleins, contre-formes en
+ * evenodd — le pipeline extrude respecte les trous : zero particule
+ * dans le point du « in » LinkedIn ou le combine WhatsApp).
+ */
+const GLYPH_WHATSAPP =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#000" fill-rule="evenodd" d="M12 2.3A9.5 9.5 0 0 0 2.5 11.8c0 1.68.44 3.3 1.27 4.74L2.4 21.6l5.2-1.35a9.42 9.42 0 0 0 4.4 1.1 9.5 9.5 0 1 0 0-19.05zm4.9 13.05c-.2.58-1.2 1.13-1.66 1.16-.45.04-.87.2-2.92-.6-2.47-.98-4.03-3.5-4.15-3.66-.12-.16-1-1.33-1-2.54 0-1.2.63-1.8.86-2.04.22-.25.49-.31.65-.31h.47c.15 0 .35-.05.55.42.2.48.68 1.66.74 1.78.06.12.1.27.02.43-.08.16-.36.5-.62.78-.13.14-.27.3-.12.57.15.26.68 1.12 1.46 1.81 1 .9 1.85 1.18 2.11 1.3.26.13.42.11.57-.06.16-.18.66-.77.84-1.03.18-.27.35-.22.6-.13.24.09 1.55.73 1.81.86.27.13.44.2.5.3.07.12.07.63-.13 1.2z"/></svg>';
+const GLYPH_FACEBOOK =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#000" d="M13.6 21.9v-7.8h2.62l.4-3.04h-3.02V9.12c0-.88.24-1.48 1.5-1.48h1.62V4.92c-.28-.04-1.24-.12-2.36-.12-2.34 0-3.94 1.43-3.94 4.05v2.21H7.8v3.04h2.62v7.8h3.18z"/></svg>';
+const GLYPH_LINKEDIN =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#000" fill-rule="evenodd" d="M4.5 2h15A2.5 2.5 0 0 1 22 4.5v15a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 19.5v-15A2.5 2.5 0 0 1 4.5 2zM6.7 8.4a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3zM5.3 18.6h2.8V9.8H5.3v8.8zm5.2-8.8v8.8h2.8v-4.5c0-1.35.5-2.25 1.7-2.25 1 0 1.4.78 1.4 2.25v4.5h2.8v-5.1c0-2.5-1.2-3.9-3.15-3.9-1.5 0-2.35.82-2.75 1.55V9.8h-2.8z"/></svg>';
+const GLYPH_TIKTOK =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#000" d="M16.7 2.9c.36 2.12 1.8 3.58 3.94 3.88v2.78c-1.47.05-2.78-.4-3.94-1.22v6.1c0 3.6-2.53 5.82-5.62 5.82-2.94 0-5.12-2.08-5.12-4.96 0-2.84 2.13-4.92 5.17-4.92.3 0 .66.03 1.01.1v2.94c-.35-.12-.7-.17-1.01-.17-1.37 0-2.33.9-2.33 2.12 0 1.27.96 2.13 2.28 2.13 1.57 0 2.74-1.07 2.79-2.94V2.9h2.83z"/></svg>';
+
 export async function generateMetadata({
   params,
 }: {
@@ -130,6 +144,50 @@ export default async function ContactPage({
             href: '#devis',
             svg: GLYPH_TRUCK,
           },
+          /* wa.me se derive du numero confirme — pas d'URL a inventer.
+             (A verifier avec le client : le numero a-t-il WhatsApp ?) */
+          {
+            id: 'whatsapp',
+            label: 'WhatsApp',
+            href: `https://wa.me/${company.phoneE164.slice(1)}`,
+            svg: GLYPH_WHATSAPP,
+            external: true,
+          },
+          /* Les trois suivants n'apparaissent qu'une fois leur URL
+             reelle resolue dans company.ts (meme regime que la TVA). */
+          ...(isResolved(company.socials.facebook)
+            ? [
+                {
+                  id: 'facebook',
+                  label: 'Facebook',
+                  href: company.socials.facebook.value,
+                  svg: GLYPH_FACEBOOK,
+                  external: true,
+                },
+              ]
+            : []),
+          ...(isResolved(company.socials.linkedin)
+            ? [
+                {
+                  id: 'linkedin',
+                  label: 'LinkedIn',
+                  href: company.socials.linkedin.value,
+                  svg: GLYPH_LINKEDIN,
+                  external: true,
+                },
+              ]
+            : []),
+          ...(isResolved(company.socials.tiktok)
+            ? [
+                {
+                  id: 'tiktok',
+                  label: 'TikTok',
+                  href: company.socials.tiktok.value,
+                  svg: GLYPH_TIKTOK,
+                  external: true,
+                },
+              ]
+            : []),
         ]}
       />
     </PageShell>
