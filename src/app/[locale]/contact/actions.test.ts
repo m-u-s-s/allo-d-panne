@@ -38,7 +38,7 @@ const valid = () => {
 const withSmtpEnv = () => {
   vi.stubEnv('SMTP_HOST', 'smtp.example.com');
   vi.stubEnv('SMTP_PORT', '587');
-  vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+  vi.stubEnv('SMTP_USER', 'contact@alo-depannage.com');
   vi.stubEnv('SMTP_PASS', 'secret');
 };
 
@@ -95,7 +95,7 @@ describe('submitQuote', () => {
     // silencieusement `secure` a false.
     vi.stubEnv('SMTP_HOST', 'smtp.example.com');
     vi.stubEnv('SMTP_PORT', 'abc');
-    vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+    vi.stubEnv('SMTP_USER', 'contact@alo-depannage.com');
     vi.stubEnv('SMTP_PASS', 'secret');
     const r = await submitQuote({ status: 'idle' }, valid());
     expect(r.status).toBe('error');
@@ -112,7 +112,7 @@ describe('submitQuote', () => {
     // mal configure.
     vi.stubEnv('SMTP_HOST', 'smtp.example.com');
     vi.stubEnv('SMTP_PORT', '   ');
-    vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+    vi.stubEnv('SMTP_USER', 'contact@alo-depannage.com');
     vi.stubEnv('SMTP_PASS', 'secret');
     const r = await submitQuote({ status: 'idle' }, valid());
     expect(r.status).toBe('error');

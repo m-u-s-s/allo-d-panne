@@ -2,7 +2,7 @@ import type { SiteContent } from './types';
 
 export const en: SiteContent = {
   meta: {
-    title: 'ALB Depannage — 24/7 breakdown and towing in Brussels',
+    title: 'Alo-Depannage — 24/7 breakdown and towing in Brussels',
     // "Approved and insured" deliberately dropped: this closing sentence
     // of the description feeds schema.org (LocalBusinessJsonLd.description)
     // and search snippets — machine-readable surfaces. Belgian motorway

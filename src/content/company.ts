@@ -45,13 +45,13 @@ export type Address = {
 };
 
 export const company = {
-  legalName: resolved('ALB Dépannage'),
-  displayName: 'ALB Dépannage',
+  legalName: resolved('Alo-Dépannage'),
+  displayName: 'Alo-Dépannage',
 
   phoneE164: PHONE_E164,
   phoneNational: PHONE_NATIONAL,
   phoneInternational: PHONE_INTERNATIONAL,
-  email: resolved('contact@alb-depannage.com'),
+  email: resolved('contact@alo-depannage.com'),
 
   available247: true,
 

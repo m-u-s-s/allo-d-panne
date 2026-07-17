@@ -2,7 +2,7 @@ import type { SiteContent } from './types';
 
 export const fr: SiteContent = {
   meta: {
-    title: 'ALB Dépannage — Dépannage et remorquage 24h/24 à Bruxelles',
+    title: 'Alo-Dépannage — Dépannage et remorquage 24h/24 à Bruxelles',
     // "Agréé et assuré" volontairement absent : cette phrase de la
     // description nourrit schema.org (LocalBusinessJsonLd.description) et
     // les extraits de recherche, des surfaces machine-lisibles. L'agrement
