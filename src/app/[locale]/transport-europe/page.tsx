@@ -7,10 +7,6 @@ import { routing, type Locale } from '@/i18n/routing';
 import { CallButton } from '@/components/ui/CallButton';
 import { EuropeRoutesStatic } from '@/components/ui/EuropeRoutesStatic';
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
 export async function generateMetadata({
   params,
 }: {

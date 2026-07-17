@@ -10,10 +10,27 @@ describe('EuropeRoutesStatic', () => {
 
   it('liste les villes en texte, pas seulement en graphique', () => {
     // La couleur et le graphique ne sont jamais les seuls porteurs
-    // d'information (regle a11y). "Bruxelles" apparait a la fois comme
-    // label SVG et dans le figcaption texte : on utilise getAllByText
-    // (et non getByText) car les deux sont des correspondances legitimes.
+    // d'information (regle a11y) : le figcaption sr-only est le porteur du
+    // texte accessible, le <text> du SVG n'est que decoratif. L'assertion
+    // porte donc specifiquement sur le figcaption (via selector) et non sur
+    // "n'importe quel element du DOM" — un test qui passerait encore apres
+    // suppression du figcaption ne vaudrait rien, puisque le figcaption est
+    // la raison d'etre de cette exigence.
     render(<EuropeRoutesStatic alt="Carte" />);
-    expect(screen.getAllByText(/Bruxelles/i).length).toBeGreaterThan(0);
+    const cities = [
+      'Bruxelles',
+      'Paris',
+      'Amsterdam',
+      'Cologne',
+      'Milan',
+      'Madrid',
+      'Berlin',
+      'Vienne',
+    ];
+    for (const city of cities) {
+      expect(
+        screen.getByText(new RegExp(city, 'i'), { selector: 'figcaption' })
+      ).toBeInTheDocument();
+    }
   });
 });

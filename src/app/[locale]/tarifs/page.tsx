@@ -7,10 +7,6 @@ import { routing, type Locale } from '@/i18n/routing';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { PricingSection } from '@/components/ui/PricingSection';
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
 export async function generateMetadata({
   params,
 }: {
