@@ -125,5 +125,15 @@ export type SiteContent = {
     pendingBody: string;
     privacyBody: string;
     termsBody: string;
+    /** Libellés des champs en attente de confirmation (mentions légales). */
+    pendingVatLabel: string;
+    pendingAddressLabel: string;
+    pendingMotorwayZoneLabel: string;
+    /** Libellés du bloc éditeur (dl), ponctuation finale incluse. */
+    publisherNameLabel: string;
+    publisherPhoneLabel: string;
+    publisherEmailLabel: string;
+    publisherVatLabel: string;
+    publisherAddressLabel: string;
   };
 };

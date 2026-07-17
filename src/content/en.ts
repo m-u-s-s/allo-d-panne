@@ -157,5 +157,13 @@ export const en: SiteContent = {
       'This website sets no analytics cookies and performs no advertising tracking. Data submitted through the quote form (name, phone, email, location) is used solely to handle your request and is never shared with third parties. You may request its deletion by email at any time.',
     termsBody:
       'The final price of an intervention depends on the type of assistance and the distance travelled. It is confirmed to the customer before any journey. Any intervention outside Brussels incurs a per-kilometre supplement.',
+    pendingVatLabel: 'VAT number',
+    pendingAddressLabel: 'Registered office address',
+    pendingMotorwayZoneLabel: 'Motorway approval zone',
+    publisherNameLabel: 'Name: ',
+    publisherPhoneLabel: 'Phone: ',
+    publisherEmailLabel: 'Email: ',
+    publisherVatLabel: 'VAT: ',
+    publisherAddressLabel: 'Registered office: ',
   },
 };

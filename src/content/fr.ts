@@ -159,5 +159,13 @@ export const fr: SiteContent = {
       "Ce site ne dépose aucun cookie de mesure d'audience et ne pratique aucun suivi publicitaire. Les données transmises via le formulaire de devis (nom, téléphone, email, localisation) servent uniquement à traiter votre demande et ne sont jamais cédées à des tiers. Vous pouvez demander leur suppression par email à tout moment.",
     termsBody:
       "Le prix final d'une intervention dépend du type de dépannage et de la distance parcourue. Il est confirmé au client avant tout déplacement. Toute intervention hors de Bruxelles fait l'objet d'un supplément kilométrique.",
+    pendingVatLabel: 'Numéro de TVA',
+    pendingAddressLabel: 'Adresse du siège',
+    pendingMotorwayZoneLabel: 'Zone d’agrément autoroute',
+    publisherNameLabel: 'Nom : ',
+    publisherPhoneLabel: 'Téléphone : ',
+    publisherEmailLabel: 'Email : ',
+    publisherVatLabel: 'TVA : ',
+    publisherAddressLabel: 'Siège : ',
   },
 };

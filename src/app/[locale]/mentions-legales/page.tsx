@@ -42,13 +42,16 @@ export default async function LegalNoticePage({
 
   const pending = [
     !isResolved(company.vat)
-      ? { label: 'Numéro de TVA', reason: company.vat.reason }
+      ? { label: c.legal.pendingVatLabel, reason: company.vat.reason }
       : null,
     !isResolved(company.address)
-      ? { label: 'Adresse du siège', reason: company.address.reason }
+      ? { label: c.legal.pendingAddressLabel, reason: company.address.reason }
       : null,
     !isResolved(company.motorwayZone)
-      ? { label: 'Zone d’agrément autoroute', reason: company.motorwayZone.reason }
+      ? {
+          label: c.legal.pendingMotorwayZoneLabel,
+          reason: company.motorwayZone.reason,
+        }
       : null,
   ].filter((f): f is { label: string; reason: string } => f !== null);
 
@@ -69,28 +72,28 @@ export default async function LegalNoticePage({
       </h2>
       <dl className="mt-4 space-y-2 text-sm">
         <div>
-          <dt className="inline text-muted">Nom : </dt>
+          <dt className="inline text-muted">{c.legal.publisherNameLabel}</dt>
           <dd className="inline text-text">{company.displayName}</dd>
         </div>
         <div>
-          <dt className="inline text-muted">Téléphone : </dt>
+          <dt className="inline text-muted">{c.legal.publisherPhoneLabel}</dt>
           <dd className="inline text-text">{PHONE_INTERNATIONAL}</dd>
         </div>
         {isResolved(company.email) ? (
           <div>
-            <dt className="inline text-muted">Email : </dt>
+            <dt className="inline text-muted">{c.legal.publisherEmailLabel}</dt>
             <dd className="inline text-text">{company.email.value}</dd>
           </div>
         ) : null}
         {isResolved(company.vat) ? (
           <div>
-            <dt className="inline text-muted">TVA : </dt>
+            <dt className="inline text-muted">{c.legal.publisherVatLabel}</dt>
             <dd className="inline text-text">{company.vat.value}</dd>
           </div>
         ) : null}
         {isResolved(company.address) ? (
           <div>
-            <dt className="inline text-muted">Siège : </dt>
+            <dt className="inline text-muted">{c.legal.publisherAddressLabel}</dt>
             <dd className="inline text-text">
               {company.address.value.street} {company.address.value.number},{' '}
               {company.address.value.postalCode} {company.address.value.city},{' '}

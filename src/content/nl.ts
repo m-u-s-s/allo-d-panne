@@ -157,5 +157,13 @@ export const nl: SiteContent = {
       'Deze website plaatst geen analytische cookies en doet niet aan advertentietracking. De gegevens die via het offerteformulier worden verzonden (naam, telefoon, e-mail, locatie) dienen uitsluitend om uw aanvraag te behandelen en worden nooit aan derden doorgegeven. U kunt op elk moment per e-mail om verwijdering vragen.',
     termsBody:
       'De eindprijs van een interventie hangt af van het type pechverhelping en de afgelegde afstand. Hij wordt aan de klant bevestigd vóór elke verplaatsing. Elke interventie buiten Brussel brengt een kilometertoeslag met zich mee.',
+    pendingVatLabel: 'Btw-nummer',
+    pendingAddressLabel: 'Adres van de maatschappelijke zetel',
+    pendingMotorwayZoneLabel: 'Erkenningszone snelwegpechverhelping',
+    publisherNameLabel: 'Naam: ',
+    publisherPhoneLabel: 'Telefoon: ',
+    publisherEmailLabel: 'E-mail: ',
+    publisherVatLabel: 'Btw: ',
+    publisherAddressLabel: 'Zetel: ',
   },
 };
