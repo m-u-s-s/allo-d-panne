@@ -60,13 +60,15 @@ export default async function HomePage({
           promesse du metier en une interaction. Remplace le hero a
           assemblage (qui reste dans le depot). Pas de data-stage : sa
           choregraphie interne est pilotee par framer-motion. La paire
-          d'images est un placeholder vectoriel aligne par construction
-          — a remplacer par la paire photo du workflow IA documente en
-          tete de wreck-reveal-hero.tsx.
+          d'images sort du workflow IA documente en tete de
+          wreck-reveal-hero.tsx : master genere (Flux), camion dedie
+          composite, degats a masque confine, exports jumeaux d'un seul
+          document — QA pixel 0 diff hors masques. Les SVG placeholder
+          restent dans public/ comme filet.
         */}
         <WreckRevealHero
-          wreckedSrc="/hero-car-wrecked.svg"
-          revealSrc="/hero-car-restored-cutout.svg"
+          wreckedSrc="/hero-car-wrecked.webp"
+          revealSrc="/hero-car-restored-cutout.webp"
           marqueeSerif="Alo-Dépannage"
           marqueeSans={c.hero.title}
           caption={c.hero.eyebrow}
