@@ -145,4 +145,17 @@ export const en: SiteContent = {
     terms: 'Terms and conditions',
     privacy: 'Privacy',
   },
+  legal: {
+    noticeTitle: 'Legal notice',
+    termsTitle: 'Terms and conditions',
+    privacyTitle: 'Privacy policy',
+    publisher: 'Website publisher',
+    pendingTitle: 'Information pending confirmation',
+    pendingBody:
+      'This page is incomplete. The information below must be confirmed by the company before the website goes public.',
+    privacyBody:
+      'This website sets no analytics cookies and performs no advertising tracking. Data submitted through the quote form (name, phone, email, location) is used solely to handle your request and is never shared with third parties. You may request its deletion by email at any time.',
+    termsBody:
+      'The final price of an intervention depends on the type of assistance and the distance travelled. It is confirmed to the customer before any journey. Any intervention outside Brussels incurs a per-kilometre supplement.',
+  },
 };

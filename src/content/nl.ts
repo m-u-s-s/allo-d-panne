@@ -145,4 +145,17 @@ export const nl: SiteContent = {
     terms: 'Algemene voorwaarden',
     privacy: 'Privacy',
   },
+  legal: {
+    noticeTitle: 'Wettelijke vermeldingen',
+    termsTitle: 'Algemene voorwaarden',
+    privacyTitle: 'Privacybeleid',
+    publisher: 'Uitgever van de website',
+    pendingTitle: 'Gegevens in afwachting van bevestiging',
+    pendingBody:
+      'Deze pagina is onvolledig. De onderstaande gegevens moeten door het bedrijf bevestigd worden vóór de publieke lancering van de website.',
+    privacyBody:
+      'Deze website plaatst geen analytische cookies en doet niet aan advertentietracking. De gegevens die via het offerteformulier worden verzonden (naam, telefoon, e-mail, locatie) dienen uitsluitend om uw aanvraag te behandelen en worden nooit aan derden doorgegeven. U kunt op elk moment per e-mail om verwijdering vragen.',
+    termsBody:
+      'De eindprijs van een interventie hangt af van het type pechverhelping en de afgelegde afstand. Hij wordt aan de klant bevestigd vóór elke verplaatsing. Elke interventie buiten Brussel brengt een kilometertoeslag met zich mee.',
+  },
 };

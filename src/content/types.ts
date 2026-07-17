@@ -116,4 +116,14 @@ export type SiteContent = {
     terms: string;
     privacy: string;
   };
+  legal: {
+    noticeTitle: string;
+    termsTitle: string;
+    privacyTitle: string;
+    publisher: string;
+    pendingTitle: string;
+    pendingBody: string;
+    privacyBody: string;
+    termsBody: string;
+  };
 };
