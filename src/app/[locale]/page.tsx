@@ -7,7 +7,7 @@ import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CoverageSection } from '@/components/ui/CoverageSection';
 import { FinalCta } from '@/components/ui/FinalCta';
-import ScrollAssemblyHero from '@/components/ui/scroll-assembly-hero';
+import WreckRevealHero from '@/components/ui/wreck-reveal-hero';
 import { PageShell } from '@/components/ui/PageShell';
 import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
 import { PricingSection } from '@/components/ui/PricingSection';
@@ -55,16 +55,18 @@ export default async function HomePage({
       */}
       <main>
         {/*
-          Hero a assemblage au scroll (remplace l'ancien hero WebGL +
-          camion filaire — les composants restent dans le depot). Pas de
-          data-stage : sa choregraphie interne (sticky 300vh) est pilotee
-          par framer-motion, le scrub GSAP de sortie se battrait avec.
-          Les placeholders portrait/casque sont a remplacer par de
-          vraies images (voir les commentaires des SVG dans public/).
+          Hero avant/apres : voiture accidentee, et sous le curseur la
+          meme voiture restauree avec la depanneuse derriere — la
+          promesse du metier en une interaction. Remplace le hero a
+          assemblage (qui reste dans le depot). Pas de data-stage : sa
+          choregraphie interne est pilotee par framer-motion. La paire
+          d'images est un placeholder vectoriel aligne par construction
+          — a remplacer par la paire photo du workflow IA documente en
+          tete de wreck-reveal-hero.tsx.
         */}
-        <ScrollAssemblyHero
-          portraitSrc="/hero-portrait.svg"
-          helmetSrc="/hero-helmet.svg"
+        <WreckRevealHero
+          wreckedSrc="/hero-car-wrecked.svg"
+          revealSrc="/hero-car-restored-cutout.svg"
           marqueeSerif="Alo-Dépannage"
           marqueeSans={c.hero.title}
           caption={c.hero.eyebrow}

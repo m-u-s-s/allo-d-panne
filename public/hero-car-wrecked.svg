@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <!--
+    PLACEHOLDER — couche A : berline accidentee, fond plat.
+    Cette paire (avec hero-car-restored-cutout.svg) sort d'UN SEUL
+    systeme de coordonnees : la carrosserie est LE MEME chemin dans les
+    deux fichiers, l'alignement pixel est garanti par construction.
+    A remplacer par la paire photo produite via le workflow IA documente
+    en tete de wreck-reveal-hero.tsx (master restaure -> inpainting
+    masque -> exports jumeaux). L'effet n'a de sens qu'avec une paire
+    parfaitement alignee.
+  -->
+  <rect width="1600" height="1000" fill="#EFEFE5"/>
+  <!-- ombre de contact (identique au master) -->
+  <ellipse cx="830" cy="856" rx="390" ry="26" fill="rgba(17,17,18,0.16)"/>
+  <!-- carrosserie : CHEMIN MASTER, ne jamais le modifier seul -->
+  <path d="M 468 748 L 468 686 C 468 654 496 636 542 628 L 646 612 C 706 546 766 524 856 521 L 992 521 C 1064 525 1114 561 1154 617 L 1186 642 C 1198 652 1202 672 1198 700 L 1194 748 L 1128 748 A 84 84 0 0 0 960 748 L 736 748 A 84 84 0 0 0 568 748 Z"
+        fill="#111112"/>
+  <!-- vitrage -->
+  <path d="M 668 618 C 716 560 770 540 852 537 L 980 537 C 1040 540 1084 570 1116 612 L 1116 618 Z" fill="#282C20"/>
+  <!-- roue arriere : intacte mais terne -->
+  <circle cx="652" cy="782" r="70" fill="#111112"/>
+  <circle cx="652" cy="782" r="28" fill="none" stroke="#535450" stroke-width="6"/>
+  <!-- roue avant : A PLAT (ecrasee, meme sol) -->
+  <ellipse cx="1044" cy="798" rx="70" ry="54" fill="#111112"/>
+  <ellipse cx="1044" cy="798" rx="30" ry="22" fill="none" stroke="#535450" stroke-width="6"/>
+  <!-- pare-brise fissure -->
+  <path d="M 1010 545 L 1052 585 L 1032 600 M 1052 585 L 1084 596 M 1030 560 L 1052 585" stroke="#EFEFE5" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- phare arrache : encoche creme dans le nez -->
+  <path d="M 1160 640 L 1196 652 L 1192 686 L 1156 676 Z" fill="#EFEFE5"/>
+  <!-- enfoncements de portiere : polylignes irregulieres -->
+  <path d="M 700 660 L 742 646 L 758 668 L 796 652" stroke="#535450" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 830 690 L 874 672 L 890 700" stroke="#3B3C38" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- rayures -->
+  <path d="M 560 700 L 668 682 M 900 640 L 1000 622" stroke="#B4B8A5" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- capot tordu : arete decalee -->
+  <path d="M 1060 600 L 1148 622" stroke="#EFEFE5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- salissures -->
+  <path d="M 500 720 C 520 706 552 708 566 722 C 548 730 516 732 500 720 Z" fill="#3B3C38" opacity="0.5"/>
+  <path d="M 1100 716 C 1120 704 1150 708 1162 722 C 1142 730 1114 730 1100 716 Z" fill="#3B3C38" opacity="0.45"/>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <!--
+    PLACEHOLDER — couche B : decoupe TRANSPARENTE plein canevas.
+    Memes dimensions et memes coordonnees que hero-car-wrecked.svg :
+    transparent partout SAUF la voiture restauree (au pixel pres a la
+    meme place), la depanneuse neuve garee DERRIERE (espace d'arriere-
+    plan, coupee par le cadre) et leurs ombres de contact. Jamais la
+    voiture SUR le plateau : la deplacer casserait la superposition.
+    A remplacer par la vraie decoupe du workflow IA (voir le composant).
+  -->
+  <!-- ===== depanneuse derriere (uniquement dans la couche B) ===== -->
+  <ellipse cx="180" cy="708" rx="330" ry="20" fill="rgba(17,17,18,0.12)"/>
+  <!-- plateau -->
+  <rect x="-160" y="608" width="672" height="20" rx="6" fill="#3B3C38"/>
+  <rect x="-160" y="596" width="672" height="6" rx="3" fill="#535450"/>
+  <!-- cabine -->
+  <path d="M 336 608 L 336 512 C 336 494 348 484 366 484 L 446 484 C 472 484 488 498 498 520 L 516 560 C 524 576 528 592 528 608 Z" fill="#3B3C38"/>
+  <path d="M 400 500 L 444 500 C 462 500 472 510 479 524 L 490 548 L 400 548 Z" fill="#282C20"/>
+  <!-- gyrophare lime -->
+  <rect x="352" y="466" width="40" height="14" rx="7" fill="#D2FF00"/>
+  <ellipse cx="372" cy="470" rx="34" ry="10" fill="#D2FF00" opacity="0.25"/>
+  <!-- roues du camion -->
+  <circle cx="120" cy="662" r="46" fill="#282C20"/>
+  <circle cx="120" cy="662" r="18" fill="none" stroke="#B4B8A5" stroke-width="5"/>
+  <circle cx="424" cy="662" r="46" fill="#282C20"/>
+  <circle cx="424" cy="662" r="18" fill="none" stroke="#B4B8A5" stroke-width="5"/>
+  <!-- ===== voiture restauree : MEMES coordonnees que la couche A ===== -->
+  <ellipse cx="830" cy="856" rx="390" ry="26" fill="rgba(17,17,18,0.16)"/>
+  <!-- carrosserie : CHEMIN MASTER identique a hero-car-wrecked.svg -->
+  <path d="M 468 748 L 468 686 C 468 654 496 636 542 628 L 646 612 C 706 546 766 524 856 521 L 992 521 C 1064 525 1114 561 1154 617 L 1186 642 C 1198 652 1202 672 1198 700 L 1194 748 L 1128 748 A 84 84 0 0 0 960 748 L 736 748 A 84 84 0 0 0 568 748 Z"
+        fill="#111112"/>
+  <!-- vitrage impeccable + reflet -->
+  <path d="M 668 618 C 716 560 770 540 852 537 L 980 537 C 1040 540 1084 570 1116 612 L 1116 618 Z" fill="#282C20"/>
+  <path d="M 700 600 C 740 556 790 542 850 540 L 812 600 Z" fill="#3B3C38"/>
+  <!-- gleam de capot -->
+  <path d="M 900 560 C 980 548 1060 566 1120 606" stroke="#B4B8A5" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <!-- ligne chrome -->
+  <path d="M 480 706 L 1180 706" stroke="#B4B8A5" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+  <!-- poignee -->
+  <rect x="880" y="646" width="52" height="8" rx="4" fill="#535450"/>
+  <!-- phare neuf -->
+  <path d="M 1160 640 L 1196 652 L 1192 686 L 1156 676 Z" fill="#EBEEE0"/>
+  <!-- roues neuves, jantes lime -->
+  <circle cx="652" cy="782" r="70" fill="#111112"/>
+  <circle cx="652" cy="782" r="28" fill="none" stroke="#D2FF00" stroke-width="7"/>
+  <circle cx="652" cy="782" r="6" fill="#D2FF00"/>
+  <circle cx="1044" cy="782" r="70" fill="#111112"/>
+  <circle cx="1044" cy="782" r="28" fill="none" stroke="#D2FF00" stroke-width="7"/>
+  <circle cx="1044" cy="782" r="6" fill="#D2FF00"/>
+</svg>
