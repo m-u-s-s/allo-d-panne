@@ -3,11 +3,15 @@ import { Inter, Syncopate } from 'next/font/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { LocalBusinessJsonLd } from '@/components/seo/LocalBusinessJsonLd';
 import { SiteFooter } from '@/components/ui/SiteFooter';
 import { SiteHeader } from '@/components/ui/SiteHeader';
 import { StickyCallBar } from '@/components/ui/StickyCallBar';
+import { getContent } from '@/content';
+import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
+import { alternatesFor, SITE_URL } from '@/lib/seo';
 import '../globals.css';
 
 const inter = Inter({
@@ -27,9 +31,30 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-  title: 'ALB Dépannage',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) return {};
+  const c = getContent(locale as Locale);
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: c.meta.title, template: `%s — ${company.displayName}` },
+    description: c.meta.description,
+    alternates: alternatesFor('/'),
+    openGraph: {
+      title: c.meta.title,
+      description: c.meta.description,
+      url: `${SITE_URL}/${locale}`,
+      siteName: company.displayName,
+      locale,
+      type: 'website',
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,
@@ -53,6 +78,7 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="bg-bg text-text antialiased">
+        <LocalBusinessJsonLd locale={typedLocale} />
         <NextIntlClientProvider>
           <SiteHeader locale={typedLocale} />
           {children}
