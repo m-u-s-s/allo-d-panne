@@ -19,7 +19,7 @@ export async function generateMetadata({
   return {
     title: c.pricingPage.title,
     description: c.pricingPage.intro,
-    alternates: alternatesFor('/tarifs'),
+    alternates: alternatesFor('/tarifs', locale as Locale),
   };
 }
 

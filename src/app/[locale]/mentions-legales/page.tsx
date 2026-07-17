@@ -3,19 +3,11 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
-import { company, isResolved } from '@/content/company';
+import { company, isLegalComplete, isResolved } from '@/content/company';
 import { routing, type Locale } from '@/i18n/routing';
 import { PendingDataNotice } from '@/components/ui/PendingDataNotice';
 import { PHONE_INTERNATIONAL } from '@/lib/phone';
 import { alternatesFor } from '@/lib/seo';
-
-/**
- * noindex tant que la page est incomplete : une page de mentions legales
- * fausse, indexee, est pire qu'absente.
- */
-function isComplete() {
-  return isResolved(company.vat) && isResolved(company.address);
-}
 
 export async function generateMetadata({
   params,
@@ -27,8 +19,11 @@ export async function generateMetadata({
   const c = getContent(locale as Locale);
   return {
     title: c.legal.noticeTitle,
-    alternates: alternatesFor('/mentions-legales'),
-    robots: isComplete() ? undefined : { index: false, follow: false },
+    alternates: alternatesFor('/mentions-legales', locale as Locale),
+    // noindex tant que la page est incomplete : une page de mentions
+    // legales fausse, indexee, est pire qu'absente. Meme predicat que le
+    // sitemap (qui exclut cette page tant qu'elle est incomplete).
+    robots: isLegalComplete() ? undefined : { index: false, follow: false },
   };
 }
 

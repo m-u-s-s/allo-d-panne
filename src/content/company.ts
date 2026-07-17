@@ -73,3 +73,16 @@ export const company = {
     "Le client annonce « agree autoroute » sans preciser la zone. Le depannage autoroutier belge est concede par zone : la mention ne peut pas etre publiee telle quelle.",
   ) as Field<string>,
 } as const;
+
+/**
+ * Source unique pour "les mentions legales sont-elles publiables ?".
+ *
+ * Le sitemap (qui exclut la page tant qu'elle est incomplete) et la page
+ * des mentions legales elle-meme (qui se met en noindex) doivent s'accorder
+ * sur cette question. Sans predicat partage, chacun re-derive sa propre
+ * copie et elles peuvent silencieusement diverger si un champ requis
+ * s'ajoute d'un cote sans l'autre.
+ */
+export function isLegalComplete(): boolean {
+  return isResolved(company.vat) && isResolved(company.address);
+}

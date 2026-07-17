@@ -11,7 +11,7 @@ import { getContent } from '@/content';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
-import { alternatesFor, SITE_URL } from '@/lib/seo';
+import { ogLocaleFor, SITE_URL } from '@/lib/seo';
 import '../globals.css';
 
 const inter = Inter({
@@ -44,13 +44,21 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: { default: c.meta.title, template: `%s — ${company.displayName}` },
     description: c.meta.description,
-    alternates: alternatesFor('/'),
+    // Pas d'`alternates` ici : le layout ne connait que la locale, jamais
+    // le chemin de la page enfant. Les 7 pages feuilles fixent chacune leur
+    // propre canonical/hreflang auto-referent via alternatesFor(path,
+    // locale). Un fallback ici serait correct uniquement pour "/" et FAUX
+    // pour toute autre page qui l'heriterait silencieusement — un mauvais
+    // fallback est pire que pas de fallback : une page qui oublierait ses
+    // propres alternates se retrouverait sans canonical du tout (visible,
+    // detectable), plutot qu'avec un canonical pointant vers l'accueil
+    // (silencieux, trompeur).
     openGraph: {
       title: c.meta.title,
       description: c.meta.description,
       url: `${SITE_URL}/${locale}`,
       siteName: company.displayName,
-      locale,
+      locale: ogLocaleFor(locale as Locale),
       type: 'website',
     },
   };

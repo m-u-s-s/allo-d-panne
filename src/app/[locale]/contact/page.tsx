@@ -20,7 +20,7 @@ export async function generateMetadata({
   return {
     title: c.contactPage.title,
     description: c.contactPage.intro,
-    alternates: alternatesFor('/contact'),
+    alternates: alternatesFor('/contact', locale as Locale),
   };
 }
 

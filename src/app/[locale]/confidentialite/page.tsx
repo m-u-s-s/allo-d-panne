@@ -15,7 +15,7 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   return {
     title: getContent(locale as Locale).legal.privacyTitle,
-    alternates: alternatesFor('/confidentialite'),
+    alternates: alternatesFor('/confidentialite', locale as Locale),
   };
 }
 

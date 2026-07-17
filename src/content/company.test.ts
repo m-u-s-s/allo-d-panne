@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { company, isResolved, resolved, todo } from './company';
+import { company, isLegalComplete, isResolved, resolved, todo } from './company';
 
 describe('Field', () => {
   it('isResolved discrimine un champ resolu', () => {
@@ -78,5 +78,25 @@ describe('Perimetre d intervention', () => {
 
   it('le transport est europeen', () => {
     expect(company.transportScope).toBe('europe');
+  });
+});
+
+describe('isLegalComplete — source unique partagee (sitemap + page mentions legales)', () => {
+  /**
+   * Le sitemap et la page des mentions legales doivent s'accorder sur
+   * "cette page est-elle publiable ?". Un seul predicat evite qu'ils
+   * divergent silencieusement si un champ requis change d'un cote sans
+   * l'autre.
+   */
+  it('est faux tant que la TVA ou l adresse restent todo', () => {
+    expect(isResolved(company.vat)).toBe(false);
+    expect(isResolved(company.address)).toBe(false);
+    expect(isLegalComplete()).toBe(false);
+  });
+
+  it('correspond exactement a TVA resolue ET adresse resolue', () => {
+    expect(isLegalComplete()).toBe(
+      isResolved(company.vat) && isResolved(company.address),
+    );
   });
 });

@@ -19,7 +19,7 @@ export async function generateMetadata({
   return {
     title: c.transportPage.title,
     description: c.transportPage.intro,
-    alternates: alternatesFor('/transport-europe'),
+    alternates: alternatesFor('/transport-europe', locale as Locale),
   };
 }
 

@@ -23,7 +23,7 @@ export async function generateMetadata({
   return {
     title: c.meta.title,
     description: c.meta.description,
-    alternates: alternatesFor('/'),
+    alternates: alternatesFor('/', locale as Locale),
   };
 }
 
