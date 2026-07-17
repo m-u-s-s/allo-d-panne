@@ -3134,7 +3134,20 @@ langues avant traduction : la garantie du modele de contenu tient."
 1. **SMTP en serverless est lent et faillible.** Une connexion SMTP depuis une fonction Vercel peut prendre plusieurs secondes ou expirer. L'action doit avoir un timeout explicite et, en cas d'échec, renvoyer l'utilisateur vers le téléphone — jamais afficher un faux succès.
 2. **Les identifiants n'existent pas encore.** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` sont à fournir par le client. Le code est écrit et testé avec nodemailer mocké ; l'absence d'identifiants est un échec explicite et testé, pas un crash.
 
-**Sécurité :** aucune donnée du formulaire n'est interpolée dans du HTML d'email. Le corps est en texte brut, ce qui supprime la question de l'injection HTML. Les en-têtes (`Reply-To`) sont validés avant usage : un `\r\n` dans un champ email permettrait une injection d'en-tête SMTP.
+**Sécurité :** aucune donnée du formulaire n'est interpolée dans du HTML d'email. Le corps est en texte brut, ce qui supprime la question de l'injection HTML.
+
+**Audit d'injection d'en-tête — par champ, pas globalement.** Un `\r\n` dans un champ qui atteint un en-tête SMTP permet d'en injecter d'arbitraires (un `Bcc:` vers une liste de spam, par exemple). Il ne suffit donc pas de « valider les en-têtes » : il faut savoir quel champ atteint lequel.
+
+| Champ | Destination | Garde |
+|---|---|---|
+| `email` | `Reply-To` | **Rejet des CRLF** |
+| `name` | `Subject` | **Rejet des CRLF** |
+| `service` | `Subject` | Aucune nécessaire — restreint au whitelist `SERVICE_IDS`, les CRLF y sont structurellement impossibles |
+| `phone`, `location`, `message` | Corps `text/plain` | Aucune nécessaire — un saut de ligne dans un corps est légitime, pas un vecteur |
+
+On **rejette**, on ne nettoie pas : une adresse ou un nom contenant un retour chariot n'est pas une faute de frappe, c'est une attaque.
+
+> **À ne pas déléguer à nodemailer.** Le nodemailer épinglé remplace les CRLF dans `_encodeHeaderValue`, donc une garde manquante n'est pas exploitable aujourd'hui. Mais c'est un interne non contractuel : une montée de version, un changement de transport ou l'usage d'une API d'en-tête brut rouvrirait la faille **sans qu'aucun test n'échoue**. La garantie doit tenir dans notre code.
 
 - [ ] **Step 1: Étendre le contenu**
 
