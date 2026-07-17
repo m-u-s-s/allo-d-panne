@@ -3,14 +3,14 @@ import { defineRouting } from 'next-intl/routing';
 export const routing = defineRouting({
   locales: ['fr', 'nl', 'en'],
   defaultLocale: 'fr',
-  // Sans ceci, next-intl negocie la langue via l'en-tete Accept-Language :
-  // un visiteur avec un navigateur/OS regle en anglais (frequent meme chez
-  // des francophones, ordinateurs professionnels...) atterrirait sur /en
-  // des la racine. Le francais est la langue par defaut du marche cible
-  // (Bruxelles) ; la racine doit y mener de facon deterministe, pas au gre
-  // d'un en-tete HTTP. Le selecteur de langue reste le seul moyen explicite
-  // de changer de langue.
-  localeDetection: false,
+  // La negociation Accept-Language (comportement par defaut de next-intl)
+  // est deliberement conservee : l'entreprise est en peripherie bruxelloise
+  // bilingue (Vilvoorde/Machelen neerlandophones a cote) et transporte des
+  // vehicules dans toute l'Europe. Un visiteur flamand doit atterrir en
+  // neerlandais, un client de transport allemand ou anglophone en anglais.
+  // Le francais reste le fallback pour toute langue non servie. Ne pas
+  // desactiver via localeDetection: false pour satisfaire un test — c'est
+  // le test qui doit verifier la negociation, pas l'inverse.
 });
 
 export type Locale = (typeof routing.locales)[number];

@@ -23,15 +23,56 @@ test.describe('Chemin de conversion', () => {
     });
   }
 
-  test('la racine redirige vers le francais', async ({ page }) => {
-    await page.goto('/');
-    await expect(page).toHaveURL(/\/fr$/);
-  });
-
   test('le selecteur de langue conserve la page', async ({ page }) => {
     await page.goto('/fr/tarifs');
     await page.getByRole('button', { name: 'NL' }).click();
     await expect(page).toHaveURL(/\/nl\/tarifs/);
+  });
+});
+
+test.describe('Negociation de langue a la racine', () => {
+  // On cree un contexte navigateur dedie par test, avec l'option `locale`,
+  // pour que le contexte par defaut du projet Playwright (mobile/desktop)
+  // n'interfere pas avec la negociation qu'on verifie ici.
+  //
+  // Verifie empiriquement (pas suppose) : `extraHTTPHeaders` ne fonctionne
+  // PAS pour cet usage sous Chromium — la toute premiere requete de
+  // navigation (document racine) part avec l'Accept-Language par defaut du
+  // navigateur (`en-US`) quel que soit l'en-tete fourni ; seules les
+  // sous-ressources chargees ensuite recoivent l'en-tete surcharge. L'option
+  // `locale` du contexte, elle, pilote l'Accept-Language des la requete de
+  // navigation elle-meme — confirme via une capture des en-tetes reellement
+  // envoyes. C'est donc `locale` qui pilote la negociation next-intl (cf.
+  // `getAcceptLanguageLocale` dans next-intl/middleware/resolveLocale.js,
+  // qui lit `accept-language` sur la requete entrante).
+  async function gotoRootWithLocale(
+    browser: import('@playwright/test').Browser,
+    locale: string,
+  ) {
+    const context = await browser.newContext({ locale });
+    const page = await context.newPage();
+    await page.goto('/');
+    return { context, page };
+  }
+
+  test('Accept-Language: nl redirige vers /nl', async ({ browser }) => {
+    const { context, page } = await gotoRootWithLocale(browser, 'nl-NL');
+    await expect(page).toHaveURL(/\/nl$/);
+    await context.close();
+  });
+
+  test('Accept-Language: fr redirige vers /fr', async ({ browser }) => {
+    const { context, page } = await gotoRootWithLocale(browser, 'fr-FR');
+    await expect(page).toHaveURL(/\/fr$/);
+    await context.close();
+  });
+
+  test('une langue non servie (de) retombe sur /fr, la langue par defaut', async ({
+    browser,
+  }) => {
+    const { context, page } = await gotoRootWithLocale(browser, 'de-DE');
+    await expect(page).toHaveURL(/\/fr$/);
+    await context.close();
   });
 });
 
