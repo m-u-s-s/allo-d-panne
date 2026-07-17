@@ -3949,6 +3949,11 @@ telephone — comportement teste, pas un crash."
 
 **Contrainte légale :** en Belgique, des mentions légales incomplètes exposent l'entreprise. Ces pages **ne peuvent pas être publiées** tant que TVA et adresse sont `todo`. Plutôt que d'inventer, la page affiche un encart visible listant ce qui manque — et un test `noindex` empêche l'indexation d'une page incomplète.
 
+> **Deux corrections issues de la revue** (commits `bd40946`, `2c50df0`) :
+>
+> 1. **Les libellés vivent dans le modèle de contenu typé**, pas en français en dur. La version initiale affichait « Numéro de TVA », « Siège », « Téléphone » en français sur `/nl` et `/en` — une page légale à moitié traduite, alors que l'entreprise est en périphérie néerlandophone. Les `reason` des champs `todo` restent en français : ce sont des notes transitoires destinées à qui terminera le site, et elles disparaissent dès que le client confirme les données.
+> 2. **L'encart est un `<aside>` nommé par `aria-labelledby`, pas un `role="alert"`.** `role="alert"` est une région live assertive, faite pour un message transitoire — une erreur de formulaire. Cet encart est du mobilier de page, présent à chaque visite jusqu'à confirmation des données : un lecteur d'écran était donc interrompu à chaque chargement pour annoncer un contenu ni urgent ni changeant. Le repère nommé laisse l'utilisateur y accéder quand il le décide.
+
 - [ ] **Step 1: Étendre le contenu**
 
 Ajouter à `SiteContent` dans `src/content/types.ts` :
