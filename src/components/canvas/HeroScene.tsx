@@ -3,6 +3,7 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import { ShaderMaterial, Vector2 } from 'three';
+import { scrollState } from './scroll-state';
 
 /**
  * Le plan est dessine directement en espace de clip : gl_Position prend
@@ -39,6 +40,8 @@ const fragmentShader = /* glsl */ `
   uniform vec2  uMouse;
   uniform float uQuality;
   uniform float uReveal;
+  uniform float uEnergy;
+  uniform float uScroll;
 
   varying vec2 vUv;
 
@@ -82,7 +85,11 @@ const fragmentShader = /* glsl */ `
     vec2 drift = uMouse * 0.06;
 
     int octaves = uQuality > 0.5 ? 4 : 2;
-    float mist = fbm(p * 2.4 + drift + vec2(uTime * 0.03, uTime * 0.015), octaves);
+    // uScroll fait defiler la brume avec la page : le fond est fixe mais
+    // sa matiere accompagne le mouvement — c'est le lien visuel entre le
+    // scroll DOM et le decor, la signature du site de reference.
+    vec2 flow = vec2(uTime * 0.03, uTime * 0.015 - uScroll * 1.4);
+    float mist = fbm(p * 2.4 + drift + flow, octaves);
 
     // Le gyrophare vit a DROITE : le texte occupe la gauche, et le voile
     // du hero y est opaque. Une source centree serait entierement mangee
@@ -111,7 +118,10 @@ const fragmentShader = /* glsl */ `
     float halo = exp(-dist * 2.2) * 0.25;
 
     float pulse = 0.75 + 0.25 * sin(uTime * 3.2);
-    float beacon = (beam + core * 0.7 + halo) * pulse;
+    // La velocite de scroll charge le gyrophare : il brille plus fort
+    // pendant le mouvement et retombe a l'arret (uEnergy est deja lisse
+    // cote JS, pas de clignotement possible).
+    float beacon = (beam + core * 0.7 + halo) * pulse * (1.0 + uEnergy * 0.6);
 
     // Contre-jour bleu froid en bas : sans lui l'ambre seul vire au sepia
     // et perd la nuit.
@@ -152,6 +162,7 @@ export function HeroScene({ quality }: { quality: number }) {
   const material = useRef<ShaderMaterial>(null);
   const { pointer } = useThree();
   const smoothed = useRef(new Vector2(0, 0));
+  const energy = useRef(0);
 
   const uniforms = useMemo(
     () => ({
@@ -159,6 +170,8 @@ export function HeroScene({ quality }: { quality: number }) {
       uMouse: { value: new Vector2(0, 0) },
       uQuality: { value: quality },
       uReveal: { value: 0 },
+      uEnergy: { value: 0 },
+      uScroll: { value: 0 },
     }),
     // quality ne change qu'au changement de palier, ou tout le canvas est
     // remonte de toute facon.
@@ -169,7 +182,18 @@ export function HeroScene({ quality }: { quality: number }) {
     const m = material.current;
     if (!m) return;
 
-    m.uniforms.uTime.value += delta;
+    // La velocite Lenis arrive brute (px/frame, signee, nerveuse). On la
+    // normalise et on la lisse ICI, cote lecture : le shader ne recoit
+    // qu'une energie 0..1 amortie, et la couche motion n'a pas besoin de
+    // connaitre les besoins du rendu.
+    const target = Math.min(Math.abs(scrollState.velocity) / 45, 1);
+    energy.current += (target - energy.current) * Math.min(1, delta * 4);
+
+    // Le temps s'ecoule plus vite pendant le scroll : la brume et le
+    // balayage s'activent avec le mouvement, retombent au repos.
+    m.uniforms.uTime.value += delta * (1 + energy.current * 2.0);
+    m.uniforms.uEnergy.value = energy.current;
+    m.uniforms.uScroll.value = scrollState.progress;
 
     // Fondu d'entree ~0.8s. Borne a 1 pour ne pas depasser en alpha.
     m.uniforms.uReveal.value = Math.min(1, m.uniforms.uReveal.value + delta * 1.25);

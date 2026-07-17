@@ -5,6 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LocalBusinessJsonLd } from '@/components/seo/LocalBusinessJsonLd';
 import { SceneMount } from '@/components/canvas/SceneMount';
+import { ScrollExperience } from '@/components/motion/ScrollExperience';
 import { getContent } from '@/content';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
@@ -114,6 +115,13 @@ export default async function LocaleLayout({
           au CLS. En palier Static il ne rend rien du tout.
         */}
         <SceneMount />
+        {/*
+          Comme le canvas, le systeme de scroll vit au layout et survit
+          aux navigations : Lenis garde son inertie d'une page a l'autre.
+          Il se reinitialise par route via usePathname (les triggers sont
+          lies aux sections de la page courante). En Static il rend null.
+        */}
+        <ScrollExperience />
         {children}
       </body>
     </html>

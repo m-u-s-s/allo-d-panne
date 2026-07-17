@@ -41,6 +41,35 @@ body {
   outline-offset: 2px;
 }
 
+/*
+ * Indicateur de scroll du hero : deux chevrons qui pulsent vers le bas,
+ * le second avec un temps de retard — l'onde descend, le sens de lecture
+ * est immediat. L'etat de repos (0 % / 100 %) est semi-transparent mais
+ * VISIBLE : sous prefers-reduced-motion (regle ci-dessous : duree 0.01ms,
+ * un seul cycle), les chevrons se figent sur cet etat — l'affordance
+ * survit, seul le mouvement disparait.
+ */
+@keyframes scroll-chevron {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(-3px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(3px);
+  }
+}
+
+.scroll-chevron {
+  animation: scroll-chevron 2s ease-in-out infinite;
+}
+
+.scroll-chevron-delayed {
+  animation-delay: 0.3s;
+  opacity: 0.35; /* etat initial avant le premier cycle decale */
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

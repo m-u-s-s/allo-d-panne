@@ -42,22 +42,44 @@ export default async function HomePage({
 
   return (
     <PageShell path="/" locale={l}>
+      {/*
+        data-stage : contrat avec la couche motion (ScrollExperience).
+        Chaque etage recoit les transitions d'entree/sortie scrubbed en
+        palier Full, un reveal simple en Lite, rien en Static — le HTML
+        ci-dessous est deja complet sans JavaScript. Les wrappers sont des
+        div neutres : les landmarks restent portes par les <section> des
+        composants. data-stage="hero" est un cas a part : pas d'animation
+        d'entree (c'est le LCP, il est visible au chargement), seulement
+        la sortie en profondeur.
+      */}
       <main>
-        <Hero locale={l} />
+        <div data-stage="hero">
+          <Hero locale={l} />
+        </div>
 
         {/* Section "probleme" : la situation du client, avant les services. */}
-        <section className="mx-auto max-w-7xl px-4 py-20">
+        <section data-stage="" className="mx-auto max-w-7xl px-4 py-20">
           <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
             {c.problem.title}
           </h2>
           <p className="mt-4 max-w-[60ch] text-lg text-muted">{c.problem.body}</p>
         </section>
 
-        <ServicesSection locale={l} />
-        <ProofSection locale={l} />
-        <CoverageSection locale={l} />
-        <PricingSection locale={l} />
-        <FinalCta locale={l} />
+        <div data-stage="">
+          <ServicesSection locale={l} />
+        </div>
+        <div data-stage="">
+          <ProofSection locale={l} />
+        </div>
+        <div data-stage="">
+          <CoverageSection locale={l} />
+        </div>
+        <div data-stage="">
+          <PricingSection locale={l} />
+        </div>
+        <div data-stage="">
+          <FinalCta locale={l} />
+        </div>
       </main>
     </PageShell>
   );

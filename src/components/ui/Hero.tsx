@@ -78,6 +78,48 @@ export function Hero({ locale }: { locale: Locale }) {
 
         <p className="mt-4 text-sm text-muted">{c.hero.availability}</p>
       </div>
+
+      {/*
+        Indicateur de scroll : deux chevrons semi-transparents qui pulsent
+        vers le bas en cascade. La premiere version etait un trait de 1 px
+        — present dans le DOM, anime, et pourtant invisible a l'ecran :
+        un indicateur doit etre RECONNAISSABLE, pas seulement exister.
+        CSS pur : il vit dans tous les paliers, y compris Static. Avec
+        prefers-reduced-motion, la regle globale fige l'animation sur son
+        etat de repos : chevrons statiques a faible opacite, l'affordance
+        reste sans le mouvement. aria-hidden : purement decoratif.
+      */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center"
+      >
+        <svg
+          className="scroll-chevron h-4 w-7 text-cta"
+          viewBox="0 0 28 14"
+          fill="none"
+        >
+          <path
+            d="M3 3l11 8 11-8"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <svg
+          className="scroll-chevron scroll-chevron-delayed -mt-1.5 h-4 w-7 text-cta"
+          viewBox="0 0 28 14"
+          fill="none"
+        >
+          <path
+            d="M3 3l11 8 11-8"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
     </section>
   );
 }
