@@ -37,20 +37,16 @@ export default async function LegalNoticePage({
   setRequestLocale(locale);
   const c = getContent(locale as Locale);
 
+  // Uniquement des libelles localises (SiteContent) : jamais les `reason`
+  // de company.ts, qui sont des notes internes pour l'equipe de dev (voir
+  // le commentaire de PendingDataNotice).
   const pending = [
-    !isResolved(company.vat)
-      ? { label: c.legal.pendingVatLabel, reason: company.vat.reason }
-      : null,
-    !isResolved(company.address)
-      ? { label: c.legal.pendingAddressLabel, reason: company.address.reason }
-      : null,
+    !isResolved(company.vat) ? c.legal.pendingVatLabel : null,
+    !isResolved(company.address) ? c.legal.pendingAddressLabel : null,
     !isResolved(company.motorwayZone)
-      ? {
-          label: c.legal.pendingMotorwayZoneLabel,
-          reason: company.motorwayZone.reason,
-        }
+      ? c.legal.pendingMotorwayZoneLabel
       : null,
-  ].filter((f): f is { label: string; reason: string } => f !== null);
+  ].filter((f): f is string => f !== null);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-20">

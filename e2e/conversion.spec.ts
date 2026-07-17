@@ -96,10 +96,28 @@ test.describe('Barre d appel mobile', () => {
 });
 
 test.describe('Donnees non confirmees', () => {
-  test('la TVA fausse n apparait nulle part', async ({ page }) => {
-    await page.goto('/fr/mentions-legales');
-    await expect(page.getByText('BE06922715996')).toHaveCount(0);
-  });
+  // Les `reason` de company.ts sont des notes internes pour l'equipe de
+  // dev, pas du contenu public : PendingDataNotice ne doit jamais les
+  // reciter, sur aucune des 3 langues. Trois chaines concretes couvrent
+  // les trois champs todo : la TVA erronee (BE06922715996), l'adresse
+  // incomplete (Schaarbeeklei, une rue sans numero ni commune) et la
+  // pretention autoroute non verifiable ("agree autoroute" — texte exact
+  // de company.ts, sans accent). Une regression sur n'importe lequel des
+  // trois est le meme risque juridique : publier au nom de l'entreprise
+  // une donnee que l'entreprise elle-meme n'a pas confirmee.
+  const LEAKED_STRINGS = ['BE06922715996', 'Schaarbeeklei', 'agree autoroute'];
+
+  for (const locale of LOCALES) {
+    test(`[${locale}] aucune donnee client non confirmee ne fuite sur les mentions legales`, async ({
+      page,
+    }) => {
+      await page.goto(`/${locale}/mentions-legales`);
+      const bodyText = await page.locator('body').innerText();
+      for (const leaked of LEAKED_STRINGS) {
+        expect(bodyText).not.toContain(leaked);
+      }
+    });
+  }
 
   test('les mentions legales incompletes sont en noindex', async ({ page }) => {
     await page.goto('/fr/mentions-legales');

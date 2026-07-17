@@ -17,6 +17,16 @@ export const resolved = <T>(value: T): Field<T> => ({
   value,
 });
 
+/**
+ * `reason` est une note interne pour l'equipe de developpement — visible
+ * dans le source, jamais rendue au public. Certaines raisons recitent des
+ * donnees fournies par le client qui sont elles-memes le probleme (TVA
+ * erronee, adresse incomplete, pretention non verifiable) ; les publier,
+ * meme pour signaler qu'elles clochent, reviendrait a les publier quand
+ * meme. La page publique (mentions-legales) affiche uniquement les
+ * libelles localises `pending*Label` de SiteContent — jamais `reason`.
+ * `PendingDataNotice` n'accepte d'ailleurs plus de prop `reason` du tout.
+ */
 export const todo = (reason: string): Field<never> => ({
   status: 'todo',
   reason,
