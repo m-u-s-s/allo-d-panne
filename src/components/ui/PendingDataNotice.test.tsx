@@ -22,7 +22,7 @@ describe('PendingDataNotice', () => {
     expect(screen.getByText(/un chiffre en trop/i)).toBeInTheDocument();
   });
 
-  it('utilise un role alert', () => {
+  it('est une region complementaire nommee par son titre, pas une alerte live', () => {
     render(
       <PendingDataNotice
         title="En attente"
@@ -30,6 +30,9 @@ describe('PendingDataNotice', () => {
         fields={[{ label: 'TVA', reason: 'Manquant.' }]}
       />,
     );
-    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByRole('complementary', { name: 'En attente' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

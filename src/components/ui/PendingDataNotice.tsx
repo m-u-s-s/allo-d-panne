@@ -19,11 +19,16 @@ export function PendingDataNotice({
   if (fields.length === 0) return null;
 
   return (
-    <div
-      role="alert"
+    <aside
+      aria-labelledby="pending-data-notice-title"
       className="my-8 rounded-lg border border-cta bg-surface p-5"
     >
-      <h2 className="font-display text-base font-bold text-cta">{title}</h2>
+      <h2
+        id="pending-data-notice-title"
+        className="font-display text-base font-bold text-cta"
+      >
+        {title}
+      </h2>
       <p className="mt-2 text-sm text-muted">{body}</p>
       <ul className="mt-4 space-y-2">
         {fields.map((f) => (
@@ -33,6 +38,6 @@ export function PendingDataNotice({
           </li>
         ))}
       </ul>
-    </div>
+    </aside>
   );
 }
