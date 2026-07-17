@@ -77,6 +77,27 @@ describe('parseQuote', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.field).toBe('email');
   });
+
+  /**
+   * name finit dans le Subject de l'e-mail (voir actions.ts). Meme
+   * raisonnement que pour email/Reply-To : un retour chariot dans le nom
+   * permettrait d'ajouter des en-tetes arbitraires (Bcc, etc.).
+   */
+  it('rejette un nom contenant un retour chariot', () => {
+    const fd = valid();
+    fd.set('name', 'Jean\r\nBcc: victime@example.com');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('name');
+  });
+
+  it('rejette un nom contenant un saut de ligne', () => {
+    const fd = valid();
+    fd.set('name', 'Jean\nBcc: victime@example.com');
+    const r = parseQuote(fd);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.field).toBe('name');
+  });
 });
 
 describe('renderQuoteEmail', () => {

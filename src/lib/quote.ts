@@ -21,6 +21,9 @@ export function parseQuote(formData: FormData): ParseResult {
 
   const name = get('name');
   if (name.length < 2) return { ok: false, field: 'name' };
+  // name devient le Subject de l'e-mail : meme regle que pour email et
+  // Reply-To. Rejeter, pas nettoyer.
+  if (hasHeaderInjection(name)) return { ok: false, field: 'name' };
 
   const phone = get('phone');
   if (phone.replace(/[\s.\-()+]/g, '').length < 6) {

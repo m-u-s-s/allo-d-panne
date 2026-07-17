@@ -12,6 +12,7 @@ describe('QuoteForm', () => {
     expect(screen.getByLabelText(/votre email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/type d/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/où êtes-vous/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/détails/i)).toBeInTheDocument();
   });
 
   it('le champ telephone utilise le bon type', () => {

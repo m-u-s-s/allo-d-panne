@@ -1,8 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const sendMail = vi.fn();
+type TransportOptions = {
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: { user: string; pass: string };
+  connectionTimeout: number;
+  greetingTimeout: number;
+  socketTimeout: number;
+};
+
+const { sendMail, createTransport } = vi.hoisted(() => {
+  const sendMail = vi.fn();
+  // Le parametre est type (pour que mock.calls[0][0] ne soit pas un
+  // tuple vide plus bas) mais volontairement ignore ici : seul le mock
+  // renvoye compte, les tests inspectent les appels via createTransport.mock.
+  const createTransport = vi.fn((options: TransportOptions) => {
+    void options;
+    return { sendMail };
+  });
+  return { sendMail, createTransport };
+});
 vi.mock('nodemailer', () => ({
-  default: { createTransport: () => ({ sendMail }) },
+  default: { createTransport },
 }));
 
 import { submitQuote } from './actions';
@@ -26,6 +46,7 @@ describe('submitQuote', () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
     sendMail.mockReset();
+    createTransport.mockClear();
   });
 
   it('renvoie une erreur de champ sans tenter d envoyer', async () => {
@@ -67,5 +88,41 @@ describe('submitQuote', () => {
   it('n affiche jamais success quand sendMail n a pas ete appele', async () => {
     const r = await submitQuote({ status: 'idle' }, valid());
     expect(r.status).not.toBe('success');
+  });
+
+  it('renvoie error quand SMTP_PORT n est pas numerique', async () => {
+    // Un port malforme doit echouer proprement, pas degrader
+    // silencieusement `secure` a false.
+    vi.stubEnv('SMTP_HOST', 'smtp.example.com');
+    vi.stubEnv('SMTP_PORT', 'abc');
+    vi.stubEnv('SMTP_USER', 'contact@alb-depannage.com');
+    vi.stubEnv('SMTP_PASS', 'secret');
+    const r = await submitQuote({ status: 'idle' }, valid());
+    expect(r.status).toBe('error');
+    expect(sendMail).not.toHaveBeenCalled();
+    expect(createTransport).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verrouille deux choses qui ne doivent pas regresser silencieusement :
+   * les timeouts SMTP (serverless peut pendre indefiniment sans eux), et
+   * l'absence de cle `html` (le corps reste text/plain, ce qui elimine la
+   * question de l'echappement — voir quote.test.ts).
+   */
+  it('configure les timeouts a 8000ms et n envoie que du texte', async () => {
+    withSmtpEnv();
+    sendMail.mockResolvedValue({ messageId: '1' });
+    await submitQuote({ status: 'idle' }, valid());
+
+    expect(createTransport).toHaveBeenCalledOnce();
+    const transportOptions = createTransport.mock.calls[0][0];
+    expect(transportOptions.connectionTimeout).toBe(8000);
+    expect(transportOptions.greetingTimeout).toBe(8000);
+    expect(transportOptions.socketTimeout).toBe(8000);
+
+    expect(sendMail).toHaveBeenCalledOnce();
+    const mailOptions = sendMail.mock.calls[0][0];
+    expect(mailOptions).toHaveProperty('text');
+    expect(mailOptions).not.toHaveProperty('html');
   });
 });
