@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LocalBusinessJsonLd } from '@/components/seo/LocalBusinessJsonLd';
+import { SceneMount } from '@/components/canvas/SceneMount';
 import { getContent } from '@/content';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
@@ -106,6 +107,13 @@ export default async function LocaleLayout({
       */}
       <body className="bg-bg text-text antialiased">
         <LocalBusinessJsonLd locale={typedLocale} />
+        {/*
+          Le canvas WebGL vit ici, au-dessus de {children}, et ne se
+          demonte donc jamais d'une route a l'autre (spec section 3.1). Il
+          est en position fixed et hors flux : il ne participe ni au LCP ni
+          au CLS. En palier Static il ne rend rien du tout.
+        */}
+        <SceneMount />
         {children}
       </body>
     </html>
