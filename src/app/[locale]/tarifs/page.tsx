@@ -6,6 +6,7 @@ import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
+import { PageShell } from '@/components/ui/PageShell';
 import { PricingSection } from '@/components/ui/PricingSection';
 
 export async function generateMetadata({
@@ -36,19 +37,21 @@ export default async function PricingPage({
   const c = getContent(l);
 
   return (
-    <main>
-      <div className="mx-auto max-w-7xl px-4 pt-20">
-        <h1 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
-          {c.pricingPage.title}
-        </h1>
-        <p className="mt-6 max-w-[60ch] text-lg text-muted">
-          {c.pricingPage.intro}
-        </p>
-      </div>
-      <div className="mt-12">
-        <PricingSection locale={l} />
-      </div>
-      <FinalCta locale={l} />
-    </main>
+    <PageShell path="/tarifs" locale={l}>
+      <main>
+        <div className="mx-auto max-w-7xl px-4 pt-20">
+          <h1 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+            {c.pricingPage.title}
+          </h1>
+          <p className="mt-6 max-w-[60ch] text-lg text-muted">
+            {c.pricingPage.intro}
+          </p>
+        </div>
+        <div className="mt-12">
+          <PricingSection locale={l} />
+        </div>
+        <FinalCta locale={l} />
+      </main>
+    </PageShell>
   );
 }

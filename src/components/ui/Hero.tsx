@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import { getContent } from '@/content';
+import { getPathname } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { CallButton } from './CallButton';
-import { Link } from '@/i18n/navigation';
 
 /**
  * Le poster est le LCP. Le WebGL (Plan 2) se posera PAR-DESSUS via le
@@ -49,12 +49,12 @@ export function Hero({ locale }: { locale: Locale }) {
 
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <CallButton label={c.hero.callCta} variant="primary" showNumber />
-          <Link
-            href="/contact"
+          <a
+            href={getPathname({ href: '/contact', locale })}
             className="inline-flex min-h-[44px] cursor-pointer items-center rounded-md border border-border px-6 py-3 text-base text-text transition-colors duration-200 hover:border-cta hover:text-cta"
           >
             {c.hero.quoteCta}
-          </Link>
+          </a>
         </div>
 
         <p className="mt-4 text-sm text-muted">{c.hero.availability}</p>

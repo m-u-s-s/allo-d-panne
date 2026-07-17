@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 import { getContent } from '@/content';
 import { SiteFooter } from './SiteFooter';
@@ -20,12 +19,11 @@ import { SiteFooter } from './SiteFooter';
  * DOM rendu — la sortie que verrait un client — pas seulement la structure
  * de donnees en amont.
  */
+// Pas de NextIntlClientProvider : SiteFooter n'utilise plus `Link`
+// (@/i18n/navigation) depuis que ses liens internes sont des `<a href>`
+// calcules server-side via `getPathname()` (finding 5).
 function renderFooter(locale: 'fr' | 'nl' | 'en' = 'fr') {
-  return render(
-    <NextIntlClientProvider locale={locale}>
-      <SiteFooter locale={locale} />
-    </NextIntlClientProvider>,
-  );
+  return render(<SiteFooter locale={locale} />);
 }
 
 describe('SiteFooter — le todo ne s affiche jamais', () => {

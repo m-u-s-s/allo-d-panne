@@ -24,9 +24,25 @@ test.describe('Chemin de conversion', () => {
   }
 
   test('le selecteur de langue conserve la page', async ({ page }) => {
+    // LocaleSwitcher est un server component (finding 5) : de vraies
+    // ancres <a href>, pas des boutons pilotes par du JS client.
     await page.goto('/fr/tarifs');
-    await page.getByRole('button', { name: 'NL' }).click();
+    await page.getByRole('link', { name: 'NL' }).click();
     await expect(page).toHaveURL(/\/nl\/tarifs/);
+  });
+
+  test('le selecteur de langue fonctionne JS desactive', async ({
+    browser,
+  }) => {
+    // Le point central de finding 5 : un site statique de liens n'a besoin
+    // d'aucun JavaScript pour changer de langue. Avec JS coupe, seul un
+    // vrai <a href> peut encore fonctionner — un onClick ne le peut pas.
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/fr/tarifs');
+    await page.getByRole('link', { name: 'NL' }).click();
+    await expect(page).toHaveURL(/\/nl\/tarifs/);
+    await context.close();
   });
 });
 

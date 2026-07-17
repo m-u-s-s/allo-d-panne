@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter, Syncopate } from 'next/font/google';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LocalBusinessJsonLd } from '@/components/seo/LocalBusinessJsonLd';
-import { SiteFooter } from '@/components/ui/SiteFooter';
-import { SiteHeader } from '@/components/ui/SiteHeader';
-import { StickyCallBar } from '@/components/ui/StickyCallBar';
 import { getContent } from '@/content';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
@@ -96,14 +93,20 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${syncopate.variable}`}
       suppressHydrationWarning
     >
+      {/*
+        Pas de NextIntlClientProvider : plus rien ici n'en a besoin. C'etait
+        exige par LocaleSwitcher (client component, usePathname/useRouter de
+        next-intl) — devenu server component (voir LocaleSwitcher.tsx),
+        c'est parti avec lui. Le seul autre client component, QuoteForm, lit
+        le contenu via getContent(locale) (TS type, pas next-intl) : aucun
+        hook next-intl cote client ne reste dans l'arbre. header/footer/
+        barre d'appel sont maintenant rendus par page via PageShell, pas ici
+        (voir PageShell.tsx : le layout ne connait pas le chemin de la page
+        enfant, LocaleSwitcher en a besoin).
+      */}
       <body className="bg-bg text-text antialiased">
         <LocalBusinessJsonLd locale={typedLocale} />
-        <NextIntlClientProvider>
-          <SiteHeader locale={typedLocale} />
-          {children}
-          <SiteFooter locale={typedLocale} />
-          <StickyCallBar locale={typedLocale} />
-        </NextIntlClientProvider>
+        {children}
       </body>
     </html>
   );

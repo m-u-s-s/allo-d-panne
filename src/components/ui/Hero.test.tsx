@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 import { Hero } from './Hero';
 
@@ -29,17 +28,14 @@ vi.mock('next/image', () => ({
 }));
 
 /**
- * Link (@/i18n/navigation) lit la locale via useLocale() sous Vitest — le
- * bundler ne resout pas la condition "react-server" en dehors du build
- * Next, donc c'est toujours la variante client qui s'execute ici et elle
- * exige un NextIntlClientProvider (meme convention que SiteFooter.test.tsx).
+ * Pas de NextIntlClientProvider ici : Hero n'utilise plus `Link`
+ * (@/i18n/navigation) depuis que son lien "Demander un devis" est un
+ * `<a href>` calcule server-side via `getPathname()` (finding 5 — Link
+ * enveloppe next/link, qui reste un client component meme dans un server
+ * component, et exigeait le provider a l'hydratation).
  */
 function renderHero(locale: 'fr' | 'nl' | 'en' = 'fr') {
-  return render(
-    <NextIntlClientProvider locale={locale}>
-      <Hero locale={locale} />
-    </NextIntlClientProvider>,
-  );
+  return render(<Hero locale={locale} />);
 }
 
 describe('Hero', () => {
@@ -52,6 +48,12 @@ describe('Hero', () => {
     renderHero();
     const link = screen.getByRole('link', { name: /appeler maintenant/i });
     expect(link).toHaveAttribute('href', 'tel:+32467786456');
+  });
+
+  it('le lien devis pointe vers /contact prefixe par la locale', () => {
+    renderHero('nl');
+    const link = screen.getByRole('link', { name: /offerte aanvragen/i });
+    expect(link).toHaveAttribute('href', '/nl/contact');
   });
 
   it('annonce la disponibilite 24/7', () => {

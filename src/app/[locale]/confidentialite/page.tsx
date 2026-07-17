@@ -5,6 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { PageShell } from '@/components/ui/PageShell';
 
 export async function generateMetadata({
   params,
@@ -29,14 +30,17 @@ export default async function PrivacyPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  const c = getContent(locale as Locale);
+  const l = locale as Locale;
+  const c = getContent(l);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-20">
-      <h1 className="font-display text-3xl font-bold tracking-tight">
-        {c.legal.privacyTitle}
-      </h1>
-      <p className="mt-6 text-muted">{c.legal.privacyBody}</p>
-    </main>
+    <PageShell path="/confidentialite" locale={l}>
+      <main className="mx-auto max-w-3xl px-4 py-20">
+        <h1 className="font-display text-3xl font-bold tracking-tight">
+          {c.legal.privacyTitle}
+        </h1>
+        <p className="mt-6 text-muted">{c.legal.privacyBody}</p>
+      </main>
+    </PageShell>
   );
 }

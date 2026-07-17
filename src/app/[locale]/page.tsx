@@ -8,6 +8,7 @@ import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CoverageSection } from '@/components/ui/CoverageSection';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { Hero } from '@/components/ui/Hero';
+import { PageShell } from '@/components/ui/PageShell';
 import { PricingSection } from '@/components/ui/PricingSection';
 import { ProofSection } from '@/components/ui/ProofSection';
 import { ServicesSection } from '@/components/ui/ServicesSection';
@@ -40,22 +41,24 @@ export default async function HomePage({
   const c = getContent(l);
 
   return (
-    <main>
-      <Hero locale={l} />
+    <PageShell path="/" locale={l}>
+      <main>
+        <Hero locale={l} />
 
-      {/* Section "probleme" : la situation du client, avant les services. */}
-      <section className="mx-auto max-w-7xl px-4 py-20">
-        <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
-          {c.problem.title}
-        </h2>
-        <p className="mt-4 max-w-[60ch] text-lg text-muted">{c.problem.body}</p>
-      </section>
+        {/* Section "probleme" : la situation du client, avant les services. */}
+        <section className="mx-auto max-w-7xl px-4 py-20">
+          <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
+            {c.problem.title}
+          </h2>
+          <p className="mt-4 max-w-[60ch] text-lg text-muted">{c.problem.body}</p>
+        </section>
 
-      <ServicesSection locale={l} />
-      <ProofSection locale={l} />
-      <CoverageSection locale={l} />
-      <PricingSection locale={l} />
-      <FinalCta locale={l} />
-    </main>
+        <ServicesSection locale={l} />
+        <ProofSection locale={l} />
+        <CoverageSection locale={l} />
+        <PricingSection locale={l} />
+        <FinalCta locale={l} />
+      </main>
+    </PageShell>
   );
 }

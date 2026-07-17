@@ -1,11 +1,20 @@
 import { company, isResolved } from '@/content/company';
 import { getContent } from '@/content';
-import { Link } from '@/i18n/navigation';
+import { getPathname } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
 
 export function SiteFooter({ locale }: { locale: Locale }) {
   const c = getContent(locale);
+  // <a href> via getPathname(), pas <Link> — voir le commentaire equivalent
+  // dans SiteHeader.tsx : Link exige NextIntlClientProvider a l'hydratation
+  // meme dans un server component.
+  const transport = getPathname({ href: '/transport-europe', locale });
+  const pricing = getPathname({ href: '/tarifs', locale });
+  const contact = getPathname({ href: '/contact', locale });
+  const legalNotice = getPathname({ href: '/mentions-legales', locale });
+  const terms = getPathname({ href: '/cgv', locale });
+  const privacy = getPathname({ href: '/confidentialite', locale });
 
   return (
     // pb-24 sur mobile : la barre d'appel fixe ne doit pas masquer le footer.
@@ -59,45 +68,45 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           est le repli conventionnel, sans JS, au niveau statique du site.
         */}
         <nav aria-label={c.footer.navLabel} className="flex flex-col gap-2 text-sm">
-          <Link
-            href="/transport-europe"
+          <a
+            href={transport}
             className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
           >
             {c.nav.transport}
-          </Link>
-          <Link
-            href="/tarifs"
+          </a>
+          <a
+            href={pricing}
             className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
           >
             {c.nav.pricing}
-          </Link>
-          <Link
-            href="/contact"
+          </a>
+          <a
+            href={contact}
             className="inline-flex min-h-[44px] items-center text-muted transition-colors duration-200 hover:text-text"
           >
             {c.nav.contact}
-          </Link>
+          </a>
         </nav>
 
         <nav aria-label={c.footer.legalNavLabel} className="flex flex-col gap-2 text-sm">
-          <Link
-            href="/mentions-legales"
+          <a
+            href={legalNotice}
             className="text-muted transition-colors duration-200 hover:text-text"
           >
             {c.footer.legal}
-          </Link>
-          <Link
-            href="/cgv"
+          </a>
+          <a
+            href={terms}
             className="text-muted transition-colors duration-200 hover:text-text"
           >
             {c.footer.terms}
-          </Link>
-          <Link
-            href="/confidentialite"
+          </a>
+          <a
+            href={privacy}
             className="text-muted transition-colors duration-200 hover:text-text"
           >
             {c.footer.privacy}
-          </Link>
+          </a>
         </nav>
       </div>
 
