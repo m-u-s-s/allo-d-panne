@@ -122,6 +122,25 @@ export const fr: SiteContent = {
     intro:
       "Nos prix sont annoncés à l'avance et confirmés avant tout déplacement. Pas de mauvaise surprise sur la facture.",
   },
+  contactPage: {
+    title: 'Nous contacter',
+    intro: "Pour une urgence, appelez — c'est toujours plus rapide. Pour un devis de transport ou une question, le formulaire suffit.",
+    urgentTitle: 'C’est urgent ?',
+    urgentBody: 'Ne remplissez pas le formulaire. Appelez, on décroche.',
+    formTitle: 'Demander un devis',
+    fields: {
+      name: 'Votre nom',
+      phone: 'Votre téléphone',
+      email: 'Votre email',
+      service: 'Type d’intervention',
+      location: 'Où êtes-vous ?',
+      message: 'Détails',
+    },
+    submit: 'Envoyer la demande',
+    success: 'Demande reçue. Nous vous rappelons rapidement.',
+    error: 'L’envoi a échoué. Appelez-nous, c’est plus sûr.',
+    invalidFields: 'Vérifiez les champs du formulaire.',
+  },
   footer: {
     rights: 'Tous droits réservés.',
     legal: 'Mentions légales',

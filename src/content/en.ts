@@ -120,6 +120,25 @@ export const en: SiteContent = {
     intro:
       'Our prices are stated upfront and confirmed before we set off. No unpleasant surprises on the invoice.',
   },
+  contactPage: {
+    title: 'Contact us',
+    intro: 'For an emergency, call — it is always faster. For a transport quote or a question, the form is enough.',
+    urgentTitle: 'Is it urgent?',
+    urgentBody: 'Do not fill in the form. Call us, we pick up.',
+    formTitle: 'Request a quote',
+    fields: {
+      name: 'Your name',
+      phone: 'Your phone',
+      email: 'Your email',
+      service: 'Type of intervention',
+      location: 'Where are you?',
+      message: 'Details',
+    },
+    submit: 'Send request',
+    success: 'Request received. We will call you back shortly.',
+    error: 'Sending failed. Call us, it is safer.',
+    invalidFields: 'Please check the form fields.',
+  },
   footer: {
     rights: 'All rights reserved.',
     legal: 'Legal notice',

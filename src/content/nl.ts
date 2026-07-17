@@ -120,6 +120,25 @@ export const nl: SiteContent = {
     intro:
       'Onze prijzen worden vooraf aangekondigd en bevestigd vóór elke verplaatsing. Geen onaangename verrassingen op de factuur.',
   },
+  contactPage: {
+    title: 'Contact',
+    intro: 'Bij een noodgeval belt u beter — dat gaat altijd sneller. Voor een transportofferte of een vraag volstaat het formulier.',
+    urgentTitle: 'Is het dringend?',
+    urgentBody: 'Vul het formulier niet in. Bel ons, wij nemen op.',
+    formTitle: 'Offerte aanvragen',
+    fields: {
+      name: 'Uw naam',
+      phone: 'Uw telefoon',
+      email: 'Uw e-mail',
+      service: 'Type interventie',
+      location: 'Waar bent u?',
+      message: 'Details',
+    },
+    submit: 'Aanvraag versturen',
+    success: 'Aanvraag ontvangen. Wij bellen u snel terug.',
+    error: 'Verzenden mislukt. Bel ons, dat is zekerder.',
+    invalidFields: 'Controleer de velden van het formulier.',
+  },
   footer: {
     rights: 'Alle rechten voorbehouden.',
     legal: 'Wettelijke vermeldingen',

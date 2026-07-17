@@ -89,6 +89,27 @@ export type SiteContent = {
     title: string;
     intro: string;
   };
+  contactPage: {
+    title: string;
+    intro: string;
+    urgentTitle: string;
+    urgentBody: string;
+    formTitle: string;
+    fields: {
+      name: string;
+      phone: string;
+      email: string;
+      service: string;
+      location: string;
+      message: string;
+    };
+    submit: string;
+    success: string;
+    /** Echec d'envoi SMTP — oriente vers le telephone. */
+    error: string;
+    /** Erreur de validation d'un champ — distincte d'un echec d'envoi. */
+    invalidFields: string;
+  };
   footer: {
     rights: string;
     legal: string;
