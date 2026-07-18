@@ -277,6 +277,8 @@ function ParticleSculpture({
   const prevSelected = useRef(0);
   const pressRef = useRef({ t: 0, x: 0, y: 0 });
   // survol : cible mise a jour par les evenements, lissee dans useFrame
+  const colorDark = useRef(new THREE.Color(PALETTE.particle));
+  const colorInk = useRef(new THREE.Color('#2c3440'));
   const hover = useRef({
     point: new THREE.Vector3(0, 0, 99),
     raw: new THREE.Vector3(0, 0, 99),
@@ -390,6 +392,13 @@ function ParticleSculpture({
 
     // dynamique du survol : monte vite sous le curseur, retombe des
     // qu'il s'immobilise ou quitte — amorti dt-corrige comme le reste
+    // chambre claire : la sculpture bascule vers l'encre (la reference
+    // pose un sujet SOMBRE sur fond laiteux — gris-bleu invisible sinon)
+    const chamberT = Math.min(1, Math.max(0, (store.current - 0.78) / 0.22));
+    (u.uColor.value as THREE.Color)
+      .copy(colorDark.current)
+      .lerp(colorInk.current, chamberT);
+
     const h = hover.current;
     if (performance.now() - h.last > 160) h.target = 0;
     h.k += (h.target - h.k) * (1 - Math.exp(-6 * delta));
@@ -702,23 +711,23 @@ function Podium() {
         <mesh key={i} position={[0, y + h / 2, 0]}>
           <cylinderGeometry args={[r, r * 1.04, h, 72]} />
           <meshStandardMaterial
-            color={PALETTE.metal}
-            metalness={0.75}
-            roughness={0.4}
+            color="#b3bdca"
+            metalness={0.5}
+            roughness={0.45}
           />
         </mesh>
       ))}
       <mesh position={[0, 1.28, 0]}>
         <cylinderGeometry args={[1.5, 1.62, 0.6, 64]} />
-        <meshStandardMaterial color={PALETTE.metal} metalness={0.75} roughness={0.35} />
+        <meshStandardMaterial color="#b3bdca" metalness={0.5} roughness={0.42} />
       </mesh>
       {/* couture lumineuse du pourtour */}
       <mesh position={[0, 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[6.52, 0.05, 8, 96]} />
         <meshStandardMaterial
-          color={PALETTE.ember}
-          emissive={PALETTE.ember}
-          emissiveIntensity={1.7}
+          color="#dff2ff"
+          emissive="#bfe9ff"
+          emissiveIntensity={2.2}
           fog={false}
         />
       </mesh>
@@ -727,18 +736,18 @@ function Podium() {
       <mesh position={[0, 8.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[3.9, 0.16, 10, 72]} />
         <meshStandardMaterial
-          color={PALETTE.emberSoft}
-          emissive={PALETTE.emberSoft}
-          emissiveIntensity={2.2}
+          color="#dff2ff"
+          emissive="#bfe9ff"
+          emissiveIntensity={2.6}
           fog={false}
         />
       </mesh>
       <mesh position={[0, 5, 0]}>
         <coneGeometry args={[3.9, 6.8, 48, 1, true]} />
         <meshBasicMaterial
-          color={PALETTE.emberSoft}
+          color="#dff2ff"
           transparent
-          opacity={0.035}
+          opacity={0.05}
           blending={THREE.AdditiveBlending}
           side={THREE.DoubleSide}
           depthWrite={false}
@@ -763,7 +772,7 @@ function Rig() {
   // Brouillard ET couleur de fond lerpes ensemble (ils doivent rester
   // identiques, c'est ce qui fond la scene), en zone C uniquement.
   const bgFrom = React.useMemo(() => new THREE.Color(PALETTE.bg), []);
-  const bgTo = React.useMemo(() => new THREE.Color('#4d5a6e'), []);
+  const bgTo = React.useMemo(() => new THREE.Color('#8f9aab'), []); // chambre laiteuse (retour client : eclatant)
   const bgScratch = React.useMemo(() => new THREE.Color(), []);
 
   useFrame((_, delta) => {
@@ -812,13 +821,13 @@ function Rig() {
       bgScratch.copy(bgFrom).lerp(bgTo, C);
       fog.color.copy(bgScratch);
       gl.setClearColor(bgScratch);
-      if (chamberLight.current) chamberLight.current.intensity = 0.65 * C;
+      if (chamberLight.current) chamberLight.current.intensity = 1.1 * C;
     }
   });
   return (
     <group>
       <pointLight ref={lamp} intensity={6} distance={20} color="#cfd8e6" />
-      <ambientLight ref={chamberLight} intensity={0} color="#c3cede" />
+      <ambientLight ref={chamberLight} intensity={0} color="#e6edf6" />
     </group>
   );
 }
@@ -980,7 +989,7 @@ export default function TunnelPodiumFooter({
             <pointLight
               position={[0, PODIUM_Y + 8, 0]}
               intensity={16}
-              color={PALETTE.emberSoft}
+              color="#dff2ff"
             />
             <Rig />
             <DebrisField />
@@ -1032,7 +1041,7 @@ export default function TunnelPodiumFooter({
               onClick={() =>
                 setSelected((s) => (s + items.length - 1) % items.length)
               }
-              className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-text/60 transition-colors hover:text-text"
+              className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-[#1e2733]/70 transition-colors hover:text-[#1e2733]"
             >
               ‹
             </button>
@@ -1050,8 +1059,8 @@ export default function TunnelPodiumFooter({
                 onFocus={revealPodium}
                 className={`flex min-h-[44px] items-center px-3 transition-all duration-300 ${
                   i === selected
-                    ? 'text-text before:pr-2 before:text-cta before:content-["["] after:pl-2 after:text-cta after:content-["]"]'
-                    : 'text-text/35 hover:text-text/70'
+                    ? 'text-[#151b24] before:pr-2 before:text-cta before:content-["["] after:pl-2 after:text-cta after:content-["]"]'
+                    : 'text-[#1e2733]/45 hover:text-[#1e2733]/80'
                 }`}
               >
                 {item.label}
@@ -1061,7 +1070,7 @@ export default function TunnelPodiumFooter({
               type="button"
               aria-label="Suivant"
               onClick={() => setSelected((s) => (s + 1) % items.length)}
-              className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-text/60 transition-colors hover:text-text"
+              className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-[#1e2733]/70 transition-colors hover:text-[#1e2733]"
             >
               ›
             </button>
