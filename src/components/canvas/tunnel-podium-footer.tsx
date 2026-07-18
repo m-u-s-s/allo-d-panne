@@ -578,37 +578,6 @@ function makeArcSlabGeometry(
   return geo;
 }
 
-function makeChipGeometry(w: number, h: number, depth: number, seed: number) {
-  const r = Math.min(w, h) * 0.28;
-  const shape = new THREE.Shape();
-  shape.moveTo(-w / 2 + r, -h / 2);
-  shape.lineTo(w / 2 - r, -h / 2);
-  shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
-  shape.lineTo(w / 2, h / 2 - r);
-  shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
-  shape.lineTo(-w / 2 + r, h / 2);
-  shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
-  shape.lineTo(-w / 2, -h / 2 + r);
-  shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
-  shape.closePath();
-  const geo = new THREE.ExtrudeGeometry(shape, {
-    depth,
-    bevelEnabled: true,
-    bevelThickness: depth * 0.4,
-    bevelSize: Math.min(w, h) * 0.1,
-    bevelSegments: 3,
-    curveSegments: 12,
-  });
-  geo.translate(0, 0, -depth / 2);
-  const rng = mulberry32(seed);
-  const pos = geo.attributes.position as THREE.BufferAttribute;
-  for (let i = 0; i < pos.count; i++) {
-    pos.setZ(i, pos.getZ(i) + (rng() - 0.5) * 0.015);
-  }
-  geo.computeVertexNormals();
-  return geo;
-}
-
 function makeDiscTexture(): THREE.CanvasTexture {
   const S = 1024;
   const cv = document.createElement('canvas');
@@ -665,7 +634,6 @@ interface RingFrag {
   home: [number, number, number];
   scatter: { pos: [number, number, number]; rot: [number, number, number] };
   window: [number, number];
-  isLogo: boolean;
 }
 
 function scatterFor(seed: number, spread: number): RingFrag['scatter'] {
@@ -692,33 +660,9 @@ function buildRingFrags(): RingFrag[] {
       home: [0, 0, 0],
       scatter: scatterFor(200 + i, 7.5),
       window: [i * 0.055, 0.5 + i * 0.03],
-      isLogo: false,
     });
   }
-  const logoZ = 0.9;
-  const logo: Array<{
-    geo: THREE.BufferGeometry;
-    home: [number, number, number];
-  }> = [
-    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 0.55, Math.PI * 1.45, 0.42, 0.02, 11), home: [0, 0, logoZ] },
-    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 1.55, Math.PI * 1.8, 0.42, 0.02, 12), home: [0, 0, logoZ] },
-    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 0.12, Math.PI * 0.42, 0.42, 0.02, 13), home: [0, 0, logoZ] },
-    { geo: makeArcSlabGeometry(0.42, 0.78, Math.PI * 0.65, Math.PI * 1.6, 0.38, 0.02, 14), home: [0.05, -0.05, logoZ + 0.05] },
-    { geo: makeChipGeometry(0.42, 0.42, 0.36, 15), home: [0.55, 0.42, logoZ + 0.08] },
-    { geo: makeChipGeometry(0.44, 0.5, 0.36, 16), home: [1.28, -0.42, logoZ + 0.02] },
-    { geo: makeChipGeometry(0.4, 0.34, 0.34, 17), home: [0.12, 1.02, logoZ + 0.05] },
-  ];
-  const LOGO_SCALE = 1.28;
-  logo.forEach((l, i) => {
-    l.geo.scale(LOGO_SCALE, LOGO_SCALE, LOGO_SCALE);
-    frags.push({
-      geo: l.geo,
-      home: [l.home[0] * LOGO_SCALE, l.home[1] * LOGO_SCALE, l.home[2]],
-      scatter: scatterFor(300 + i, 4.2),
-      window: [0.18 + i * 0.045, 0.62 + i * 0.02],
-      isLogo: true,
-    });
-  });
+  // (monogramme central retire — retour client : pas de debris au centre)
   return frags;
 }
 
@@ -764,13 +708,7 @@ function Tunnel() {
           spin: seeded(i, 41) * Math.PI * 2,
           offX: (seeded(i, 43) - 0.5) * 0.7,
           offZ: (seeded(i, 47) - 0.5) * 0.7,
-          // monogramme + disque fondent a l'approche : materiaux par anneau
-          logoMat: new THREE.MeshStandardMaterial({
-            color: '#ccd0d7',
-            roughness: 0.85,
-            metalness: 0.06,
-            transparent: true,
-          }),
+          // le disque fond a l'approche : materiaux par anneau
           neonMat: new THREE.MeshStandardMaterial({
             color: '#dff4ff',
             emissive: '#dff4ff',
@@ -851,12 +789,11 @@ function Tunnel() {
       const light = lightRefs.current[i];
       if (light) light.intensity = ignite * 6 * flicker;
 
-      // ON TRAVERSE l'anneau : disque givre + monogramme se dissolvent a
-      // l'approche de la camera (et reapparaissent en remontant)
+      // ON TRAVERSE l'anneau : le disque givre se dissout a l'approche
+      // de la camera (et reapparait en remontant)
       const near = Math.abs(camera.position.y - r.baseY);
       const membrane = clamp01((near - 1.2) / 2.2);
       r.discMat.opacity = ringT * membrane;
-      r.logoMat.opacity = membrane;
     }
   });
 
@@ -879,7 +816,7 @@ function Tunnel() {
                 fragRefs.current[i * F + j] = el;
               }}
               geometry={fr.geo}
-              material={fr.isLogo ? r.logoMat : shared.stoneMat}
+              material={shared.stoneMat}
             />
           ))}
           <mesh>
