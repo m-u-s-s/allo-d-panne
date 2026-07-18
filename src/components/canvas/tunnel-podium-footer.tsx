@@ -505,7 +505,7 @@ function DebrisField() {
   );
 }
 
-const RING_COUNT = 12;
+const RING_COUNT = 3; // retour client : 3 anneaux max, repartis sur la profondeur
 const SEG_COUNT = 8;
 const SEG_ARC = (Math.PI * 2) / SEG_COUNT;
 
@@ -547,9 +547,9 @@ function Tunnel() {
   const rings = React.useMemo(
     () =>
       Array.from({ length: RING_COUNT }, (_, i) => {
-        const camB = (3.5 + i * 3.2) / 40;
+        const camB = (5 + i * 12.5) / 40;
         return {
-          baseY: -7.5 - i * 3.2,
+          baseY: -9 - i * 12.5,
           start: 0.3 + camB * 0.48 - 0.1,
           spin: seeded(i, 41) * Math.PI * 2,
           offX: (seeded(i, 43) - 0.5) * 0.7,
