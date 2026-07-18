@@ -589,8 +589,16 @@ function Podium() {
 function Rig() {
   const camera = useThree((s) => s.camera);
   const scene = useThree((s) => s.scene);
+  const gl = useThree((s) => s.gl);
   const look = React.useMemo(() => new THREE.Vector3(), []);
   const lamp = useRef<THREE.PointLight>(null);
+  const chamberLight = useRef<THREE.AmbientLight>(null);
+  // Retour client : la chambre s'eclaircit une fois le tunnel passe.
+  // Brouillard ET couleur de fond lerpes ensemble (ils doivent rester
+  // identiques, c'est ce qui fond la scene), en zone C uniquement.
+  const bgFrom = React.useMemo(() => new THREE.Color(PALETTE.bg), []);
+  const bgTo = React.useMemo(() => new THREE.Color('#4d5a6e'), []);
+  const bgScratch = React.useMemo(() => new THREE.Color(), []);
 
   useFrame((_, delta) => {
     // amorti dt-corrige : meme sensation a 60 et 144 Hz
@@ -633,9 +641,20 @@ function Rig() {
     if (fog) {
       fog.density =
         0.045 * (1 + 0.2 * Math.sin(Math.PI * B) * (1 - C)) - C * 0.017;
+      // la chambre s'illumine : nuit → gris-bleu clair, fond et
+      // brouillard synchrones, plus une ambiance dediee qui monte
+      bgScratch.copy(bgFrom).lerp(bgTo, C);
+      fog.color.copy(bgScratch);
+      gl.setClearColor(bgScratch);
+      if (chamberLight.current) chamberLight.current.intensity = 0.65 * C;
     }
   });
-  return <pointLight ref={lamp} intensity={18} distance={26} color="#cfd8e6" />;
+  return (
+    <group>
+      <pointLight ref={lamp} intensity={18} distance={26} color="#cfd8e6" />
+      <ambientLight ref={chamberLight} intensity={0} color="#c3cede" />
+    </group>
+  );
 }
 
 /**
