@@ -497,94 +497,191 @@ function DebrisField() {
 }
 
 const RING_COUNT = 12;
+const SEG_COUNT = 8;
+const SEG_ARC = (Math.PI * 2) / SEG_COUNT;
 
+/**
+ * Anneaux reproduits d'apres la capture client (igloo.inc) : couronne
+ * de ~8 SEGMENTS de pierre pale aux entailles visibles, jonc emissif
+ * blanc-cyan sur le bord interieur, membrane brumeuse dans l'ouverture,
+ * debris d'arcs erodes flottant au centre.
+ *
+ * Formation (fidele a la reference) : chaque segment converge vers son
+ * encoche — il arrive de l'exterieur, decale en profondeur et sur-vrille,
+ * en cascade (stagger par segment) — puis le jonc S'ALLUME et la
+ * membrane apparait une fois la couronne assemblee. Pilote par la
+ * progression amortie : remonter desassemble. Geometries PARTAGEES
+ * entre les douze anneaux ; transforms et opacites mutes par frame,
+ * zero allocation.
+ */
 function Tunnel() {
-  /* Demande client : les anneaux SE FORMENT pendant la descente au lieu
-     d'un puits pre-construit. Douze anneaux individuels (12 draw calls,
-     negligeable), chacun avec sa fenetre de formation calee pour se
-     terminer juste avant le passage de la camera : il converge (echelle
-     1.7 → 1), se visse en place et devient opaque. Tout est pilote par
-     la progression amortie — remonter dissout le puits. */
+  const shared = React.useMemo(() => {
+    const segGeos = Array.from({ length: SEG_COUNT }, (_, j) => {
+      const g = displace(
+        new THREE.TorusGeometry(4.1, 0.85, 9, 10, SEG_ARC * 0.9),
+        0.14,
+        j * 7,
+      );
+      g.scale(1, 1, 0.55); // rondelle aplatie, pas un boudin
+      return g;
+    });
+    const rimGeo = new THREE.TorusGeometry(3.32, 0.055, 8, 72);
+    const memGeo = new THREE.CircleGeometry(3.28, 48);
+    const debrisGeos = [
+      displace(new THREE.TorusGeometry(1.5, 0.26, 8, 10, 1.6), 0.1, 31),
+      displace(new THREE.TorusGeometry(1.05, 0.2, 8, 8, 1.15), 0.1, 47),
+      displace(new THREE.TorusGeometry(0.68, 0.16, 8, 6, 0.85), 0.1, 53),
+    ];
+    return { segGeos, rimGeo, memGeo, debrisGeos };
+  }, []);
+
   const rings = React.useMemo(
     () =>
       Array.from({ length: RING_COUNT }, (_, i) => {
-        const r = 4 + seeded(i, 31) * 1.1;
-        const geo = displace(
-          new THREE.TorusGeometry(r, 1.35 + seeded(i, 37) * 0.5, 10, 26),
-          0.3,
-          i * 3,
-        );
-        geo.rotateX(Math.PI / 2);
-        const baseY = -7.5 - i * 3.2;
-        // fin de formation ~0.045 de progression avant l'arrivee camera
         const camB = (3.5 + i * 3.2) / 40;
-        const start = 0.3 + camB * 0.48 - 0.1;
         return {
-          geo,
-          baseY,
-          baseRotY: seeded(i, 41) * Math.PI,
-          offX: (seeded(i, 43) - 0.5) * 0.8,
-          offZ: (seeded(i, 47) - 0.5) * 0.8,
-          start,
-          mat: new THREE.MeshStandardMaterial({
-            color: PALETTE.rock,
-            roughness: 0.9,
-            side: THREE.BackSide,
+          baseY: -7.5 - i * 3.2,
+          start: 0.3 + camB * 0.48 - 0.1,
+          spin: seeded(i, 41) * Math.PI * 2,
+          offX: (seeded(i, 43) - 0.5) * 0.7,
+          offZ: (seeded(i, 47) - 0.5) * 0.7,
+          segMat: new THREE.MeshStandardMaterial({
+            color: '#9aa4b0',
+            roughness: 0.74,
+            metalness: 0.05,
             transparent: true,
             opacity: 0,
           }),
+          rimMat: new THREE.MeshStandardMaterial({
+            color: '#eaf6ff',
+            emissive: '#bfe9ff',
+            emissiveIntensity: 0,
+            transparent: true,
+            opacity: 0,
+            fog: false,
+          }),
+          memMat: new THREE.MeshBasicMaterial({
+            color: '#dff2ff',
+            transparent: true,
+            opacity: 0,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            fog: false,
+          }),
+          debrisMat: new THREE.MeshStandardMaterial({
+            color: '#9aa4b0',
+            roughness: 0.75,
+            transparent: true,
+            opacity: 0,
+          }),
+          debris: [0, 1, 2].map((k) => ({
+            rot: seeded(i * 3 + k, 61) * Math.PI * 2,
+            tilt: (seeded(i * 3 + k, 67) - 0.5) * 0.6,
+            spin: 0.08 + seeded(i * 3 + k, 71) * 0.16,
+          })),
         };
       }),
     [],
   );
-  const refs = useRef<Array<THREE.Mesh | null>>([]);
 
-  useFrame(() => {
+  const groupRefs = useRef<Array<THREE.Group | null>>([]);
+  const segRefs = useRef<Array<THREE.Mesh | null>>([]);
+  const debrisRefs = useRef<Array<THREE.Mesh | null>>([]);
+
+  useFrame(({ clock }) => {
     const p = store.current;
-    for (let i = 0; i < rings.length; i++) {
-      const mesh = refs.current[i];
-      if (!mesh) continue;
+    const time = clock.elapsedTime;
+    for (let i = 0; i < RING_COUNT; i++) {
+      const group = groupRefs.current[i];
+      if (!group) continue;
       const r = rings[i];
       const t = ease(Math.min(1, Math.max(0, (p - r.start) / 0.07)));
-      mesh.visible = t > 0.001;
-      if (!mesh.visible) continue;
-      const inv = 1 - t;
-      mesh.scale.setScalar(1.7 - 0.7 * t);
-      mesh.rotation.y = r.baseRotY + inv * 1.2;
-      mesh.position.set(r.offX, r.baseY + inv * 1.6, r.offZ);
-      r.mat.opacity = t;
+      group.visible = t > 0.001;
+      if (!group.visible) continue;
+
+      r.segMat.opacity = Math.min(1, t * 1.8);
+      r.debrisMat.opacity = t;
+
+      // segments : convergence en cascade vers les encoches
+      for (let j = 0; j < SEG_COUNT; j++) {
+        const mesh = segRefs.current[i * SEG_COUNT + j];
+        if (!mesh) continue;
+        const tj = ease(
+          Math.min(1, Math.max(0, (t - j * 0.035) / 0.65)),
+        );
+        const inv = 1 - tj;
+        const slot = r.spin + j * SEG_ARC;
+        mesh.rotation.z = slot + inv * 1.1;
+        const mid = slot + SEG_ARC * 0.45;
+        const off = 2.4 * inv;
+        mesh.position.set(
+          Math.cos(mid) * off,
+          Math.sin(mid) * off,
+          (seeded(i * SEG_COUNT + j, 83) - 0.5) * 2.6 * inv,
+        );
+      }
+
+      // le jonc s'allume et la membrane apparait une fois assemble
+      const ignite = ease(Math.min(1, Math.max(0, (t - 0.62) / 0.38)));
+      r.rimMat.opacity = ignite;
+      r.rimMat.emissiveIntensity = 1.9 * ignite;
+      r.memMat.opacity = 0.035 * ignite;
+
+      // debris : derive et rotation lente continues
+      for (let k = 0; k < 3; k++) {
+        const mesh = debrisRefs.current[i * 3 + k];
+        if (!mesh) continue;
+        const d = r.debris[k];
+        mesh.rotation.z = d.rot + time * d.spin;
+        mesh.rotation.x = d.tilt;
+        const sc = 0.8 + 0.2 * t;
+        mesh.scale.setScalar(sc);
+      }
     }
   });
 
   return (
     <group>
       {rings.map((r, i) => (
-        <mesh
+        <group
           key={i}
           ref={(el) => {
-            refs.current[i] = el;
+            groupRefs.current[i] = el;
           }}
-          geometry={r.geo}
-          material={r.mat}
+          position={[r.offX, r.baseY, r.offZ]}
+          rotation={[-Math.PI / 2, 0, 0]}
           visible={false}
-        />
+        >
+          {shared.segGeos.map((g, j) => (
+            <mesh
+              key={j}
+              ref={(el) => {
+                segRefs.current[i * SEG_COUNT + j] = el;
+              }}
+              geometry={g}
+              material={r.segMat}
+            />
+          ))}
+          <mesh geometry={shared.rimGeo} material={r.rimMat} />
+          <mesh geometry={shared.memGeo} material={r.memMat} />
+          {shared.debrisGeos.map((g, k) => (
+            <mesh
+              key={`d${k}`}
+              ref={(el) => {
+                debrisRefs.current[i * 3 + k] = el;
+              }}
+              geometry={g}
+              material={r.debrisMat}
+            />
+          ))}
+        </group>
       ))}
-      {/* jonc emissif d'entree + disque lumineux du fond : fog:false,
-          ils percent la brume comme dans la reference */}
-      <mesh position={[0, -7, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[4.6, 0.09, 8, 64]} />
-        <meshStandardMaterial
-          color={PALETTE.ember}
-          emissive={PALETTE.ember}
-          emissiveIntensity={2.5}
-          fog={false}
-        />
-      </mesh>
+      {/* disque lumineux du fond, assorti aux joncs */}
       <mesh position={[0, -45.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[2.6, 48]} />
         <meshStandardMaterial
-          color={PALETTE.discGlow}
-          emissive={PALETTE.discGlow}
+          color="#dff2ff"
+          emissive="#bfe9ff"
           emissiveIntensity={1.3}
           fog={false}
         />
@@ -720,7 +817,7 @@ function Rig() {
   });
   return (
     <group>
-      <pointLight ref={lamp} intensity={18} distance={26} color="#cfd8e6" />
+      <pointLight ref={lamp} intensity={6} distance={20} color="#cfd8e6" />
       <ambientLight ref={chamberLight} intensity={0} color="#c3cede" />
     </group>
   );
