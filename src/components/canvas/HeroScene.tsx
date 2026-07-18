@@ -20,18 +20,16 @@ const vertexShader = /* glsl */ `
 `;
 
 /**
- * Un gyrophare ambre balayant une brume nocturne.
+ * Fond aurora : nappes de couleur radieuses (bleu electrique, violet,
+ * pointe d'ambre) flottant sur une base profonde — le langage moderne
+ * type Linear/Stripe (demande client : « moderne et lumineux »).
+ * Garde-fou : tout le site pose du texte BLANC sur ce fond ; la
+ * luminosite vient des lueurs, jamais d'un fond clair — la base reste
+ * sous ~0.3 de luminance la ou vit le texte.
  *
- * Entierement genere : aucune texture, aucun asset externe, donc aucune
- * question de licence. Le motif reprend l'image que le site decrit deja
- * dans son propre texte alternatif (« route mouillee de nuit eclairee par
- * le gyrophare ambre d'une depanneuse ») — l'arriere-plan prolonge le
- * poster au lieu de raconter autre chose.
- *
- * uQuality vaut 1.0 en palier Full et 0.0 en Lite. En Lite le fbm tombe
- * de 4 octaves a 2 et le grain disparait : c'est la « version simplifiee
- * du shader » que la spec demande, pas un shader different a maintenir en
- * double.
+ * Entierement genere, aucune texture. uQuality 1.0 = Full, 0.0 = Lite
+ * (2 octaves de fbm, pas de grain) : la version simplifiee de la spec,
+ * pas un shader en double.
  */
 const fragmentShader = /* glsl */ `
   precision highp float;
@@ -80,40 +78,38 @@ const fragmentShader = /* glsl */ `
     vec2 uv = vUv;
     vec2 p = (uv - 0.5) * vec2(1.8, 1.0);
 
-    // Le parallaxe souris deplace la brume, jamais le gyrophare : la
-    // source lumineuse reste ancree, c'est l'air devant elle qui bouge.
+    // La parallaxe souris et le scroll animent la MATIERE des nappes.
     vec2 drift = uMouse * 0.06;
-
     int octaves = uQuality > 0.5 ? 4 : 2;
-    // uScroll fait defiler la brume avec la page : le fond est fixe mais
-    // sa matiere accompagne le mouvement — c'est le lien visuel entre le
-    // scroll DOM et le decor, la signature du site de reference.
-    vec2 flow = vec2(uTime * 0.03, uTime * 0.015 - uScroll * 1.4);
-    float mist = fbm(p * 2.4 + drift + flow, octaves);
+    vec2 flow = vec2(uTime * 0.03, uTime * 0.015 - uScroll * 1.2);
+    float mist = fbm(p * 2.2 + drift + flow, octaves);
 
-    // Gyrophare retire (retour client) : seule la brume vit encore.
+    // Trois nappes aurora aux centres derivant lentement ; le scroll les
+    // fait glisser verticalement — le fond accompagne la page.
+    vec2 c1 = vec2(-0.55 + 0.10 * sin(uTime * 0.11), 0.28 + 0.08 * cos(uTime * 0.09) - uScroll * 0.35);
+    vec2 c2 = vec2(0.62 + 0.12 * cos(uTime * 0.07), -0.05 + 0.10 * sin(uTime * 0.13) + uScroll * 0.25);
+    vec2 c3 = vec2(0.05 + 0.18 * sin(uTime * 0.05), -0.42 - uScroll * 0.2);
 
-    // Contre-jour bleu froid en bas : sans lui l'ambre seul vire au sepia
-    // et perd la nuit.
-    float cold = smoothstep(0.75, 0.0, uv.y) * 0.16;
+    float g1 = exp(-dot(p - c1, p - c1) * 2.6) * (0.55 + mist * 0.7);
+    float g2 = exp(-dot(p - c2, p - c2) * 3.2) * (0.5 + mist * 0.8);
+    float g3 = exp(-dot(p - c3, p - c3) * 4.5) * (0.4 + mist * 0.6);
 
-    vec3 col = BG;
-    col += BLUE * cold * (0.6 + mist * 0.8);
-    // pointe d'ambre residuelle portee par la brume seule, tres faible —
-    // garde la chaleur de la marque sans aucune source qui balaie
-    col += AMBER * mist * 0.045;
+    const vec3 VIOLET = vec3(0.545, 0.361, 0.965);
 
-    // Tone mapping exponentiel, indispensable et non cosmetique.
-    //
-    // L'accumulation depasse 1.0 au coeur du gyrophare. Sans compression,
-    // le rouge de l'ambre clippe a 1.0 pendant que le vert continue de
-    // monter : la teinte derive vers le vert-jaune et trahit le clipping.
-    // La courbe exponentielle ecrase les hautes lumieres en preservant le
-    // rapport entre canaux, donc la teinte tient jusqu'au blanc.
+    vec3 col = BG * 1.35; // base legerement relevee : profonde, pas noire
+    col += BLUE * g1 * (0.55 + uEnergy * 0.2);
+    col += VIOLET * g2 * 0.42;
+    col += AMBER * g3 * 0.30;
+    // sheen : leger degrade vertical qui eclaircit le haut, tres doux
+    col += vec3(0.10, 0.12, 0.17) * smoothstep(0.2, 1.0, uv.y) * 0.5;
+
+    // Compression exponentielle : les coeurs de nappes saturent en
+    // douceur sans deriver de teinte, la luminance reste maitrisee la
+    // ou vit le texte blanc.
     col = vec3(1.0) - exp(-col * 1.35);
 
-    // Vignette : ramene l'oeil au centre, ou vit le texte.
-    col *= 1.0 - 0.35 * length(uv - 0.5);
+    // Vignette adoucie : le centre respire, les bords tiennent le cadre.
+    col *= 1.0 - 0.22 * length(uv - 0.5);
 
     // Grain, palier Full uniquement. Il casse le banding des degrades
     // sombres, tres visible sur un fond aussi proche du noir.
