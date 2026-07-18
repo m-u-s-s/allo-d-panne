@@ -172,6 +172,8 @@ const VERT = /* glsl */ `
   uniform float uSize;
   uniform float uDpr;
   uniform float uScaleFactor;
+  uniform vec3 uPointer;
+  uniform float uPointerK;
   varying float vFlight;
 
   float easeT(float t) { return t * t * (3.0 - 2.0 * t); }
@@ -204,6 +206,15 @@ const VERT = /* glsl */ `
       pos.y + sin(uTime * 0.4) * 0.06,
       pos.x * sin(g) + pos.z * cos(g)
     );
+
+    // survol : les particules proches du curseur sont repoussees et
+    // scintillent — applique apres la rotation de groupe, dans le meme
+    // espace que uPointer (espace objet).
+    vec3 dp = pos - uPointer;
+    float pd = length(dp);
+    float push = smoothstep(1.5, 0.0, pd) * uPointerK;
+    pos += (dp / max(pd, 0.001)) * push * 0.85;
+    vFlight = max(vFlight, push * 0.7);
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
@@ -238,11 +249,20 @@ function ParticleSculpture({
   anchorRefs: React.MutableRefObject<Array<HTMLAnchorElement | null>>;
 }) {
   const points = useRef<THREE.Points>(null!);
+  const groupRef = useRef<THREE.Group>(null!);
   const size = useThree((s) => s.size);
   const dpr = useThree((s) => s.viewport.dpr);
   const clouds = useRef<Array<Float32Array | null>>([]);
   const prevSelected = useRef(0);
   const pressRef = useRef({ t: 0, x: 0, y: 0 });
+  // survol : cible mise a jour par les evenements, lissee dans useFrame
+  const hover = useRef({
+    point: new THREE.Vector3(0, 0, 99),
+    scratch: new THREE.Vector3(),
+    k: 0,
+    target: 0,
+    last: 0,
+  });
 
   const { geometry, material, rand } = React.useMemo(() => {
     const first = sampleIcon(items[0].svg, COUNT);
@@ -271,6 +291,9 @@ function ParticleSculpture({
           uDpr: { value: 1 },
           uScaleFactor: { value: 400 },
           uColor: { value: new THREE.Color(PALETTE.particle) },
+          // survol : position du curseur en espace objet + intensite
+          uPointer: { value: new THREE.Vector3(0, 0, 99) },
+          uPointerK: { value: 0 },
         },
       ]),
       vertexShader: VERT,
@@ -342,10 +365,18 @@ function ParticleSculpture({
     u.uTime.value += delta;
     u.uDpr.value = dpr;
     u.uScaleFactor.value = size.height * 0.5;
+
+    // dynamique du survol : monte vite sous le curseur, retombe des
+    // qu'il s'immobilise ou quitte — amorti dt-corrige comme le reste
+    const h = hover.current;
+    if (performance.now() - h.last > 160) h.target = 0;
+    h.k += (h.target - h.k) * (1 - Math.exp(-6 * delta));
+    u.uPointerK.value = h.k;
+    (u.uPointer.value as THREE.Vector3).copy(h.point);
   });
 
   return (
-    <group position={[0, PODIUM_Y + 3.6, 0]}>
+    <group ref={groupRef} position={[0, PODIUM_Y + 3.6, 0]}>
       <points geometry={geometry} material={material} ref={points} />
       {/* Proxy de clic : sphere invisible — on ne raycaste JAMAIS les
           30k points. Clic = pointerup a moins de 8 px / 300 ms du down,
@@ -363,6 +394,18 @@ function ParticleSculpture({
           ) {
             anchorRefs.current[selected]?.click();
           }
+        }}
+        onPointerMove={(e) => {
+          // e.point est en monde ; le shader repousse en espace objet
+          const h = hover.current;
+          h.scratch.copy(e.point);
+          groupRef.current.worldToLocal(h.scratch);
+          h.point.copy(h.scratch);
+          h.target = 1;
+          h.last = performance.now();
+        }}
+        onPointerLeave={() => {
+          hover.current.target = 0;
         }}
       >
         <sphereGeometry args={[WORLD_SIZE * 0.75, 12, 12]} />
