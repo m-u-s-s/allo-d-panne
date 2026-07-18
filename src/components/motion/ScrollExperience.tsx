@@ -180,8 +180,7 @@ export function ScrollExperience() {
           // piste ne se decadre jamais.
           const dist = () => track.scrollWidth - window.innerWidth;
 
-          tweens.push(
-            gsap.to(track, {
+          const horiz = gsap.to(track, {
               x: () => -dist(),
               ease: 'none',
               scrollTrigger: {
@@ -203,8 +202,48 @@ export function ScrollExperience() {
                   delay: 0.15,
                 },
               },
-            }),
-          );
+            });
+          tweens.push(horiz);
+
+          // ----- Choregraphie par panneau (demande client) : les
+          // enfants de chaque panneau se revelent en cascade quand SON
+          // bord entre a l'ecran pendant la traversee (containerAnimation
+          // — les seuils se calculent dans l'espace de la piste animee).
+          // Le panneau 1 est deja en scene a l'epinglage : il se revele
+          // a l'approche VERTICALE, sinon sa cascade serait consommee
+          // avant l'arrivee. Selecteur cure : jamais un parent ET son
+          // enfant (li mais pas li>p) — sinon les fondus se composent.
+          const CHORE_SEL =
+            'h2, section > p, section > div > p, li, article, dl > div';
+          const panelKids: HTMLElement[] = [];
+          Array.from(track.children).forEach((panel, i) => {
+            const kids = gsap.utils.toArray<HTMLElement>(
+              (panel as HTMLElement).querySelectorAll(CHORE_SEL),
+            );
+            if (!kids.length) return;
+            panelKids.push(...kids);
+            tweens.push(
+              gsap.from(kids, {
+                opacity: 0,
+                y: 36,
+                duration: 0.7,
+                ease: 'power3.out',
+                stagger: 0.06,
+                scrollTrigger:
+                  i === 0
+                    ? { trigger: panel as HTMLElement, start: 'top 75%' }
+                    : {
+                        trigger: panel as HTMLElement,
+                        containerAnimation: horiz,
+                        start: 'left 78%',
+                        toggleActions: 'play none none reverse',
+                      },
+              }),
+            );
+          });
+          teardown.push(() => {
+            if (panelKids.length) gsap.set(panelKids, { clearProps: 'all' });
+          });
 
           // Les rubans de chevrons derivent avec la piste mais a des
           // vitesses differentes : c'est l'ecart de vitesse qui cree la
