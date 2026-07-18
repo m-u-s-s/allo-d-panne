@@ -191,15 +191,32 @@ const VERT = /* glsl */ `
     float s = ${STAGGER.toFixed(2)};
     float t = clamp((uProgress * (1.0 + s) - s * aRand.x), 0.0, 1.0);
     t = easeT(t);
-    // enveloppe triangle : pic en plein vol, zero au repos
-    float flight = 1.0 - abs(t * 2.0 - 1.0);
+    // enveloppe sinusoidale : le triangle cassait la derivee au sommet,
+    // le vol paraissait mecanique (retour client « pas fluide »)
+    float flight = sin(3.14159 * t);
     vFlight = flight;
 
     vec3 pos = mix(aPositionFrom, aPositionTo, t);
-    pos += swirl(pos, aRand.z, t * aRand.w) * flight * 0.55;
-    // micro-vie au repos + lente derive de groupe
-    pos.x += sin(uTime * 0.6 + aRand.z * 40.0) * 0.012;
-    pos.y += cos(uTime * 0.5 + aRand.z * 28.0) * 0.012;
+    // trajectoire en ARC propre a chaque particule (plus de lignes
+    // droites interpolees) + tourbillon a DEUX octaves dephasees
+    pos += vec3(
+      sin(aRand.z * 6.2831),
+      cos(aRand.y * 6.2831) * 0.8 + 0.35,
+      sin(aRand.w * 6.2831)
+    ) * flight * 0.4;
+    pos += swirl(pos, aRand.z, t * aRand.w) * flight * 0.5;
+    pos += swirl(pos * 2.3, aRand.z * 1.7, t * aRand.w * 1.6) * flight * 0.22;
+    // micro-vie au repos : deux ondes lentes sur trois axes
+    pos += vec3(
+      sin(uTime * 0.55 + aRand.z * 40.0),
+      cos(uTime * 0.48 + aRand.z * 28.0),
+      sin(uTime * 0.62 + aRand.y * 33.0)
+    ) * 0.02;
+    pos += vec3(
+      sin(uTime * 0.21 + aRand.w * 17.0),
+      sin(uTime * 0.17 + aRand.x * 23.0),
+      cos(uTime * 0.19 + aRand.z * 11.0)
+    ) * 0.014;
     float g = uTime * 0.12;
     pos = vec3(
       pos.x * cos(g) - pos.z * sin(g),
@@ -212,8 +229,12 @@ const VERT = /* glsl */ `
     // espace que uPointer (espace objet).
     vec3 dp = pos - uPointer;
     float pd = length(dp);
-    float push = smoothstep(1.5, 0.0, pd) * uPointerK;
-    pos += (dp / max(pd, 0.001)) * push * 0.85;
+    float push = smoothstep(1.6, 0.0, pd) * uPointerK;
+    vec3 dir = dp / max(pd, 0.001);
+    pos += dir * push * 0.85;
+    // composante tangentielle : le creux tourbillonne au lieu de
+    // seulement s'ecarter — bien plus organique
+    pos += cross(dir, vec3(0.0, 1.0, 0.0)) * push * 0.45;
     vFlight = max(vFlight, push * 0.7);
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
@@ -258,6 +279,7 @@ function ParticleSculpture({
   // survol : cible mise a jour par les evenements, lissee dans useFrame
   const hover = useRef({
     point: new THREE.Vector3(0, 0, 99),
+    raw: new THREE.Vector3(0, 0, 99),
     scratch: new THREE.Vector3(),
     k: 0,
     target: 0,
@@ -371,6 +393,9 @@ function ParticleSculpture({
     const h = hover.current;
     if (performance.now() - h.last > 160) h.target = 0;
     h.k += (h.target - h.k) * (1 - Math.exp(-6 * delta));
+    // le creux SUIT le curseur en douceur au lieu de sauter d'un
+    // evenement a l'autre
+    h.point.lerp(h.raw, 1 - Math.exp(-10 * delta));
     u.uPointerK.value = h.k;
     (u.uPointer.value as THREE.Vector3).copy(h.point);
   });
@@ -400,7 +425,8 @@ function ParticleSculpture({
           const h = hover.current;
           h.scratch.copy(e.point);
           groupRef.current.worldToLocal(h.scratch);
-          h.point.copy(h.scratch);
+          if (h.target === 0) h.point.copy(h.scratch); // entree : pas de fronde
+          h.raw.copy(h.scratch);
           h.target = 1;
           h.last = performance.now();
         }}
