@@ -427,39 +427,79 @@ function DebrisField() {
   );
 }
 
+const RING_COUNT = 12;
+
 function Tunnel() {
-  const geo = React.useMemo(() => {
-    const rings: THREE.BufferGeometry[] = [];
-    for (let i = 0; i < 12; i++) {
-      const r = 4 + seeded(i, 31) * 1.1;
-      const ring = displace(
-        new THREE.TorusGeometry(r, 1.35 + seeded(i, 37) * 0.5, 10, 26),
-        0.3,
-        i * 3,
-      );
-      ring.rotateX(Math.PI / 2);
-      ring.rotateY(seeded(i, 41) * Math.PI);
-      ring.translate(
-        (seeded(i, 43) - 0.5) * 0.8,
-        -7.5 - i * 3.2,
-        (seeded(i, 47) - 0.5) * 0.8,
-      );
-      rings.push(ring);
+  /* Demande client : les anneaux SE FORMENT pendant la descente au lieu
+     d'un puits pre-construit. Douze anneaux individuels (12 draw calls,
+     negligeable), chacun avec sa fenetre de formation calee pour se
+     terminer juste avant le passage de la camera : il converge (echelle
+     1.7 → 1), se visse en place et devient opaque. Tout est pilote par
+     la progression amortie — remonter dissout le puits. */
+  const rings = React.useMemo(
+    () =>
+      Array.from({ length: RING_COUNT }, (_, i) => {
+        const r = 4 + seeded(i, 31) * 1.1;
+        const geo = displace(
+          new THREE.TorusGeometry(r, 1.35 + seeded(i, 37) * 0.5, 10, 26),
+          0.3,
+          i * 3,
+        );
+        geo.rotateX(Math.PI / 2);
+        const baseY = -7.5 - i * 3.2;
+        // fin de formation ~0.045 de progression avant l'arrivee camera
+        const camB = (3.5 + i * 3.2) / 40;
+        const start = 0.3 + camB * 0.48 - 0.1;
+        return {
+          geo,
+          baseY,
+          baseRotY: seeded(i, 41) * Math.PI,
+          offX: (seeded(i, 43) - 0.5) * 0.8,
+          offZ: (seeded(i, 47) - 0.5) * 0.8,
+          start,
+          mat: new THREE.MeshStandardMaterial({
+            color: PALETTE.rock,
+            roughness: 0.9,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0,
+          }),
+        };
+      }),
+    [],
+  );
+  const refs = useRef<Array<THREE.Mesh | null>>([]);
+
+  useFrame(() => {
+    const p = store.current;
+    for (let i = 0; i < rings.length; i++) {
+      const mesh = refs.current[i];
+      if (!mesh) continue;
+      const r = rings[i];
+      const t = ease(Math.min(1, Math.max(0, (p - r.start) / 0.07)));
+      mesh.visible = t > 0.001;
+      if (!mesh.visible) continue;
+      const inv = 1 - t;
+      mesh.scale.setScalar(1.7 - 0.7 * t);
+      mesh.rotation.y = r.baseRotY + inv * 1.2;
+      mesh.position.set(r.offX, r.baseY + inv * 1.6, r.offZ);
+      r.mat.opacity = t;
     }
-    // UNE geometrie fusionnee, faces vers l'INTERIEUR (BackSide) — la
-    // camera vole dedans, sans ca le tunnel est invisible.
-    return mergeGeometries(rings)!;
-  }, []);
+  });
 
   return (
     <group>
-      <mesh geometry={geo}>
-        <meshStandardMaterial
-          color={PALETTE.rock}
-          roughness={0.9}
-          side={THREE.BackSide}
+      {rings.map((r, i) => (
+        <mesh
+          key={i}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          geometry={r.geo}
+          material={r.mat}
+          visible={false}
         />
-      </mesh>
+      ))}
       {/* jonc emissif d'entree + disque lumineux du fond : fog:false,
           ils percent la brume comme dans la reference */}
       <mesh position={[0, -7, 0]} rotation={[Math.PI / 2, 0, 0]}>
