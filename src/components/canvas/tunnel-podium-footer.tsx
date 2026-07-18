@@ -1067,7 +1067,9 @@ function Podium() {
         />
       </mesh>
       <mesh position={[0, 5, 0]}>
-        <coneGeometry args={[3.9, 6.8, 48, 1, true]} />
+        {/* colonne cylindrique (retour client : plus de cone evase) —
+            meme rayon que le halo, elle s'y raccorde exactement */}
+        <cylinderGeometry args={[3.9, 3.9, 6.8, 48, 1, true]} />
         <meshBasicMaterial
           color="#dff2ff"
           transparent
