@@ -55,6 +55,17 @@ export default async function HomePage({
       */}
       <main>
         {/*
+          h1 sr-only : le hero est purement visuel (le lockup de marque
+          est un <p>, les marquees sont aria-hidden) — l'accueil avait
+          PERDU son h1 aux remplacements de hero successifs (constat de
+          l'audit UX). La proposition metier localisee reprend son role
+          de titre de page, invisible a l'ecran, restituee aux lecteurs
+          d'ecran et aux moteurs. Les sections suivantes sont en h2 :
+          la hierarchie redevient valide.
+        */}
+        <h1 className="sr-only">{c.hero.title}</h1>
+
+        {/*
           Hero avant/apres : voiture accidentee, et sous le curseur la
           meme voiture restauree avec la depanneuse derriere — la
           promesse du metier en une interaction. Remplace le hero a
