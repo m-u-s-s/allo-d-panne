@@ -505,43 +505,253 @@ function DebrisField() {
   );
 }
 
-const RING_COUNT = 3; // retour client : 3 anneaux max, repartis sur la profondeur
-const SEG_COUNT = 8;
-const SEG_ARC = (Math.PI * 2) / SEG_COUNT;
+const RING_COUNT = 3; // 3 anneaux max (retour client), repartis sur la profondeur
 
-/**
- * Anneaux reproduits d'apres la capture client (igloo.inc) : couronne
- * de ~8 SEGMENTS de pierre pale aux entailles visibles, jonc emissif
- * blanc-cyan sur le bord interieur, membrane brumeuse dans l'ouverture,
- * debris d'arcs erodes flottant au centre.
- *
- * Formation (fidele a la reference) : chaque segment converge vers son
- * encoche — il arrive de l'exterieur, decale en profondeur et sur-vrille,
- * en cascade (stagger par segment) — puis le jonc S'ALLUME et la
- * membrane apparait une fois la couronne assemblee. Pilote par la
- * progression amortie : remonter desassemble. Geometries PARTAGEES
- * entre les douze anneaux ; transforms et opacites mutes par frame,
- * zero allocation.
- */
-function Tunnel() {
-  const shared = React.useMemo(() => {
-    const segGeos = Array.from({ length: SEG_COUNT }, (_, j) => {
-      const g = displace(
-        new THREE.TorusGeometry(4.1, 0.85, 9, 10, SEG_ARC * 0.9),
-        0.14,
-        j * 7,
-      );
-      g.scale(1, 1, 0.55); // rondelle aplatie, pas un boudin
-      return g;
+/* ------------------------------------------------------------------ */
+/* Anneau igloo — porte depuis le projet fourni par le client          */
+/* (Desktop/igloo-ring/src/IglooRing.tsx) : dalles d'arc biseautees,   */
+/* monogramme central en 7 fragments, disque givre au reseau           */
+/* triangule, neon a scintillement. Adaptations : nos fenetres de      */
+/* formation par anneau pilotent l'assemblage ; disque et monogramme   */
+/* se DISSOLVENT a l'approche de la camera (on traverse nos anneaux,   */
+/* igloo regarde le sien de face).                                     */
+/* ------------------------------------------------------------------ */
+
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeArcSlabGeometry(
+  innerR: number,
+  outerR: number,
+  startA: number,
+  endA: number,
+  depth: number,
+  roughAmp: number,
+  seed: number,
+) {
+  const shape = new THREE.Shape();
+  const steps = 24;
+  for (let i = 0; i <= steps; i++) {
+    const a = startA + ((endA - startA) * i) / steps;
+    if (i === 0) shape.moveTo(Math.cos(a) * outerR, Math.sin(a) * outerR);
+    else shape.lineTo(Math.cos(a) * outerR, Math.sin(a) * outerR);
+  }
+  for (let i = steps; i >= 0; i--) {
+    const a = startA + ((endA - startA) * i) / steps;
+    shape.lineTo(Math.cos(a) * innerR, Math.sin(a) * innerR);
+  }
+  shape.closePath();
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: depth * 0.35,
+    bevelSize: (outerR - innerR) * 0.12,
+    bevelSegments: 3,
+    curveSegments: 24,
+  });
+  geo.translate(0, 0, -depth / 2);
+  // relief rocheux cuit UNE fois — bruit continu en espace position :
+  // deux sommets confondus se deplacent pareil, les faces ne dechirent pas
+  const ph = seed * 0.37;
+  const pos = geo.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i);
+    const y = pos.getY(i);
+    const z = pos.getZ(i);
+    const n =
+      Math.sin(x * 2.1 + y * 1.7 + ph) * 0.45 +
+      Math.sin(y * 3.6 + z * 2.9 + ph * 2) * 0.35 +
+      Math.sin(z * 5.1 + x * 2.3 + ph * 3) * 0.2;
+    const len = Math.hypot(x, y) || 1;
+    pos.setX(i, x + (x / len) * n * roughAmp);
+    pos.setY(i, y + (y / len) * n * roughAmp);
+    pos.setZ(i, z + n * roughAmp * 0.8);
+  }
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeChipGeometry(w: number, h: number, depth: number, seed: number) {
+  const r = Math.min(w, h) * 0.28;
+  const shape = new THREE.Shape();
+  shape.moveTo(-w / 2 + r, -h / 2);
+  shape.lineTo(w / 2 - r, -h / 2);
+  shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+  shape.lineTo(w / 2, h / 2 - r);
+  shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+  shape.lineTo(-w / 2 + r, h / 2);
+  shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+  shape.lineTo(-w / 2, -h / 2 + r);
+  shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+  shape.closePath();
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: depth * 0.4,
+    bevelSize: Math.min(w, h) * 0.1,
+    bevelSegments: 3,
+    curveSegments: 12,
+  });
+  geo.translate(0, 0, -depth / 2);
+  const rng = mulberry32(seed);
+  const pos = geo.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    pos.setZ(i, pos.getZ(i) + (rng() - 0.5) * 0.015);
+  }
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeDiscTexture(): THREE.CanvasTexture {
+  const S = 1024;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = S;
+  const c = cv.getContext('2d')!;
+  const g = c.createRadialGradient(S / 2, S / 2, S * 0.05, S / 2, S / 2, S * 0.5);
+  g.addColorStop(0, '#e9ecf0');
+  g.addColorStop(0.55, '#dde1e7');
+  g.addColorStop(1, '#cdd2d9');
+  c.fillStyle = g;
+  c.fillRect(0, 0, S, S);
+  c.strokeStyle = 'rgba(160,166,175,0.35)';
+  c.lineWidth = 2;
+  for (const rr of [0.16, 0.27, 0.38]) {
+    c.beginPath();
+    c.arc(S / 2, S / 2, S * rr, 0, Math.PI * 2);
+    c.stroke();
+  }
+  // reseau de givre triangule, plus dense vers la rive
+  const rng = mulberry32(7);
+  const pts: Array<[number, number]> = [];
+  for (let i = 0; i < 170; i++) {
+    const a = rng() * Math.PI * 2;
+    const r = S * (0.18 + Math.pow(rng(), 0.45) * 0.31);
+    pts.push([S / 2 + Math.cos(a) * r, S / 2 + Math.sin(a) * r]);
+  }
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]);
+      if (d < S * 0.07) {
+        const rim =
+          (Math.hypot(pts[i][0] - S / 2, pts[i][1] - S / 2) / (S * 0.5) - 0.35) /
+          0.65;
+        c.strokeStyle = 'rgba(255,255,255,' + (0.12 + Math.max(0, rim) * 0.5) + ')';
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(pts[i][0], pts[i][1]);
+        c.lineTo(pts[j][0], pts[j][1]);
+        c.stroke();
+      }
+    }
+  }
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+interface RingFrag {
+  geo: THREE.BufferGeometry;
+  home: [number, number, number];
+  scatter: { pos: [number, number, number]; rot: [number, number, number] };
+  window: [number, number];
+  isLogo: boolean;
+}
+
+function scatterFor(seed: number, spread: number): RingFrag['scatter'] {
+  const rng = mulberry32(seed);
+  return {
+    pos: [
+      (rng() - 0.5) * spread * 2,
+      (rng() - 0.5) * spread * 1.4,
+      1 + rng() * 3,
+    ],
+    rot: [(rng() - 0.5) * 2.4, (rng() - 0.5) * 2.4, (rng() - 0.5) * 2.4],
+  };
+}
+
+function buildRingFrags(): RingFrag[] {
+  const frags: RingFrag[] = [];
+  const N = 8;
+  const gap = 0.028;
+  for (let i = 0; i < N; i++) {
+    const a0 = (i / N) * Math.PI * 2 + gap;
+    const a1 = ((i + 1) / N) * Math.PI * 2 - gap;
+    frags.push({
+      geo: makeArcSlabGeometry(3.45, 4.65, a0, a1, 0.85, 0.05, 100 + i),
+      home: [0, 0, 0],
+      scatter: scatterFor(200 + i, 7.5),
+      window: [i * 0.055, 0.5 + i * 0.03],
+      isLogo: false,
     });
-    const rimGeo = new THREE.TorusGeometry(3.32, 0.055, 8, 72);
-    const memGeo = new THREE.CircleGeometry(3.28, 48);
-    const debrisGeos = [
-      displace(new THREE.TorusGeometry(1.5, 0.26, 8, 10, 1.6), 0.1, 31),
-      displace(new THREE.TorusGeometry(1.05, 0.2, 8, 8, 1.15), 0.1, 47),
-      displace(new THREE.TorusGeometry(0.68, 0.16, 8, 6, 0.85), 0.1, 53),
-    ];
-    return { segGeos, rimGeo, memGeo, debrisGeos };
+  }
+  const logoZ = 0.9;
+  const logo: Array<{
+    geo: THREE.BufferGeometry;
+    home: [number, number, number];
+  }> = [
+    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 0.55, Math.PI * 1.45, 0.42, 0.02, 11), home: [0, 0, logoZ] },
+    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 1.55, Math.PI * 1.8, 0.42, 0.02, 12), home: [0, 0, logoZ] },
+    { geo: makeArcSlabGeometry(1.05, 1.55, Math.PI * 0.12, Math.PI * 0.42, 0.42, 0.02, 13), home: [0, 0, logoZ] },
+    { geo: makeArcSlabGeometry(0.42, 0.78, Math.PI * 0.65, Math.PI * 1.6, 0.38, 0.02, 14), home: [0.05, -0.05, logoZ + 0.05] },
+    { geo: makeChipGeometry(0.42, 0.42, 0.36, 15), home: [0.55, 0.42, logoZ + 0.08] },
+    { geo: makeChipGeometry(0.44, 0.5, 0.36, 16), home: [1.28, -0.42, logoZ + 0.02] },
+    { geo: makeChipGeometry(0.4, 0.34, 0.34, 17), home: [0.12, 1.02, logoZ + 0.05] },
+  ];
+  const LOGO_SCALE = 1.28;
+  logo.forEach((l, i) => {
+    l.geo.scale(LOGO_SCALE, LOGO_SCALE, LOGO_SCALE);
+    frags.push({
+      geo: l.geo,
+      home: [l.home[0] * LOGO_SCALE, l.home[1] * LOGO_SCALE, l.home[2]],
+      scatter: scatterFor(300 + i, 4.2),
+      window: [0.18 + i * 0.045, 0.62 + i * 0.02],
+      isLogo: true,
+    });
+  });
+  return frags;
+}
+
+function Tunnel() {
+  const camera = useThree((st) => st.camera);
+
+  // geometries et textures partagees entre les 3 anneaux, construites 1x
+  const shared = React.useMemo(() => {
+    const frags = buildRingFrags();
+    const S = 256;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = S;
+    const c = cv.getContext('2d')!;
+    const img = c.createImageData(S, S);
+    const rng = mulberry32(42);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = 165 + rng() * 70;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 255;
+    }
+    c.putImageData(img, 0, 0);
+    const noise = new THREE.CanvasTexture(cv);
+    noise.wrapS = noise.wrapT = THREE.RepeatWrapping;
+    noise.repeat.set(3, 3);
+    const stoneMat = new THREE.MeshStandardMaterial({
+      color: '#ccd0d7',
+      roughness: 0.85,
+      metalness: 0.06,
+      bumpMap: noise,
+      bumpScale: 0.6,
+      roughnessMap: noise,
+    });
+    return { frags, stoneMat, discTex: makeDiscTexture() };
   }, []);
 
   const rings = React.useMemo(
@@ -550,52 +760,54 @@ function Tunnel() {
         const camB = (5 + i * 12.5) / 40;
         return {
           baseY: -9 - i * 12.5,
-          start: 0.3 + camB * 0.48 - 0.1,
+          start: 0.3 + camB * 0.48 - 0.14,
           spin: seeded(i, 41) * Math.PI * 2,
           offX: (seeded(i, 43) - 0.5) * 0.7,
           offZ: (seeded(i, 47) - 0.5) * 0.7,
-          segMat: new THREE.MeshStandardMaterial({
-            color: '#9aa4b0',
-            roughness: 0.74,
-            metalness: 0.05,
+          // monogramme + disque fondent a l'approche : materiaux par anneau
+          logoMat: new THREE.MeshStandardMaterial({
+            color: '#ccd0d7',
+            roughness: 0.85,
+            metalness: 0.06,
             transparent: true,
-            opacity: 0,
           }),
-          rimMat: new THREE.MeshStandardMaterial({
-            color: '#eaf6ff',
-            emissive: '#bfe9ff',
+          neonMat: new THREE.MeshStandardMaterial({
+            color: '#dff4ff',
+            emissive: '#dff4ff',
             emissiveIntensity: 0,
-            transparent: true,
-            opacity: 0,
+            roughness: 0.3,
+            toneMapped: false,
             fog: false,
           }),
-          memMat: new THREE.MeshBasicMaterial({
-            color: '#dff2ff',
+          haloMat: new THREE.MeshBasicMaterial({
+            color: '#dff4ff',
             transparent: true,
             opacity: 0,
-            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
             depthWrite: false,
+            toneMapped: false,
             fog: false,
           }),
-          debrisMat: new THREE.MeshStandardMaterial({
-            color: '#9aa4b0',
-            roughness: 0.75,
+          discMat: new THREE.MeshStandardMaterial({
+            roughness: 0.55,
+            metalness: 0.02,
             transparent: true,
-            opacity: 0,
           }),
-          debris: [0, 1, 2].map((k) => ({
-            rot: seeded(i * 3 + k, 61) * Math.PI * 2,
-            tilt: (seeded(i * 3 + k, 67) - 0.5) * 0.6,
-            spin: 0.08 + seeded(i * 3 + k, 71) * 0.16,
-          })),
         };
       }),
     [],
   );
+  React.useEffect(() => {
+    for (const r of rings) {
+      r.discMat.map = shared.discTex;
+      r.discMat.needsUpdate = true;
+    }
+  }, [rings, shared]);
 
   const groupRefs = useRef<Array<THREE.Group | null>>([]);
-  const segRefs = useRef<Array<THREE.Mesh | null>>([]);
-  const debrisRefs = useRef<Array<THREE.Mesh | null>>([]);
+  const fragRefs = useRef<Array<THREE.Mesh | null>>([]);
+  const lightRefs = useRef<Array<THREE.PointLight | null>>([]);
+  const F = shared.frags.length;
 
   useFrame(({ clock }) => {
     const p = store.current;
@@ -604,48 +816,47 @@ function Tunnel() {
       const group = groupRefs.current[i];
       if (!group) continue;
       const r = rings[i];
-      const t = ease(Math.min(1, Math.max(0, (p - r.start) / 0.07)));
-      group.visible = t > 0.001;
+      const ringT = clamp01((p - r.start) / 0.12);
+      group.visible = ringT > 0.001;
       if (!group.visible) continue;
 
-      r.segMat.opacity = Math.min(1, t * 1.8);
-      r.debrisMat.opacity = t;
+      // lente respiration de l'anneau assemble
+      group.rotation.z = r.spin + ringT * 0.35 + time * 0.02;
 
-      // segments : convergence en cascade vers les encoches
-      for (let j = 0; j < SEG_COUNT; j++) {
-        const mesh = segRefs.current[i * SEG_COUNT + j];
+      // assemblage : chaque fragment vole vers sa place dans SA fenetre
+      for (let j = 0; j < F; j++) {
+        const mesh = fragRefs.current[i * F + j];
         if (!mesh) continue;
-        const tj = ease(
-          Math.min(1, Math.max(0, (t - j * 0.035) / 0.65)),
+        const fr = shared.frags[j];
+        const t = easeOutCubic(
+          clamp01((ringT - fr.window[0]) / (fr.window[1] - fr.window[0] || 1)),
         );
-        const inv = 1 - tj;
-        const slot = r.spin + j * SEG_ARC;
-        mesh.rotation.z = slot + inv * 1.1;
-        const mid = slot + SEG_ARC * 0.45;
-        const off = 2.4 * inv;
         mesh.position.set(
-          Math.cos(mid) * off,
-          Math.sin(mid) * off,
-          (seeded(i * SEG_COUNT + j, 83) - 0.5) * 2.6 * inv,
+          THREE.MathUtils.lerp(fr.scatter.pos[0], fr.home[0], t),
+          THREE.MathUtils.lerp(fr.scatter.pos[1], fr.home[1], t),
+          THREE.MathUtils.lerp(fr.scatter.pos[2], fr.home[2], t),
+        );
+        mesh.rotation.set(
+          fr.scatter.rot[0] * (1 - t),
+          fr.scatter.rot[1] * (1 - t),
+          fr.scatter.rot[2] * (1 - t),
         );
       }
 
-      // le jonc s'allume et la membrane apparait une fois assemble
-      const ignite = ease(Math.min(1, Math.max(0, (t - 0.62) / 0.38)));
-      r.rimMat.opacity = ignite;
-      r.rimMat.emissiveIntensity = 2.4 * ignite; // retour client : eclat +un cran
-      r.memMat.opacity = 0.035 * ignite;
+      // allumage neon (seuil relatif igloo : 70 % de la formation) + flicker
+      const ignite = easeOutCubic(clamp01((ringT - 0.7) / 0.3));
+      const flicker = 1 + Math.sin(time * 20) * 0.035 * ignite;
+      r.neonMat.emissiveIntensity = ignite * 4.2 * flicker;
+      r.haloMat.opacity = ignite * 0.34;
+      const light = lightRefs.current[i];
+      if (light) light.intensity = ignite * 6 * flicker;
 
-      // debris : derive et rotation lente continues
-      for (let k = 0; k < 3; k++) {
-        const mesh = debrisRefs.current[i * 3 + k];
-        if (!mesh) continue;
-        const d = r.debris[k];
-        mesh.rotation.z = d.rot + time * d.spin;
-        mesh.rotation.x = d.tilt;
-        const sc = 0.8 + 0.2 * t;
-        mesh.scale.setScalar(sc);
-      }
+      // ON TRAVERSE l'anneau : disque givre + monogramme se dissolvent a
+      // l'approche de la camera (et reapparaissent en remontant)
+      const near = Math.abs(camera.position.y - r.baseY);
+      const membrane = clamp01((near - 1.2) / 2.2);
+      r.discMat.opacity = ringT * membrane;
+      r.logoMat.opacity = membrane;
     }
   });
 
@@ -661,31 +872,41 @@ function Tunnel() {
           rotation={[-Math.PI / 2, 0, 0]}
           visible={false}
         >
-          {shared.segGeos.map((g, j) => (
+          {shared.frags.map((fr, j) => (
             <mesh
               key={j}
               ref={(el) => {
-                segRefs.current[i * SEG_COUNT + j] = el;
+                fragRefs.current[i * F + j] = el;
               }}
-              geometry={g}
-              material={r.segMat}
+              geometry={fr.geo}
+              material={fr.isLogo ? r.logoMat : shared.stoneMat}
             />
           ))}
-          <mesh geometry={shared.rimGeo} material={r.rimMat} />
-          <mesh geometry={shared.memGeo} material={r.memMat} />
-          {shared.debrisGeos.map((g, k) => (
-            <mesh
-              key={`d${k}`}
-              ref={(el) => {
-                debrisRefs.current[i * 3 + k] = el;
-              }}
-              geometry={g}
-              material={r.debrisMat}
-            />
-          ))}
+          <mesh>
+            <torusGeometry args={[3.22, 0.09, 24, 128]} />
+            <primitive object={r.neonMat} attach="material" />
+          </mesh>
+          <pointLight
+            ref={(el) => {
+              lightRefs.current[i] = el;
+            }}
+            position={[0, 0, 2.5]}
+            color="#dff4ff"
+            intensity={0}
+            distance={14}
+            decay={2}
+          />
+          <mesh position={[0, 0, -0.1]}>
+            <ringGeometry args={[2.6, 3.9, 96]} />
+            <primitive object={r.haloMat} attach="material" />
+          </mesh>
+          <mesh position={[0, 0, -0.25]}>
+            <circleGeometry args={[3.35, 96]} />
+            <primitive object={r.discMat} attach="material" />
+          </mesh>
         </group>
       ))}
-      {/* disque lumineux du fond, assorti aux joncs */}
+      {/* disque lumineux du fond, assorti aux neons */}
       <mesh position={[0, -45.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[2.6, 48]} />
         <meshStandardMaterial
