@@ -84,7 +84,7 @@ const PALETTE = {
 const COUNT = 30000;
 const STAGGER = 0.6;
 const MORPH_SECONDS = 2.2; // retour client : morph ralenti (1.15 -> 2.2)
-const WORLD_SIZE = 3.2;
+const WORLD_SIZE = 3.8; // retour client : logos agrandis (3.2 -> 3.8)
 const PODIUM_Y = -54;
 
 const seeded = (i: number, k: number) => {
@@ -345,7 +345,7 @@ function ParticleSculpture({
   });
 
   return (
-    <group position={[0, PODIUM_Y + 3.3, 0]}>
+    <group position={[0, PODIUM_Y + 3.6, 0]}>
       <points geometry={geometry} material={material} ref={points} />
       {/* Proxy de clic : sphere invisible — on ne raycaste JAMAIS les
           30k points. Clic = pointerup a moins de 8 px / 300 ms du down,
@@ -618,7 +618,7 @@ function Rig() {
     // dans l'axe ; C : pose face au podium (tenue a p=1)
     if (C > 0) {
       camera.position.set(0, -44 - 6.4 * C, 7.4 * C);
-      look.set(0, -50 + (PODIUM_Y + 2.9 + 50) * C, 0);
+      look.set(0, -50 + (PODIUM_Y + 3.0 + 50) * C, 0);
     } else if (B > 0) {
       camera.position.set(0, -4 - 40 * B, 2.4 * (1 - B));
       look.set(0, camera.position.y - 6, 0);
