@@ -83,7 +83,7 @@ const PALETTE = {
 
 const COUNT = 30000;
 const STAGGER = 0.6;
-const MORPH_SECONDS = 1.15;
+const MORPH_SECONDS = 2.2; // retour client : morph ralenti (1.15 -> 2.2)
 const WORLD_SIZE = 3.2;
 const PODIUM_Y = -54;
 
