@@ -624,7 +624,7 @@ function Tunnel() {
       // le jonc s'allume et la membrane apparait une fois assemble
       const ignite = ease(Math.min(1, Math.max(0, (t - 0.62) / 0.38)));
       r.rimMat.opacity = ignite;
-      r.rimMat.emissiveIntensity = 1.9 * ignite;
+      r.rimMat.emissiveIntensity = 2.4 * ignite; // retour client : eclat +un cran
       r.memMat.opacity = 0.035 * ignite;
 
       // debris : derive et rotation lente continues
