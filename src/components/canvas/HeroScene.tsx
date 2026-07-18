@@ -91,37 +91,7 @@ const fragmentShader = /* glsl */ `
     vec2 flow = vec2(uTime * 0.03, uTime * 0.015 - uScroll * 1.4);
     float mist = fbm(p * 2.4 + drift + flow, octaves);
 
-    // Le gyrophare vit a DROITE : le texte occupe la gauche, et le voile
-    // du hero y est opaque. Une source centree serait entierement mangee
-    // par ce voile — le shader tournerait pour rien.
-    vec2 src = vec2(0.42, 0.06);
-
-    // Balayage : un lobe qui tourne, comme un gyrophare reel, plutot
-    // qu'une rotation lineaire qui ferait phare de voiture.
-    vec2 d = p - src;
-    float angle = atan(d.y, d.x);
-    float dist = length(d);
-
-    // Exposant modere (3 et non 6) : un lobe trop serre donne un cone aux
-    // bords nets — une decoupe, pas une lumiere.
-    float sweep = pow(max(sin(angle - uTime * 1.6), 0.0), 3.0);
-    float falloff = exp(-dist * 1.5);
-
-    // Le faisceau n'existe QUE dans la brume : c'est ce qui le rend
-    // volumetrique. Un cone qui brille dans le vide se lit comme un
-    // aplat vectoriel ; module par le fbm, il devient de l'air eclaire.
-    float beam = sweep * falloff * (0.35 + mist * 1.1);
-
-    // Halo a la source. Sans lui, le sommet du lobe forme un angle net et
-    // trahit la geometrie derriere l'effet.
-    float core = exp(-dist * 6.0);
-    float halo = exp(-dist * 2.2) * 0.25;
-
-    float pulse = 0.75 + 0.25 * sin(uTime * 3.2);
-    // La velocite de scroll charge le gyrophare : il brille plus fort
-    // pendant le mouvement et retombe a l'arret (uEnergy est deja lisse
-    // cote JS, pas de clignotement possible).
-    float beacon = (beam + core * 0.7 + halo) * pulse * (1.0 + uEnergy * 0.6);
+    // Gyrophare retire (retour client) : seule la brume vit encore.
 
     // Contre-jour bleu froid en bas : sans lui l'ambre seul vire au sepia
     // et perd la nuit.
@@ -129,8 +99,9 @@ const fragmentShader = /* glsl */ `
 
     vec3 col = BG;
     col += BLUE * cold * (0.6 + mist * 0.8);
-    col += AMBER * beacon * 1.6;
-    col += AMBER * mist * falloff * 0.35;
+    // pointe d'ambre residuelle portee par la brume seule, tres faible —
+    // garde la chaleur de la marque sans aucune source qui balaie
+    col += AMBER * mist * 0.045;
 
     // Tone mapping exponentiel, indispensable et non cosmetique.
     //
