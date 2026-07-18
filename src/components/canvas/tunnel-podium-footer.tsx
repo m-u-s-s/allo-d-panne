@@ -410,7 +410,7 @@ function ParticleSculpture({
   });
 
   return (
-    <group ref={groupRef} position={[0, PODIUM_Y + 3.6, 0]}>
+    <group ref={groupRef} position={[0, PODIUM_Y + 3.75, 0]}>
       <points geometry={geometry} material={material} ref={points} />
       {/* Proxy de clic : sphere invisible — on ne raycaste JAMAIS les
           30k points. Clic = pointerup a moins de 8 px / 300 ms du down,
@@ -857,40 +857,206 @@ function Tunnel() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Podium igloo — porte depuis IglooPodium.tsx du projet fourni par    */
+/* le client (igloo-ring) : 5 disques de pierre chanfreines au tour,   */
+/* VAGUE RADIALE (chaque gradin oscille avec un dephasage — le         */
+/* mouvement coule vers l'exterieur), rainures gravees, couture        */
+/* lumineuse scintillante sur le 2e gradin, coeur pulsant additif sur  */
+/* le piedestal. Adaptations : notre Rig garde la camera (leur lookAt  */
+/* retire) ; halo plafond + cone volumetrique de la chambre conserves. */
+/* ------------------------------------------------------------------ */
+
+const WAVE_AMPLITUDE = 0.16;
+const WAVE_SPEED = 1.1;
+const WAVE_PHASE_STEP = 0.85;
+
+function makeDiscGeometry(radius: number, thickness: number, chamfer: number) {
+  const pts: THREE.Vector2[] = [
+    new THREE.Vector2(0.001, thickness),
+    new THREE.Vector2(radius - chamfer, thickness),
+    new THREE.Vector2(radius, thickness - chamfer),
+    new THREE.Vector2(radius, 0),
+    new THREE.Vector2(0.001, 0),
+  ];
+  const geo = new THREE.LatheGeometry(pts, 96);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeGlowTexture() {
+  const S = 256;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = S;
+  const c = cv.getContext('2d')!;
+  const g = c.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.35, 'rgba(220,240,255,0.55)');
+  g.addColorStop(1, 'rgba(220,240,255,0)');
+  c.fillStyle = g;
+  c.fillRect(0, 0, S, S);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+interface PodiumRingDef {
+  radius: number;
+  thickness: number;
+  baseY: number;
+  grooves: number[];
+}
+
+// exterieur → interieur ; chaque gradin un peu plus haut (butte etagee)
+const PODIUM_RINGS: PodiumRingDef[] = [
+  { radius: 7.6, thickness: 0.34, baseY: 0.0, grooves: [6.9] },
+  { radius: 6.1, thickness: 0.36, baseY: 0.22, grooves: [5.5] },
+  { radius: 4.7, thickness: 0.38, baseY: 0.46, grooves: [4.1, 3.6] },
+  { radius: 3.4, thickness: 0.4, baseY: 0.72, grooves: [2.9] },
+  { radius: 2.1, thickness: 0.46, baseY: 1.0, grooves: [1.45] }, // piedestal
+];
+const SEAM_RING = 1;
+
 function Podium() {
+  const ringRefs = useRef<Array<THREE.Group | null>>([]);
+  const coreMat = useRef<THREE.MeshBasicMaterial>(null!);
+  const seamMat = useRef<THREE.MeshStandardMaterial>(null!);
+  const group = useRef<THREE.Group>(null!);
+  const pointer = useThree((st) => st.pointer);
+
+  const stoneTex = React.useMemo(() => {
+    const S = 256;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = S;
+    const c = cv.getContext('2d')!;
+    const img = c.createImageData(S, S);
+    const rng = mulberry32(1337);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = 170 + rng() * 60;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 255;
+    }
+    c.putImageData(img, 0, 0);
+    const tex = new THREE.CanvasTexture(cv);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(4, 4);
+    return tex;
+  }, []);
+  const glowTex = React.useMemo(() => makeGlowTexture(), []);
+  const discGeos = React.useMemo(
+    () => PODIUM_RINGS.map((r) => makeDiscGeometry(r.radius, r.thickness, 0.07)),
+    [],
+  );
+  const stoneMat = React.useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: '#c2c6ce',
+        roughness: 0.72,
+        metalness: 0.08,
+        bumpMap: stoneTex,
+        bumpScale: 0.5,
+        roughnessMap: stoneTex,
+      }),
+    [stoneTex],
+  );
+  const grooveMat = React.useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: '#9aa0ab',
+        transparent: true,
+        opacity: 0.55,
+      }),
+    [],
+  );
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+
+    // vague radiale : chaque gradin oscille avec un dephasage — le
+    // mouvement coule du centre vers l'exterieur
+    for (let i = 0; i < PODIUM_RINGS.length; i++) {
+      const g = ringRefs.current[i];
+      if (!g) continue;
+      g.position.y =
+        PODIUM_RINGS[i].baseY +
+        WAVE_AMPLITUDE * Math.sin(t * WAVE_SPEED - i * WAVE_PHASE_STEP);
+    }
+
+    // pulsation du coeur + scintillement de la couture
+    const pulse = 0.75 + Math.sin(t * 1.7) * 0.25;
+    coreMat.current.opacity = 0.55 + pulse * 0.45;
+    seamMat.current.emissiveIntensity = 2.6 + Math.sin(t * 2.3) * 0.5;
+
+    // lente derive + parallaxe pointeur
+    const g = group.current;
+    g.rotation.y += 0.0004;
+    g.rotation.x = THREE.MathUtils.lerp(g.rotation.x, -pointer.y * 0.04, 0.05);
+    g.rotation.z = THREE.MathUtils.lerp(g.rotation.z, pointer.x * 0.03, 0.05);
+  });
+
   return (
-    <group position={[0, PODIUM_Y, 0]}>
-      {[
-        [6.5, 0.28, 0],
-        [5.2, 0.28, 0.24],
-        [3.9, 0.28, 0.48],
-        [2.6, 0.28, 0.72],
-      ].map(([r, h, y], i) => (
-        <mesh key={i} position={[0, y + h / 2, 0]}>
-          <cylinderGeometry args={[r, r * 1.04, h, 72]} />
-          <meshStandardMaterial
-            color="#b3bdca"
-            metalness={0.5}
-            roughness={0.45}
-          />
-        </mesh>
+    <group ref={group} position={[0, PODIUM_Y, 0]}>
+      {PODIUM_RINGS.map((def, i) => (
+        <group
+          key={i}
+          ref={(el) => {
+            ringRefs.current[i] = el;
+          }}
+          position={[0, def.baseY, 0]}
+        >
+          <mesh geometry={discGeos[i]} material={stoneMat} />
+          {def.grooves.map((gr, j) => (
+            <mesh
+              key={j}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, def.thickness + 0.002, 0]}
+            >
+              <ringGeometry args={[gr - 0.012, gr + 0.012, 128]} />
+              <primitive object={grooveMat} attach="material" />
+            </mesh>
+          ))}
+          {i === SEAM_RING && (
+            <mesh
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, def.thickness * 0.5, 0]}
+            >
+              <torusGeometry args={[def.radius + 0.02, 0.045, 16, 160]} />
+              <meshStandardMaterial
+                ref={seamMat}
+                color="#e6f4ff"
+                emissive="#e6f4ff"
+                emissiveIntensity={2.6}
+                roughness={0.3}
+                toneMapped={false}
+                fog={false}
+              />
+            </mesh>
+          )}
+        </group>
       ))}
-      <mesh position={[0, 1.28, 0]}>
-        <cylinderGeometry args={[1.5, 1.62, 0.6, 64]} />
-        <meshStandardMaterial color="#b3bdca" metalness={0.5} roughness={0.42} />
-      </mesh>
-      {/* couture lumineuse du pourtour */}
-      <mesh position={[0, 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[6.52, 0.05, 8, 96]} />
-        <meshStandardMaterial
+
+      {/* coeur pulsant sur le piedestal, sous la sculpture */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, PODIUM_RINGS[4].baseY + PODIUM_RINGS[4].thickness + 0.06, 0]}
+      >
+        <circleGeometry args={[1.35, 64]} />
+        <meshBasicMaterial
+          ref={coreMat}
+          map={glowTex}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          toneMapped={false}
           color="#dff2ff"
-          emissive="#bfe9ff"
-          emissiveIntensity={2.2}
           fog={false}
         />
       </mesh>
-      {/* halo plafond + puits volumetrique factice (additif, fog:false —
-          additif + fog = voile laiteux, l'alpha fait le fondu) */}
+
+      {/* fill au niveau de la couture */}
+      <pointLight position={[0, 2.4, 0]} color="#e6f4ff" intensity={9} distance={16} decay={2} />
+
+      {/* halo plafond + puits volumetrique de la chambre (conserves) */}
       <mesh position={[0, 8.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[3.9, 0.16, 10, 72]} />
         <meshStandardMaterial
@@ -916,8 +1082,6 @@ function Podium() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Camera + brouillard : pilotage par la progression amortie.         */
 /* ------------------------------------------------------------------ */
 function Rig() {
   const camera = useThree((s) => s.camera);
