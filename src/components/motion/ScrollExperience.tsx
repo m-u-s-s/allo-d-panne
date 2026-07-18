@@ -192,6 +192,16 @@ export function ScrollExperience() {
                 pin: true,
                 anticipatePin: 1,
                 invalidateOnRefresh: true,
+                // Aimantation par panneau (demande client) : en fin de
+                // molette, la piste se pose sur le panneau le plus
+                // proche — jamais arretee entre deux sections. Les
+                // increments viennent du nombre reel de panneaux.
+                snap: {
+                  snapTo: 1 / (track.children.length - 1),
+                  duration: { min: 0.3, max: 0.8 },
+                  ease: 'power2.inOut',
+                  delay: 0.15,
+                },
               },
             }),
           );
