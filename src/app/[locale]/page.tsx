@@ -133,15 +133,23 @@ export default async function HomePage({
             scrub que la piste. Purement decoratifs : aria-hidden, aucun
             evenement pointeur, invisibles hors mode horizontal.
           */}
-          {/* Triplet serre (maquette DevTools du client) : un seul motif
-              massif ‹‹‹ — la trainee rapide du haut a ete supprimee a sa
-              demande, le triplet porte seul le motif. */}
+          {/* Bande de verre ‹‹‹ (demande client) : pleine hauteur de la
+              section, 25 % de large, transparente avec backdrop-blur —
+              les panneaux defilent a travers, floutes. La regle CSS
+              .hscroll-ribbon force display:block : le centrage vit sur
+              le conteneur interne. Derive en parallaxe inchangee. */}
           <div
             aria-hidden="true"
             data-ribbon="slow"
-            className="hscroll-ribbon pointer-events-none absolute bottom-[6%] left-0 z-10 select-none whitespace-nowrap font-display text-[30svh] font-bold leading-none text-text opacity-[0.04]"
+            className="hscroll-ribbon pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 select-none border-r border-white/5 bg-white/[0.03] backdrop-blur-md"
           >
-            ‹‹‹
+            <div className="flex h-full items-center justify-center overflow-hidden">
+              {/* 4 chevrons (demande client) — taille reduite pour tenir
+                  dans les 25 % de la bande sans deborder */}
+              <span className="whitespace-nowrap font-display text-[min(18vw,55svh)] font-bold leading-none text-text/[0.07]">
+                ‹‹‹‹
+              </span>
+            </div>
           </div>
         </div>
 
