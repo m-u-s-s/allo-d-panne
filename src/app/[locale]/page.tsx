@@ -127,37 +127,39 @@ export default async function HomePage({
             </div>
           </div>
 
-          {/*
-            Les grands « ‹ » transparents qui derivent au scroll — deux
-            rubans a vitesses differentes (parallaxe), pilotes par le meme
-            scrub que la piste. Purement decoratifs : aria-hidden, aucun
-            evenement pointeur, invisibles hors mode horizontal.
-          */}
-          {/* Bande de verre ‹‹‹ (demande client) : pleine hauteur de la
-              section, 25 % de large, transparente avec backdrop-blur —
-              les panneaux defilent a travers, floutes. La regle CSS
-              .hscroll-ribbon force display:block : le centrage vit sur
-              le conteneur interne. Derive en parallaxe inchangee. */}
-          {/* Mur de verre (demande client) : QUATRE colonnes de 25 % —
-              un chevron par colonne, l'ensemble couvre 100 % de la
-              section. Chaque colonne est sa propre vitre (blur + voile),
-              les panneaux defilent floutes derriere. La derive parallaxe
-              GSAP porte sur le mur entier. */}
+          {/* Mur de chevrons de verre (iterations client) : quatre div
+              en FORME de ‹ (clip-path, bande 50 % — chaque chevron
+              touche les quatre coins de sa colonne de 25 %), le
+              backdrop-blur ne floute que dans la forme, intensites de
+              verre croissantes de gauche a droite. Decoratif :
+              aria-hidden, pointer-events-none, invisible hors mode
+              horizontal ; derive parallaxe GSAP sur le mur entier. */}
           <div
             aria-hidden="true"
             data-ribbon="slow"
             className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none"
           >
             <div className="flex h-full w-full">
-              {[0, 1, 2, 3].map((i) => (
+              {/* Chaque div EST le chevron : clip-path en bande ‹ pleine
+                  hauteur — le backdrop-blur ne floute que dans la forme,
+                  le contenu reste net autour. Quatre intensites de verre
+                  croissantes (voile + flou), une par chevron. */}
+              {[
+                'bg-white/[0.03] backdrop-blur-xs',
+                'bg-white/[0.06] backdrop-blur',
+                'bg-white/[0.09] backdrop-blur-md',
+                'bg-white/[0.13] backdrop-blur-lg',
+              ].map((glass, i) => (
                 <div
                   key={i}
-                  className="flex h-full w-1/4 items-center justify-center overflow-hidden border-r border-white/5 bg-white/[0.03] backdrop-blur-md last:border-r-0"
-                >
-                  <span className="font-display text-[min(18vw,55svh)] font-bold leading-none text-text/[0.07]">
-                    ‹
-                  </span>
-                </div>
+                  className={`h-full w-1/4 ${glass}`}
+                  style={{
+                    // bande a 50 % d'epaisseur : le ‹ touche les quatre
+                    // coins de sa colonne — 100 % de la largeur parent
+                    clipPath:
+                      'polygon(50% 0, 100% 0, 50% 50%, 100% 100%, 50% 100%, 0 50%)',
+                  }}
+                />
               ))}
             </div>
           </div>
