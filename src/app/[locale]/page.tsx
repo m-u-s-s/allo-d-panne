@@ -140,12 +140,15 @@ export default async function HomePage({
           >
             {'‹ '.repeat(40)}
           </div>
+          {/* Triplet serre (maquette DevTools du client) : un seul motif
+              massif ‹‹‹ plutot qu'une trainee — le ruban rapide du haut
+              garde, lui, sa trainee continue. */}
           <div
             aria-hidden="true"
             data-ribbon="slow"
             className="hscroll-ribbon pointer-events-none absolute bottom-[6%] left-0 z-10 select-none whitespace-nowrap font-display text-[30svh] font-bold leading-none text-text opacity-[0.04]"
           >
-            {'‹ '.repeat(30)}
+            ‹‹‹
           </div>
         </div>
 
