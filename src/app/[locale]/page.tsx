@@ -138,17 +138,27 @@ export default async function HomePage({
               les panneaux defilent a travers, floutes. La regle CSS
               .hscroll-ribbon force display:block : le centrage vit sur
               le conteneur interne. Derive en parallaxe inchangee. */}
+          {/* Mur de verre (demande client) : QUATRE colonnes de 25 % —
+              un chevron par colonne, l'ensemble couvre 100 % de la
+              section. Chaque colonne est sa propre vitre (blur + voile),
+              les panneaux defilent floutes derriere. La derive parallaxe
+              GSAP porte sur le mur entier. */}
           <div
             aria-hidden="true"
             data-ribbon="slow"
-            className="hscroll-ribbon pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 select-none border-r border-white/5 bg-white/[0.03] backdrop-blur-md"
+            className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none"
           >
-            <div className="flex h-full items-center justify-center overflow-hidden">
-              {/* 4 chevrons (demande client) — taille reduite pour tenir
-                  dans les 25 % de la bande sans deborder */}
-              <span className="whitespace-nowrap font-display text-[min(18vw,55svh)] font-bold leading-none text-text/[0.07]">
-                ‹‹‹‹
-              </span>
+            <div className="flex h-full w-full">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex h-full w-1/4 items-center justify-center overflow-hidden border-r border-white/5 bg-white/[0.03] backdrop-blur-md last:border-r-0"
+                >
+                  <span className="font-display text-[min(18vw,55svh)] font-bold leading-none text-text/[0.07]">
+                    ‹
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
