@@ -139,11 +139,14 @@ export default async function HomePage({
             data-ribbon="slow"
             className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none"
           >
-            <div className="flex h-full w-full">
-              {/* Chaque div EST le chevron : clip-path en bande ‹ pleine
-                  hauteur — le backdrop-blur ne floute que dans la forme,
-                  le contenu reste net autour. Quatre intensites de verre
-                  croissantes (voile + flou), une par chevron. */}
+            {/* gap-[2px] : seul espace entre les colonnes. flex-1 =
+                quatre colonnes egales (chacune (100%-6px)/4). */}
+            <div className="flex h-full w-full gap-[2px]">
+              {/* Chaque div EST un chevron plein : clip-path arrondi-plein
+                  (‹ epais) qui remplit sa colonne bord a bord — le seul
+                  espace entre deux chevrons est le gap de 2px. Le
+                  backdrop-blur ne floute que dans la forme, le contenu
+                  reste net autour. Quatre intensites croissantes. */}
               {[
                 'bg-white/[0.03] backdrop-blur-xs',
                 'bg-white/[0.06] backdrop-blur',
@@ -152,12 +155,12 @@ export default async function HomePage({
               ].map((glass, i) => (
                 <div
                   key={i}
-                  className={`h-full w-1/4 ${glass}`}
+                  className={`h-full flex-1 ${glass}`}
                   style={{
-                    // bande a 50 % d'epaisseur : le ‹ touche les quatre
-                    // coins de sa colonne — 100 % de la largeur parent
+                    // ‹ epais remplissant la colonne : tip a gauche
+                    // (0 50%), bras jusqu'aux coins droits, encoche a 68%
                     clipPath:
-                      'polygon(50% 0, 100% 0, 50% 50%, 100% 100%, 50% 100%, 0 50%)',
+                      'polygon(100% 0, 0 50%, 100% 100%, 68% 50%)',
                   }}
                 />
               ))}
