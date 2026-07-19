@@ -3,6 +3,7 @@ import { getPathname } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { company } from '@/content/company';
 import { CallButton } from './CallButton';
+import { HeaderShell } from './HeaderShell';
 import { LocaleSwitcher } from './LocaleSwitcher';
 
 export function SiteHeader({
@@ -26,42 +27,70 @@ export function SiteHeader({
   const pricing = getPathname({ href: '/tarifs', locale });
   const contact = getPathname({ href: '/contact', locale });
 
+  const links = [
+    { href: transport, label: c.nav.transport },
+    { href: pricing, label: c.nav.pricing },
+    { href: contact, label: c.nav.contact },
+  ];
+
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
-        <a
-          href={home}
-          className="font-display text-sm font-bold tracking-widest text-text"
-        >
-          {company.displayName}
-        </a>
-
-        <nav aria-label={c.nav.primaryLabel} className="hidden items-center gap-6 md:flex">
-          <a
-            href={transport}
-            className="text-sm text-muted transition-colors duration-200 hover:text-text"
-          >
-            {c.nav.transport}
-          </a>
-          <a
-            href={pricing}
-            className="text-sm text-muted transition-colors duration-200 hover:text-text"
-          >
-            {c.nav.pricing}
-          </a>
-          <a
-            href={contact}
-            className="text-sm text-muted transition-colors duration-200 hover:text-text"
-          >
-            {c.nav.contact}
-          </a>
+    // tone light : seul l'accueil a un sommet clair (creme du hero) —
+    // texte encre a l'etat transparent, via globals.css.
+    <HeaderShell
+      tone={path === '/' ? 'light' : 'dark'}
+      menuOpenLabel={c.nav.menuOpen}
+      menuCloseLabel={c.nav.menuClose}
+      menu={
+        // Landmark distincte de la nav principale : deux <nav> du meme
+        // nom violeraient l'unicite role+nom (regle axe).
+        <nav aria-label={c.nav.menuLabel} className="flex flex-col px-4 py-3">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="flex min-h-[44px] items-center rounded-md px-2 text-base text-muted transition-colors duration-200 hover:text-text"
+            >
+              {l.label}
+            </a>
+          ))}
+          {/*
+            Le selecteur de langue vit ICI sur mobile : dans la rangee il
+            debordait du viewport (mesure : scrollWidth 423/390 — le
+            burger poussait le tout hors cadre). Deux instances mais une
+            seule a la fois dans l'arbre a11y : celle-ci est inerte menu
+            ferme, celle de la rangee est display:none sous md.
+          */}
+          <div className="mt-2 border-t border-border/60 pt-2">
+            <LocaleSwitcher current={locale} path={path} />
+          </div>
         </nav>
+      }
+    >
+      <a
+        href={home}
+        className="font-display text-sm font-bold tracking-widest text-text"
+      >
+        {company.displayName}
+      </a>
 
-        <div className="flex items-center gap-3">
+      <nav aria-label={c.nav.primaryLabel} className="hidden items-center gap-6 md:flex">
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            className="text-sm text-muted transition-colors duration-200 hover:text-text"
+          >
+            {l.label}
+          </a>
+        ))}
+      </nav>
+
+      <div className="flex items-center gap-3">
+        <div className="hidden md:block">
           <LocaleSwitcher current={locale} path={path} />
-          <CallButton label={c.hero.callCta} variant="header" />
         </div>
+        <CallButton label={c.hero.callCta} variant="header" />
       </div>
-    </header>
+    </HeaderShell>
   );
 }

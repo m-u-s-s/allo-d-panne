@@ -26,7 +26,16 @@ test.describe('Chemin de conversion', () => {
   test('le selecteur de langue conserve la page', async ({ page }) => {
     // LocaleSwitcher est un server component (finding 5) : de vraies
     // ancres <a href>, pas des boutons pilotes par du JS client.
+    // Sur mobile il vit dans le menu du header (details natif) : le
+    // parcours reel passe par l'ouverture du menu.
     await page.goto('/fr/tarifs');
+    const burger = page.locator('header summary');
+    if (await burger.isVisible()) {
+      await burger.click();
+      // laisse finir l'entree @starting-style du panneau (200 ms) :
+      // cliquer un element en cours de transition = « not stable ».
+      await page.waitForTimeout(350);
+    }
     await page.getByRole('link', { name: 'NL' }).click();
     await expect(page).toHaveURL(/\/nl\/tarifs/);
   });
@@ -40,6 +49,14 @@ test.describe('Chemin de conversion', () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/fr/tarifs');
+    // Sur mobile, le selecteur vit dans le menu du header : <details>
+    // NATIF, il s'ouvre au clic sans aucun JavaScript — c'est ce que ce
+    // test verrouille desormais aussi.
+    const burger = page.locator('header summary');
+    if (await burger.isVisible()) {
+      await burger.click();
+      await page.waitForTimeout(350); // meme stabilisation que ci-dessus
+    }
     await page.getByRole('link', { name: 'NL' }).click();
     await expect(page).toHaveURL(/\/nl\/tarifs/);
     await context.close();

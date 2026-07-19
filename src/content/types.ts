@@ -29,6 +29,11 @@ export type SiteContent = {
     contact: string;
     /** Nom accessible de la region <nav> principale du header. */
     primaryLabel: string;
+    /** Nom accessible du panneau de menu mobile (landmark distinct). */
+    menuLabel: string;
+    /** Libelles du bouton hamburger selon son etat. */
+    menuOpen: string;
+    menuClose: string;
   };
   /** Nom accessible du selecteur de langue (nav dans le header). */
   localeSwitcher: {

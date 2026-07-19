@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { getContent } from '@/content';
 import { company } from '@/content/company';
@@ -27,18 +27,36 @@ describe('SiteHeader', () => {
   });
 
   it('les liens de nav pointent vers la bonne locale', () => {
+    // Depuis le header flottant, les liens existent dans DEUX landmarks
+    // (nav desktop + panneau de menu mobile) : on cible la principale.
     renderHeader('nl', '/');
-    expect(screen.getByRole('link', { name: 'Transport Europa' })).toHaveAttribute(
+    const c = getContent('nl');
+    const nav = within(
+      screen.getByRole('navigation', { name: c.nav.primaryLabel }),
+    );
+    expect(nav.getByRole('link', { name: 'Transport Europa' })).toHaveAttribute(
       'href',
       '/nl/transport-europe',
     );
-    expect(screen.getByRole('link', { name: 'Tarieven' })).toHaveAttribute(
+    expect(nav.getByRole('link', { name: 'Tarieven' })).toHaveAttribute(
       'href',
       '/nl/tarifs',
     );
-    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
+    expect(nav.getByRole('link', { name: 'Contact' })).toHaveAttribute(
       'href',
       '/nl/contact',
+    );
+  });
+
+  it('le menu mobile porte les memes liens dans sa propre landmark', () => {
+    renderHeader('nl', '/');
+    const c = getContent('nl');
+    const menu = within(
+      screen.getByRole('navigation', { name: c.nav.menuLabel }),
+    );
+    expect(menu.getByRole('link', { name: 'Tarieven' })).toHaveAttribute(
+      'href',
+      '/nl/tarifs',
     );
   });
 
@@ -47,10 +65,13 @@ describe('SiteHeader', () => {
     // le selecteur de langue renverrait toujours vers l'accueil au lieu de
     // preserver la page courante.
     renderHeader('fr', '/tarifs');
-    expect(screen.getByRole('link', { name: 'NL' })).toHaveAttribute(
-      'href',
-      '/nl/tarifs',
-    );
+    // Deux instances du selecteur depuis le header flottant (rangee
+    // desktop + menu mobile) : TOUTES doivent preserver le chemin.
+    const nlLinks = screen.getAllByRole('link', { name: 'NL' });
+    expect(nlLinks).toHaveLength(2);
+    for (const link of nlLinks) {
+      expect(link).toHaveAttribute('href', '/nl/tarifs');
+    }
   });
 
   it('le logo ramene a l accueil de la locale', () => {

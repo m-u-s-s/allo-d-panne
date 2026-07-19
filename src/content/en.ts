@@ -19,6 +19,9 @@ export const en: SiteContent = {
     pricing: 'Pricing',
     contact: 'Contact',
     primaryLabel: 'Primary',
+    menuLabel: 'Menu',
+    menuOpen: 'Open menu',
+    menuClose: 'Close menu',
   },
   localeSwitcher: {
     label: 'Language',

@@ -20,6 +20,9 @@ export const nl: SiteContent = {
     pricing: 'Tarieven',
     contact: 'Contact',
     primaryLabel: 'Hoofdnavigatie',
+    menuLabel: 'Menu',
+    menuOpen: 'Menu openen',
+    menuClose: 'Menu sluiten',
   },
   localeSwitcher: {
     label: 'Taal',

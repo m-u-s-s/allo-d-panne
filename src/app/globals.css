@@ -52,6 +52,43 @@ body {
 }
 
 /*
+ * Header flottant, etat transparent sur page a sommet CLAIR (accueil :
+ * le hero commence creme). Les enfants du header sont rendus serveur
+ * avec text-text/text-muted — on les re-teinte en encre par attribut
+ * plutot que de les convertir en client components pour une couleur.
+ * data-scrolled reflete aussi "menu ouvert" : des que le fond verre
+ * sombre revient, ces regles ne s'appliquent plus.
+ */
+header[data-tone='light'][data-scrolled='false'] .text-text {
+  color: #111112;
+}
+header[data-tone='light'][data-scrolled='false'] .text-muted {
+  /* 5.0:1 contre le PIRE fond que calcule axe (voile creme 70 % fondu
+     sur le body sombre = #aaaba6) ; 9.7:1 sur le creme reel du hero.
+     #3d4654 donnait 4.12:1 — sous les 4.5:1 AA, mesure par axe. */
+  color: #333a47;
+}
+
+/*
+ * Panneau du menu mobile (details natif du header). Ferme, le navigateur
+ * le met en display:none — @starting-style permet malgre tout une entree
+ * animee a l'ouverture (Chrome 117+/Firefox 129+ ; ailleurs : ouverture
+ * instantanee, parfaitement fonctionnelle). La regle reduced-motion
+ * globale ecrase ces durees comme partout.
+ */
+.hdr-menu > .hdr-panel {
+  transition:
+    opacity 0.2s ease-out,
+    translate 0.2s ease-out;
+}
+@starting-style {
+  .hdr-menu[open] > .hdr-panel {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+}
+
+/*
  * Defilement horizontal (palier Full uniquement).
  *
  * Le HTML est ecrit VERTICAL : sans JavaScript, en Static, en Lite ou en
