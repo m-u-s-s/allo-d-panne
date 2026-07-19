@@ -133,16 +133,9 @@ export default async function HomePage({
             scrub que la piste. Purement decoratifs : aria-hidden, aucun
             evenement pointeur, invisibles hors mode horizontal.
           */}
-          <div
-            aria-hidden="true"
-            data-ribbon="fast"
-            className="hscroll-ribbon pointer-events-none absolute left-0 top-[8%] z-10 select-none whitespace-nowrap font-display text-[22svh] font-bold leading-none text-cta opacity-[0.07]"
-          >
-            {'‹ '.repeat(40)}
-          </div>
           {/* Triplet serre (maquette DevTools du client) : un seul motif
-              massif ‹‹‹ plutot qu'une trainee — le ruban rapide du haut
-              garde, lui, sa trainee continue. */}
+              massif ‹‹‹ — la trainee rapide du haut a ete supprimee a sa
+              demande, le triplet porte seul le motif. */}
           <div
             aria-hidden="true"
             data-ribbon="slow"
