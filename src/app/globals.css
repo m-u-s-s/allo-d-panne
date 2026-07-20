@@ -145,6 +145,28 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
 }
 
 /*
+ * Marquee des chevrons : defilement continu vers la DROITE (demande
+ * client). La piste porte deux copies identiques du jeu de 4 chevrons ;
+ * translateX(-50%) montre la 2e copie, translateX(0) la 1re — comme
+ * elles sont identiques, la boucle est sans couture. -50% → 0 = mouvement
+ * vers la droite. Lineaire = vitesse constante (« fluide »). La regle
+ * reduced-motion globale ci-dessous fige l'animation (duree 0.01ms).
+ */
+@keyframes chevron-marquee {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.chevron-marquee {
+  animation: chevron-marquee 22s linear infinite;
+  will-change: transform;
+}
+
+/*
  * Indicateur de scroll du hero : deux chevrons qui pulsent vers le bas,
  * le second avec un temps de retard — l'onde descend, le sens de lecture
  * est immediat. L'etat de repos (0 % / 100 %) est semi-transparent mais

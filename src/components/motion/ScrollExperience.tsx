@@ -245,26 +245,11 @@ export function ScrollExperience() {
             if (panelKids.length) gsap.set(panelKids, { clearProps: 'all' });
           });
 
-          // Les rubans de chevrons derivent avec la piste mais a des
-          // vitesses differentes : c'est l'ecart de vitesse qui cree la
-          // profondeur, pas les rubans eux-memes.
-          for (const ribbon of wrapper.querySelectorAll<HTMLElement>(
-            '[data-ribbon]',
-          )) {
-            const fast = ribbon.getAttribute('data-ribbon') === 'fast';
-            tweens.push(
-              gsap.to(ribbon, {
-                xPercent: fast ? -55 : -22,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: wrapper,
-                  start: 'top top',
-                  end: () => `+=${dist()}`,
-                  scrub: fast ? 0.4 : 1.1,
-                },
-              }),
-            );
-          }
+          // Le ruban de chevrons n'est PLUS pilote au scroll (retour
+          // client : il defile en continu vers la droite, animation CSS
+          // seamless — voir .chevron-marquee dans globals.css). GSAP ne
+          // le touche pas, sinon sa transform de scrub ecraserait celle
+          // de la marquee.
         }
       }
 

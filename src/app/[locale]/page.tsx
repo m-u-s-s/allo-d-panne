@@ -137,17 +137,20 @@ export default async function HomePage({
           <div
             aria-hidden="true"
             data-ribbon="slow"
-            className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none"
+            className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none overflow-hidden"
           >
-            {/* gap-[2px] : seul espace entre les colonnes. flex-1 =
-                quatre colonnes egales (chacune (100%-6px)/4). */}
-            <div className="flex h-full w-full gap-[2px]">
-              {/* Chaque div EST un chevron plein : clip-path arrondi-plein
-                  (‹ epais) qui remplit sa colonne bord a bord — le seul
-                  espace entre deux chevrons est le gap de 2px. Le
-                  backdrop-blur ne floute que dans la forme, le contenu
-                  reste net autour. Quatre intensites croissantes. */}
+            {/* Marquee : la piste porte DEUX copies du jeu de 4 chevrons
+                et defile vers la droite en continu (-50% → 0, boucle
+                sans couture — voir .chevron-marquee dans globals.css).
+                Chaque chevron fait 25vw + 2px de marge droite ; deux
+                copies = ~200vw, translateX(-50%) = exactement une copie.
+                w-max : la piste s'adapte a son contenu. */}
+            <div className="chevron-marquee flex h-full w-max">
               {[
+                'bg-white/[0.03] backdrop-blur-xs',
+                'bg-white/[0.06] backdrop-blur',
+                'bg-white/[0.09] backdrop-blur-md',
+                'bg-white/[0.13] backdrop-blur-lg',
                 'bg-white/[0.03] backdrop-blur-xs',
                 'bg-white/[0.06] backdrop-blur',
                 'bg-white/[0.09] backdrop-blur-md',
@@ -155,7 +158,7 @@ export default async function HomePage({
               ].map((glass, i) => (
                 <div
                   key={i}
-                  className={`h-full flex-1 ${glass}`}
+                  className={`h-full w-[25vw] shrink-0 [margin-right:2px] ${glass}`}
                   style={{
                     // ‹ epais remplissant la colonne : tip a gauche
                     // (0 50%), bras jusqu'aux coins droits, encoche a 68%
