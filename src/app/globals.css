@@ -134,6 +134,27 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
   padding-bottom: 2rem;
 }
 
+/* Titres des panneaux (retour client) : ils passent AU-DESSUS du mur de
+   verre (celui-ci est desormais en -z-10, derriere la piste). On leur
+   donne la meme qualite « verre » — legerement transparents — mais un
+   halo sombre garde le titre bien lisible sur les facettes claires : plus
+   net que le verre, comme demande. */
+[data-hscroll='on'] [data-panel] h2 {
+  color: rgba(248, 250, 252, 0.9);
+  text-shadow: 0 1px 26px rgba(10, 14, 20, 0.6);
+}
+
+/* Bandes de contenu pleine largeur (preuve, tarifs : <section bg-surface>).
+   Opaques, elles masquaient la paroi de verre en leur centre — un aplat
+   sombre au milieu du panneau. On les rend translucides en mode horizontal
+   pour que la paroi facettee transparaisse a travers (« remplir l'espace »),
+   facon verre depoli : le fond de verre se lit derriere, le texte reste net.
+   Les cartes (div bg-surface) restent pleines : elles flottent deja bien
+   sur le verre. */
+[data-hscroll='on'] [data-panel] section[class~='bg-surface'] {
+  background-color: rgba(20, 26, 35, 0.58);
+}
+
 /* Rubans de chevrons : invisibles tant que le mode horizontal n'est pas
    actif — ils n'ont aucun sens en flux vertical. */
 .hscroll-ribbon {
@@ -154,7 +175,7 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
  */
 @keyframes chevron-marquee {
   from {
-    transform: translateX(-50%);
+    transform: translateX(-60vw);
   }
   to {
     transform: translateX(0);
@@ -162,6 +183,13 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
 }
 
 .chevron-marquee {
+  /* La marge gauche negative sort l'encoche de la premiere tuile hors de
+     l'ecran a gauche : les bords lateraux de la paroi restent pleins,
+     jamais une pointe coupee. Le pas d'un chevron fait 15vw et le motif
+     de verre se repete tous les 4 chevrons, donc translater de 60vw
+     (= 4 × 15vw) ramene un chevron identique a chaque position — la
+     boucle est sans couture. */
+  margin-left: -20vw;
   animation: chevron-marquee 22s linear infinite;
   will-change: transform;
 }

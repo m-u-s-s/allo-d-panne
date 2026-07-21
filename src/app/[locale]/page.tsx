@@ -127,46 +127,56 @@ export default async function HomePage({
             </div>
           </div>
 
-          {/* Mur de chevrons de verre (iterations client) : quatre div
-              en FORME de ‹ (clip-path, bande 50 % — chaque chevron
-              touche les quatre coins de sa colonne de 25 %), le
-              backdrop-blur ne floute que dans la forme, intensites de
-              verre croissantes de gauche a droite. Decoratif :
-              aria-hidden, pointer-events-none, invisible hors mode
-              horizontal ; derive parallaxe GSAP sur le mur entier. */}
+          {/* Mur de verre facette (retour client : « pas pointu, remplir
+              l'espace, comme risk.film »). Chaque tuile est un chevron
+              PLEIN dont la pointe droite comble exactement l'encoche
+              gauche de la tuile suivante — pas = largeur − profondeur de
+              pointe (25vw − 10vw = 15vw). Les tuiles s'emboitent donc en
+              une paroi continue SANS trou (fini les triangles vides du
+              fond). Intensites de verre croissantes : les coutures
+              diagonales se lisent comme des facettes.
+
+              Couche placee DERRIERE la piste (-z-10) : un backdrop-blur
+              floute toujours ce qui est derriere lui, donc un titre net
+              ne peut PAS vivre derriere le verre. En passant le mur
+              sous les panneaux (transparents), le contenu — titres en
+              tete — repasse AU-DESSUS du verre, net et lisible, pendant
+              que le verre ne floute plus que le fond WebGL.
+
+              Decoratif : aria-hidden, pointer-events-none, invisible
+              hors mode horizontal. */}
           <div
             aria-hidden="true"
-            data-ribbon="slow"
-            className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none overflow-hidden"
+            className="hscroll-ribbon pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden"
           >
-            {/* Marquee : la piste porte DEUX copies du jeu de 4 chevrons
-                et defile vers la droite en continu (-50% → 0, boucle
-                sans couture — voir .chevron-marquee dans globals.css).
-                Chaque chevron fait 25vw + 2px de marge droite ; deux
-                copies = ~200vw, translateX(-50%) = exactement une copie.
-                w-max : la piste s'adapte a son contenu. */}
+            {/* Marquee : douze chevrons emboites defilent vers la droite
+                en continu. Periode = 4 chevrons × 15vw de pas = 60vw ;
+                le keyframe translate d'exactement 60vw (motif de verre
+                identique tous les 4) — boucle sans couture. La marge
+                gauche negative de .chevron-marquee sort la premiere
+                encoche hors ecran. w-max : la piste suit son contenu. */}
             <div className="chevron-marquee flex h-full w-max">
-              {[
-                'bg-white/[0.03] backdrop-blur-xs',
-                'bg-white/[0.06] backdrop-blur',
-                'bg-white/[0.09] backdrop-blur-md',
-                'bg-white/[0.13] backdrop-blur-lg',
-                'bg-white/[0.03] backdrop-blur-xs',
-                'bg-white/[0.06] backdrop-blur',
-                'bg-white/[0.09] backdrop-blur-md',
-                'bg-white/[0.13] backdrop-blur-lg',
-              ].map((glass, i) => (
-                <div
-                  key={i}
-                  className={`h-full w-[25vw] shrink-0 [margin-right:2px] ${glass}`}
-                  style={{
-                    // ‹ epais remplissant la colonne : tip a gauche
-                    // (0 50%), bras jusqu'aux coins droits, encoche a 68%
-                    clipPath:
-                      'polygon(100% 0, 0 50%, 100% 100%, 68% 50%)',
-                  }}
-                />
-              ))}
+              {Array.from({ length: 12 }, (_, i) => {
+                const glass = [
+                  'bg-white/[0.05] backdrop-blur-xs',
+                  'bg-white/[0.08] backdrop-blur',
+                  'bg-white/[0.11] backdrop-blur-md',
+                  'bg-white/[0.15] backdrop-blur-lg',
+                ][i % 4];
+                return (
+                  <div
+                    key={i}
+                    className={`h-full w-[25vw] shrink-0 [margin-right:-10vw] ${glass}`}
+                    style={{
+                      // Chevron plein ‹: pointe gauche a 0 %, encoche
+                      // droite a 60 % — la pointe d'une tuile remplit
+                      // l'encoche de la precedente (emboitement sans trou).
+                      clipPath:
+                        'polygon(100% 0%, 40% 0%, 0% 50%, 40% 100%, 100% 100%, 60% 50%)',
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
