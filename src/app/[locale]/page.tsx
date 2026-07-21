@@ -67,27 +67,31 @@ export default async function HomePage({
   // Le mur de chevrons de verre, factorise : reutilise a l'identique en
   // couche MEDIANE (z-10) de chaque panneau. backdrop-blur → il givre la
   // PHOTO placee derriere (z-0) ; le TITRE (z-20) passe net au-dessus.
-  // Chevrons PLEINS emboites (pointe d'une tuile = encoche de la voisine,
-  // pas 25vw − 10vw = 15vw) : paroi continue sans trou. Marquee : periode
-  // 60vw (motif tous les 4), translate exact de 60vw → boucle sans couture ;
-  // marge gauche negative sort la premiere encoche hors ecran.
+  // QUATRE chevrons pleins (retour client), emboites : la pointe d'une
+  // tuile comble l'encoche de la voisine (pas = 42vw × (1 − 0.4) = 25vw),
+  // paroi continue sans trou. Le jeu deborde legerement le panneau et est
+  // centre ; overflow-hidden rogne les demi-chevrons des bords → on voit
+  // quatre chevrons pleins qui remplissent la largeur. Statique : quatre
+  // tuiles ne peuvent pas boucler un defilement continu.
   const chevronGlass = (
     <div
       aria-hidden="true"
       className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none overflow-hidden"
     >
-      <div className="chevron-marquee flex h-full w-max">
-        {Array.from({ length: 12 }, (_, i) => {
+      <div className="flex h-full w-full items-stretch justify-center">
+        {Array.from({ length: 4 }, (_, i) => {
           const glass = [
             'bg-white/[0.05] backdrop-blur-xs',
             'bg-white/[0.08] backdrop-blur',
             'bg-white/[0.11] backdrop-blur-md',
             'bg-white/[0.15] backdrop-blur-lg',
-          ][i % 4];
+          ][i];
           return (
             <div
               key={i}
-              className={`h-full w-[25vw] shrink-0 [margin-right:-10vw] ${glass}`}
+              className={`h-full w-[42vw] shrink-0 ${
+                i < 3 ? '[margin-right:-16.8vw]' : ''
+              } ${glass}`}
               style={{
                 // Chevron plein ‹: pointe gauche a 0 %, encoche droite a
                 // 60 % — la pointe remplit l'encoche de la voisine.

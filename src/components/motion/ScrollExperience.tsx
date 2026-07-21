@@ -245,11 +245,9 @@ export function ScrollExperience() {
             if (panelKids.length) gsap.set(panelKids, { clearProps: 'all' });
           });
 
-          // Le ruban de chevrons n'est PLUS pilote au scroll (retour
-          // client : il defile en continu vers la droite, animation CSS
-          // seamless — voir .chevron-marquee dans globals.css). GSAP ne
-          // le touche pas, sinon sa transform de scrub ecraserait celle
-          // de la marquee.
+          // Le mur de chevrons de verre est une couche statique par panneau
+          // (quatre chevrons emboites, retour client) : GSAP ne le touche
+          // pas — il givre la photo de fond, le titre passe au-dessus.
         }
       }
 
