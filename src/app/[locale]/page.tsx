@@ -40,15 +40,15 @@ export default async function HomePage({
   const c = getContent(l);
 
   // Index horizontal : un theme par panneau. `href` → page dediee ouverte
-  // au clic sur le titre ; `photo` → mission de depannage sous le ruban. Le
-  // premier panneau est l'intro du site (ni lien ni photo).
+  // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre. Le
+  // premier panneau est l'intro du site (pas de lien).
   const panels: {
     title: string;
     sub?: string;
     href?: string;
     photo?: string;
   }[] = [
-    { title: c.problem.title, sub: c.problem.body },
+    { title: c.problem.title, sub: c.problem.body, photo: '/missions/accident.jpg' },
     {
       title: c.servicesSection.title,
       href: '/services',
@@ -63,6 +63,43 @@ export default async function HomePage({
       photo: '/missions/ville.jpg',
     },
   ];
+
+  // Le mur de chevrons de verre, factorise : reutilise a l'identique en
+  // couche MEDIANE (z-10) de chaque panneau. backdrop-blur → il givre la
+  // PHOTO placee derriere (z-0) ; le TITRE (z-20) passe net au-dessus.
+  // Chevrons PLEINS emboites (pointe d'une tuile = encoche de la voisine,
+  // pas 25vw − 10vw = 15vw) : paroi continue sans trou. Marquee : periode
+  // 60vw (motif tous les 4), translate exact de 60vw → boucle sans couture ;
+  // marge gauche negative sort la premiere encoche hors ecran.
+  const chevronGlass = (
+    <div
+      aria-hidden="true"
+      className="hscroll-ribbon pointer-events-none absolute inset-0 z-10 select-none overflow-hidden"
+    >
+      <div className="chevron-marquee flex h-full w-max">
+        {Array.from({ length: 12 }, (_, i) => {
+          const glass = [
+            'bg-white/[0.05] backdrop-blur-xs',
+            'bg-white/[0.08] backdrop-blur',
+            'bg-white/[0.11] backdrop-blur-md',
+            'bg-white/[0.15] backdrop-blur-lg',
+          ][i % 4];
+          return (
+            <div
+              key={i}
+              className={`h-full w-[25vw] shrink-0 [margin-right:-10vw] ${glass}`}
+              style={{
+                // Chevron plein ‹: pointe gauche a 0 %, encoche droite a
+                // 60 % — la pointe remplit l'encoche de la voisine.
+                clipPath:
+                  'polygon(100% 0%, 40% 0%, 0% 50%, 40% 100%, 100% 100%, 60% 50%)',
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <PageShell path="/" locale={l}>
@@ -114,28 +151,48 @@ export default async function HomePage({
         />
 
         {/*
-          Index horizontal (retour client). Chaque panneau porte, AU-DESSUS
-          du ruban de verre, le TITRE d'un theme — cliquable, il ouvre la
-          page dediee qui en porte le contenu complet ; et EN DESSOUS, une
-          PHOTO de mission de depannage. Ecrit VERTICAL : sans JS, en Static
-          / Lite / reduced-motion, les panneaux s'empilent. En palier Full,
-          ScrollExperience pose data-hscroll="on" : rangee plein ecran
-          epinglee que GSAP translate en X. Hero et FinalCta restent hors
-          piste.
+          Index horizontal (retour client). Chaque panneau est une PILE de
+          trois couches z (facon risk.film) : la PHOTO de mission en fond
+          (z-0), le mur de chevrons de verre par-dessus (z-10, son
+          backdrop-blur givre la photo), et le TITRE net superpose tout en
+          haut (z-20) — cliquable, il ouvre la page dediee au theme.
+
+          Ecrit VERTICAL : sans JS, en Static / Lite / reduced-motion, les
+          panneaux s'empilent (le verre, en .hscroll-ribbon, reste masque —
+          fond + titre suffisent). En palier Full, ScrollExperience pose
+          data-hscroll="on" : rangee plein ecran epinglee, translatee en X.
+          Hero et FinalCta restent hors piste.
         */}
         <div data-hscroll="">
           <div data-hscroll-track="">
             {panels.map((p) => (
               <div data-panel="" key={p.title}>
-                <div className="flex h-full w-full flex-col items-center">
-                  {/* HAUT : le titre, ancre juste au-dessus du ruban. */}
-                  <div className="flex flex-1 flex-col items-center justify-end px-6 pb-8 text-center">
+                <div className="relative h-full min-h-[100svh] w-full overflow-hidden">
+                  {/* FOND (z-0) : la photo de mission, DERRIERE le verre.
+                      Placeholder « design » genere (IA) — a remplacer par
+                      de vraies photos. alt="" : decoratif, le titre porte
+                      le sens. */}
+                  {p.photo ? (
+                    <Image
+                      src={p.photo}
+                      alt=""
+                      fill
+                      sizes="100vw"
+                      className="object-cover"
+                    />
+                  ) : null}
+
+                  {/* MEDIAN (z-10) : le mur de chevrons givre la photo. */}
+                  {chevronGlass}
+
+                  {/* HAUT (z-20) : le titre superpose au-dessus du verre. */}
+                  <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center">
                     {p.href ? (
                       <a
                         href={getPathname({ href: p.href, locale: l })}
                         className="hscroll-open group inline-flex items-center gap-3"
                       >
-                        <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+                        <h2 className="font-display text-4xl font-bold tracking-tight md:text-6xl">
                           {p.title}
                         </h2>
                         <span aria-hidden="true" className="hscroll-open-cue">
@@ -143,83 +200,21 @@ export default async function HomePage({
                         </span>
                       </a>
                     ) : (
-                      <>
-                        <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+                      <div>
+                        <h2 className="font-display text-4xl font-bold tracking-tight md:text-6xl">
                           {p.title}
                         </h2>
                         {p.sub ? (
-                          <p className="mt-4 max-w-[46ch] text-lg text-muted">
+                          <p className="mx-auto mt-5 max-w-[46ch] text-lg text-white/85">
                             {p.sub}
                           </p>
                         ) : null}
-                      </>
+                      </div>
                     )}
-                  </div>
-
-                  {/* MILIEU : bande reservee au ruban (meme hauteur que
-                      .hscroll-ribbon) — vide, le verre transparait ici. */}
-                  <div
-                    className="h-[34svh] w-full shrink-0"
-                    aria-hidden="true"
-                  />
-
-                  {/* BAS : la photo de mission, ancree juste sous le ruban. */}
-                  <div className="flex flex-1 items-start justify-center px-6 pt-8">
-                    {p.photo ? (
-                      <figure className="hscroll-photo">
-                        {/* Placeholder « design » genere (IA) — a remplacer
-                            par de vraies photos de missions. alt="" : la
-                            photo illustre le titre deja explicite (decorative). */}
-                        <Image
-                          src={p.photo}
-                          alt=""
-                          width={1280}
-                          height={854}
-                          className="h-full w-full object-cover"
-                          sizes="(max-width: 768px) 92vw, 40vw"
-                        />
-                      </figure>
-                    ) : null}
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Ruban de verre facette, en BANDE horizontale centree (retour
-              client : titres au-dessus, photos en dessous). Chevrons PLEINS
-              emboites — la pointe d'une tuile comble l'encoche de la voisine
-              (pas = 25vw − 10vw = 15vw) : paroi continue SANS trou. -z-10 :
-              derriere le contenu, il ne floute que le fond WebGL. Marquee :
-              12 chevrons, periode 60vw (motif tous les 4), translate exact
-              de 60vw → boucle sans couture ; marge gauche negative sort la
-              premiere encoche hors ecran. Decoratif : aria-hidden. */}
-          <div
-            aria-hidden="true"
-            className="hscroll-ribbon pointer-events-none absolute inset-x-0 top-[33svh] -z-10 h-[34svh] select-none overflow-hidden"
-          >
-            <div className="chevron-marquee flex h-full w-max">
-              {Array.from({ length: 12 }, (_, i) => {
-                const glass = [
-                  'bg-white/[0.05] backdrop-blur-xs',
-                  'bg-white/[0.08] backdrop-blur',
-                  'bg-white/[0.11] backdrop-blur-md',
-                  'bg-white/[0.15] backdrop-blur-lg',
-                ][i % 4];
-                return (
-                  <div
-                    key={i}
-                    className={`h-full w-[25vw] shrink-0 [margin-right:-10vw] ${glass}`}
-                    style={{
-                      // Chevron plein ‹: pointe gauche a 0 %, encoche droite
-                      // a 60 % — la pointe remplit l'encoche de la voisine.
-                      clipPath:
-                        'polygon(100% 0%, 40% 0%, 0% 50%, 40% 100%, 100% 100%, 60% 50%)',
-                    }}
-                  />
-                );
-              })}
-            </div>
           </div>
         </div>
 
