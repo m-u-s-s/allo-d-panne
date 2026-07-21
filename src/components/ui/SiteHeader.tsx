@@ -35,9 +35,11 @@ export function SiteHeader({
 
   return (
     // tone light : seul l'accueil a un sommet clair (creme du hero) —
-    // texte encre a l'etat transparent, via globals.css.
+    // Le hero de l'accueil est desormais SOMBRE (voiture sur fond sombre) :
+    // header en tone sombre partout (texte clair a l'etat transparent),
+    // comme les autres pages — plus de sommet clair a encrer.
     <HeaderShell
-      tone={path === '/' ? 'light' : 'dark'}
+      tone="dark"
       menuOpenLabel={c.nav.menuOpen}
       menuCloseLabel={c.nav.menuClose}
       menu={

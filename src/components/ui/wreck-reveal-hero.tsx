@@ -343,15 +343,19 @@ export default function WreckRevealHero({
 
   /* ----- Theme, carte, signature : memes fenetres que le hero
      precedent — l'architecture landonorris est inchangee. ----------- */
+  // Studio SOMBRE on-brand (retour client : voiture sur fond sombre). Le
+  // fond du composant matche le bord sombre de la nouvelle image voiture,
+  // pour que le retrait de la carte plein cadre → carte ne montre pas de
+  // saut de couleur ; le chrome passe clair (il etait encre sur creme).
   const backgroundColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#EFEFE5', '#282C20'],
+    ['#0b1119', '#0a0e14'],
   );
   const chromeColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#111112', '#EFEFE5'],
+    ['#EBEEE0', '#EBEEE0'],
   );
   const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 0]);
   const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 1]);
@@ -394,9 +398,9 @@ export default function WreckRevealHero({
   if (reduced) {
     return (
       <section
-        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#EFEFE5] ${className}`}
+        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a0e14] ${className}`}
       >
-        <ContourLayer stroke="rgba(17,17,18,0.07)" />
+        <ContourLayer stroke="rgba(235,238,224,0.07)" />
         <div className="relative aspect-[16/10] w-full max-w-5xl">
           {/* eslint-disable-next-line @next/next/no-img-element -- paire
               pixel-verrouillee : les deux couches doivent etre rendues a
@@ -405,7 +409,7 @@ export default function WreckRevealHero({
           {/* eslint-disable-next-line @next/next/no-img-element -- idem */}
           <img src={revealSrc} alt="" width={1600} height={1000} className="absolute inset-0 h-full w-full object-cover" draggable={false} />
         </div>
-        <div className="absolute left-6 top-24 text-[#111112]">
+        <div className="absolute left-6 top-24 text-[#EBEEE0]">
           <p className="text-2xl tracking-wide" style={{ fontFamily: 'var(--font-instrument), serif', fontStyle: 'italic' }}>
             {brandTop}
           </p>
