@@ -77,6 +77,9 @@ export function ogLocaleFor(locale: Locale): string {
 
 export const ROUTES = [
   '/',
+  '/services',
+  '/zones',
+  '/pourquoi',
   '/transport-europe',
   '/tarifs',
   '/contact',

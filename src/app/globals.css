@@ -144,15 +144,43 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
   text-shadow: 0 1px 26px rgba(10, 14, 20, 0.6);
 }
 
-/* Bandes de contenu pleine largeur (preuve, tarifs : <section bg-surface>).
-   Opaques, elles masquaient la paroi de verre en leur centre — un aplat
-   sombre au milieu du panneau. On les rend translucides en mode horizontal
-   pour que la paroi facettee transparaisse a travers (« remplir l'espace »),
-   facon verre depoli : le fond de verre se lit derriere, le texte reste net.
-   Les cartes (div bg-surface) restent pleines : elles flottent deja bien
-   sur le verre. */
-[data-hscroll='on'] [data-panel] section[class~='bg-surface'] {
-  background-color: rgba(20, 26, 35, 0.58);
+/* Index horizontal (retour client) : le titre du panneau est un lien qui
+   ouvre la page du theme. Le chevron › fait office d'affordance « ouvrir »
+   et glisse au survol ; le titre s'eclaircit legerement. */
+[data-hscroll='on'] [data-panel] .hscroll-open {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 200ms ease;
+}
+[data-hscroll='on'] [data-panel] .hscroll-open:hover {
+  opacity: 0.86;
+}
+.hscroll-open-cue {
+  font-size: 0.55em;
+  line-height: 1;
+  color: var(--color-cta);
+  transition: transform 200ms ease;
+}
+.hscroll-open:hover .hscroll-open-cue {
+  transform: translateX(5px);
+}
+
+/* Photo de mission sous le ruban : cadrage paysage contenu dans le tiers
+   bas du panneau, coins arrondis, bord discret, ombre portee pour la
+   detacher du verre. object-cover : jamais de deformation. */
+.hscroll-photo {
+  height: min(26svh, 32vw);
+  aspect-ratio: 3 / 2;
+  max-width: 92vw;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 26px 64px -22px rgba(0, 0, 0, 0.75);
+}
+.hscroll-photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 /* Rubans de chevrons : invisibles tant que le mode horizontal n'est pas

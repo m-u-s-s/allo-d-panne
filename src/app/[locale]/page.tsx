@@ -5,14 +5,12 @@ import type { Metadata } from 'next';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
-import { CoverageSection } from '@/components/ui/CoverageSection';
+import Image from 'next/image';
 import { FinalCta } from '@/components/ui/FinalCta';
 import WreckRevealHero from '@/components/ui/wreck-reveal-hero';
 import { PageShell } from '@/components/ui/PageShell';
 import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
-import { PricingSection } from '@/components/ui/PricingSection';
-import { ProofSection } from '@/components/ui/ProofSection';
-import { ServicesSection } from '@/components/ui/ServicesSection';
+import { getPathname } from '@/i18n/navigation';
 
 export async function generateMetadata({
   params,
@@ -40,6 +38,31 @@ export default async function HomePage({
   setRequestLocale(locale);
   const l = locale as Locale;
   const c = getContent(l);
+
+  // Index horizontal : un theme par panneau. `href` → page dediee ouverte
+  // au clic sur le titre ; `photo` → mission de depannage sous le ruban. Le
+  // premier panneau est l'intro du site (ni lien ni photo).
+  const panels: {
+    title: string;
+    sub?: string;
+    href?: string;
+    photo?: string;
+  }[] = [
+    { title: c.problem.title, sub: c.problem.body },
+    {
+      title: c.servicesSection.title,
+      href: '/services',
+      photo: '/missions/remorquage.jpg',
+    },
+    { title: c.proof.title, href: '/pourquoi', photo: '/missions/depannage.jpg' },
+    { title: c.coverage.title, href: '/zones', photo: '/missions/transport.jpg' },
+    {
+      title: c.pricing.title,
+      sub: c.pricing.subtitle,
+      href: '/tarifs',
+      photo: '/missions/ville.jpg',
+    },
+  ];
 
   return (
     <PageShell path="/" locale={l}>
@@ -91,70 +114,90 @@ export default async function HomePage({
         />
 
         {/*
-          Piste horizontale. Ecrite VERTICALE : les data-panel s'empilent
-          normalement sans JavaScript, en Static, en Lite et en
-          reduced-motion. En palier Full, ScrollExperience pose
-          data-hscroll="on" : les panneaux passent plein ecran en rangee
-          (globals.css) et GSAP epingle la piste puis la translate vers la
-          GAUCHE pendant le defilement vertical. Hero et FinalCta restent
-          hors piste : l'entree du site et son CTA de conversion ne
-          passent jamais dans le scrolljack.
+          Index horizontal (retour client). Chaque panneau porte, AU-DESSUS
+          du ruban de verre, le TITRE d'un theme — cliquable, il ouvre la
+          page dediee qui en porte le contenu complet ; et EN DESSOUS, une
+          PHOTO de mission de depannage. Ecrit VERTICAL : sans JS, en Static
+          / Lite / reduced-motion, les panneaux s'empilent. En palier Full,
+          ScrollExperience pose data-hscroll="on" : rangee plein ecran
+          epinglee que GSAP translate en X. Hero et FinalCta restent hors
+          piste.
         */}
         <div data-hscroll="">
           <div data-hscroll-track="">
-            {/* Section "probleme" : la situation du client, avant les services. */}
-            <div data-panel="">
-              <section className="mx-auto max-w-7xl px-4 py-20">
-                <h2 className="max-w-[60ch] font-display text-2xl font-bold tracking-tight md:text-3xl">
-                  {c.problem.title}
-                </h2>
-                <p className="mt-4 max-w-[60ch] text-lg text-muted">
-                  {c.problem.body}
-                </p>
-              </section>
-            </div>
-            <div data-panel="">
-              <ServicesSection locale={l} />
-            </div>
-            <div data-panel="">
-              <ProofSection locale={l} />
-            </div>
-            <div data-panel="">
-              <CoverageSection locale={l} />
-            </div>
-            <div data-panel="">
-              <PricingSection locale={l} />
-            </div>
+            {panels.map((p) => (
+              <div data-panel="" key={p.title}>
+                <div className="flex h-full w-full flex-col items-center">
+                  {/* HAUT : le titre, ancre juste au-dessus du ruban. */}
+                  <div className="flex flex-1 flex-col items-center justify-end px-6 pb-8 text-center">
+                    {p.href ? (
+                      <a
+                        href={getPathname({ href: p.href, locale: l })}
+                        className="hscroll-open group inline-flex items-center gap-3"
+                      >
+                        <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+                          {p.title}
+                        </h2>
+                        <span aria-hidden="true" className="hscroll-open-cue">
+                          ›
+                        </span>
+                      </a>
+                    ) : (
+                      <>
+                        <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+                          {p.title}
+                        </h2>
+                        {p.sub ? (
+                          <p className="mt-4 max-w-[46ch] text-lg text-muted">
+                            {p.sub}
+                          </p>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
+
+                  {/* MILIEU : bande reservee au ruban (meme hauteur que
+                      .hscroll-ribbon) — vide, le verre transparait ici. */}
+                  <div
+                    className="h-[34svh] w-full shrink-0"
+                    aria-hidden="true"
+                  />
+
+                  {/* BAS : la photo de mission, ancree juste sous le ruban. */}
+                  <div className="flex flex-1 items-start justify-center px-6 pt-8">
+                    {p.photo ? (
+                      <figure className="hscroll-photo">
+                        {/* Placeholder « design » genere (IA) — a remplacer
+                            par de vraies photos de missions. alt="" : la
+                            photo illustre le titre deja explicite (decorative). */}
+                        <Image
+                          src={p.photo}
+                          alt=""
+                          width={1280}
+                          height={854}
+                          className="h-full w-full object-cover"
+                          sizes="(max-width: 768px) 92vw, 40vw"
+                        />
+                      </figure>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Mur de verre facette (retour client : « pas pointu, remplir
-              l'espace, comme risk.film »). Chaque tuile est un chevron
-              PLEIN dont la pointe droite comble exactement l'encoche
-              gauche de la tuile suivante — pas = largeur − profondeur de
-              pointe (25vw − 10vw = 15vw). Les tuiles s'emboitent donc en
-              une paroi continue SANS trou (fini les triangles vides du
-              fond). Intensites de verre croissantes : les coutures
-              diagonales se lisent comme des facettes.
-
-              Couche placee DERRIERE la piste (-z-10) : un backdrop-blur
-              floute toujours ce qui est derriere lui, donc un titre net
-              ne peut PAS vivre derriere le verre. En passant le mur
-              sous les panneaux (transparents), le contenu — titres en
-              tete — repasse AU-DESSUS du verre, net et lisible, pendant
-              que le verre ne floute plus que le fond WebGL.
-
-              Decoratif : aria-hidden, pointer-events-none, invisible
-              hors mode horizontal. */}
+          {/* Ruban de verre facette, en BANDE horizontale centree (retour
+              client : titres au-dessus, photos en dessous). Chevrons PLEINS
+              emboites — la pointe d'une tuile comble l'encoche de la voisine
+              (pas = 25vw − 10vw = 15vw) : paroi continue SANS trou. -z-10 :
+              derriere le contenu, il ne floute que le fond WebGL. Marquee :
+              12 chevrons, periode 60vw (motif tous les 4), translate exact
+              de 60vw → boucle sans couture ; marge gauche negative sort la
+              premiere encoche hors ecran. Decoratif : aria-hidden. */}
           <div
             aria-hidden="true"
-            className="hscroll-ribbon pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden"
+            className="hscroll-ribbon pointer-events-none absolute inset-x-0 top-[33svh] -z-10 h-[34svh] select-none overflow-hidden"
           >
-            {/* Marquee : douze chevrons emboites defilent vers la droite
-                en continu. Periode = 4 chevrons × 15vw de pas = 60vw ;
-                le keyframe translate d'exactement 60vw (motif de verre
-                identique tous les 4) — boucle sans couture. La marge
-                gauche negative de .chevron-marquee sort la premiere
-                encoche hors ecran. w-max : la piste suit son contenu. */}
             <div className="chevron-marquee flex h-full w-max">
               {Array.from({ length: 12 }, (_, i) => {
                 const glass = [
@@ -168,9 +211,8 @@ export default async function HomePage({
                     key={i}
                     className={`h-full w-[25vw] shrink-0 [margin-right:-10vw] ${glass}`}
                     style={{
-                      // Chevron plein ‹: pointe gauche a 0 %, encoche
-                      // droite a 60 % — la pointe d'une tuile remplit
-                      // l'encoche de la precedente (emboitement sans trou).
+                      // Chevron plein ‹: pointe gauche a 0 %, encoche droite
+                      // a 60 % — la pointe remplit l'encoche de la voisine.
                       clipPath:
                         'polygon(100% 0%, 40% 0%, 0% 50%, 40% 100%, 100% 100%, 60% 50%)',
                     }}
