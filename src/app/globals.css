@@ -190,6 +190,31 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
 }
 
 /*
+ * Marquee des chevrons : defilement continu vers la DROITE (retour client
+ * « garder le defilement »). Douze tuiles emboitees de pas 25.2vw ; le motif
+ * de verre se repete tous les 4 chevrons, donc translater d'exactement une
+ * periode (4 × 25.2 = 100.8vw) ramene un chevron identique a chaque position
+ * → boucle sans couture. L'ecran (100vw / 25.2 ≈ 4) n'en montre que QUATRE a
+ * la fois — les autres tuiles ne servent qu'a boucler. La marge gauche
+ * negative sort la premiere encoche hors ecran ; la regle reduced-motion
+ * globale plus bas fige l'animation.
+ */
+@keyframes chevron-marquee {
+  from {
+    transform: translateX(-100.8vw);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.chevron-marquee {
+  margin-left: -30vw;
+  animation: chevron-marquee 22s linear infinite;
+  will-change: transform;
+}
+
+/*
  * Indicateur de scroll du hero : deux chevrons qui pulsent vers le bas,
  * le second avec un temps de retard — l'onde descend, le sens de lecture
  * est immediat. L'etat de repos (0 % / 100 %) est semi-transparent mais

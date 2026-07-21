@@ -245,9 +245,10 @@ export function ScrollExperience() {
             if (panelKids.length) gsap.set(panelKids, { clearProps: 'all' });
           });
 
-          // Le mur de chevrons de verre est une couche statique par panneau
-          // (quatre chevrons emboites, retour client) : GSAP ne le touche
-          // pas — il givre la photo de fond, le titre passe au-dessus.
+          // Le mur de chevrons de verre defile en continu (CSS .chevron-
+          // marquee, quatre chevrons visibles a la fois) : GSAP ne le touche
+          // pas, sinon sa transform de scrub ecraserait celle de la marquee.
+          // Il givre la photo de fond, le titre passe au-dessus.
         }
       }
 
