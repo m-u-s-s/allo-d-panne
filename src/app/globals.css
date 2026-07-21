@@ -139,13 +139,22 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
    donne la meme qualite « verre » — legerement transparents — mais un
    halo sombre garde le titre bien lisible sur les facettes claires : plus
    net que le verre, comme demande. */
+/* Titres de l'index « 3D et transparents » (retour client). Remplissage
+   quasi transparent : le verre et la photo transparaissent DANS les lettres.
+   Une arete claire au trait (-webkit-text-stroke) dessine le bord du verre ;
+   une extrusion en escalier d'ombres decalees vers le bas-droite donne le
+   relief 3D, et un lisere clair en haut-gauche simule la lumiere sur le
+   biseau. Les unites em : le relief suit la taille de police (3xl → 6xl). */
 [data-hscroll='on'] [data-panel] h2 {
-  color: rgba(248, 250, 252, 0.92);
-  /* Deux ombres : une serree pour detacher les lettres du verre clair, une
-     large en halo pour garder le contraste sur les facettes lumineuses. */
+  color: rgba(255, 255, 255, 0.1);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
   text-shadow:
-    0 2px 10px rgba(8, 11, 17, 0.72),
-    0 1px 34px rgba(8, 11, 17, 0.55);
+    -0.012em -0.012em 0 rgba(255, 255, 255, 0.4),
+    0.02em 0.02em 0 rgba(0, 0, 0, 0.3),
+    0.04em 0.04em 0 rgba(0, 0, 0, 0.26),
+    0.06em 0.06em 0 rgba(0, 0, 0, 0.22),
+    0.08em 0.08em 0 rgba(0, 0, 0, 0.18),
+    0.11em 0.13em 0.09em rgba(0, 0, 0, 0.62);
 }
 
 /* Index horizontal (retour client) : le titre du panneau est un lien qui
