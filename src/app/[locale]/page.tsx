@@ -140,8 +140,8 @@ export default async function HomePage({
           restent dans public/ comme filet.
         */}
         <WreckRevealHero
-          wreckedSrc="/hero-car-wrecked.webp"
-          revealSrc="/hero-car-restored-cutout.webp"
+          wreckedSrc="/hero-truck-empty.webp"
+          revealSrc="/hero-truck-loaded.webp"
           marqueeSerif="Alo-Dépannage"
           marqueeSans={c.hero.title}
           caption={c.hero.eyebrow}
