@@ -365,8 +365,8 @@ export function MarqueeRow({
     <motion.div
       className={
         serif
-          ? 'whitespace-nowrap text-[9vw] leading-none text-[#B2C73A] will-change-transform'
-          : 'whitespace-nowrap font-black uppercase tracking-tight text-[8vw] leading-none text-[#EBEEE0] will-change-transform'
+          ? 'whitespace-nowrap text-[9vw] leading-none text-[#96A82E] will-change-transform'
+          : 'whitespace-nowrap font-black uppercase tracking-tight text-[8vw] leading-none text-[#BCC0B1] will-change-transform'
       }
       style={{
         x,

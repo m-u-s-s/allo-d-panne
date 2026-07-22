@@ -353,14 +353,13 @@ export default function WreckRevealHero({
 
   /* ----- Theme, carte, signature : memes fenetres que le hero
      precedent — l'architecture landonorris est inchangee. ----------- */
-  // Studio SOMBRE on-brand (retour client : voiture sur fond sombre). Le
-  // fond du composant matche le bord sombre de la nouvelle image voiture,
-  // pour que le retrait de la carte plein cadre → carte ne montre pas de
-  // saut de couleur ; le chrome passe clair (il etait encre sur creme).
-  // Voile d'encre LEGER (retour client : la depanneuse doit rester visible,
-  // l'encre juste par-dessus). 0.4 au repos → le camion transparait sous le
-  // voile ; l'essuyage l'eclaircit a fond le long des coups de pinceau. Tombe
-  // a 0 des le debut du scroll pour liberer la choregraphie.
+  // Studio CLAIR (bascule theme clair 2026-07-22, retour client « hero clair,
+  // panneau HeroAlo sombre ») : fond blanc, chrome ENCRE sombre (#15171C),
+  // marquees et nappes reteintes pour le clair. La depanneuse detouree pose
+  // parfaitement sur blanc.
+  // Voile LEGER a essuyer : desormais un voile CLAIR ([255,255,255]) — sur
+  // fond blanc il fond dans le fond (brume) et l'essuyage revele la
+  // depanneuse. 0.4 au repos, tombe a 0 des le debut du scroll.
   const inkOpacity = useTransform(scrollYProgress, [0, 0.12], [0.4, 0]);
   const inkPointer = useTransform(inkOpacity, (v) =>
     v < 0.05 ? 'none' : 'auto',
@@ -369,17 +368,16 @@ export default function WreckRevealHero({
   const backgroundColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#0b1119', '#0a0e14'],
+    ['#ffffff', '#eef1e6'],
   );
   const chromeColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
-    ['#EBEEE0', '#EBEEE0'],
+    ['#15171C', '#15171C'],
   );
-  // Images du hero desormais DETOUREES (fond transparent) : les nappes
-  // claires #DDE1D2 transparaissaient a travers → taches cremes sur le
-  // theme sombre. On ne garde que les nappes SOMBRES (#3B3C38), ambiance
-  // discrete sur #0a0e14.
+  // Nappes ambiantes (blur) : en theme clair on garde une nappe TRES claire
+  // (#E8EADF), ambiance discrete sur blanc (l'ancienne nappe sombre aurait
+  // fait des taches grises).
   const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 0]);
   const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 1]);
   const cardOpacity = useTransform(scrollYProgress, [0.4, 0.5], [1, 0]);
@@ -421,9 +419,9 @@ export default function WreckRevealHero({
   if (reduced) {
     return (
       <section
-        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a0e14] ${className}`}
+        className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#ffffff] ${className}`}
       >
-        <ContourLayer stroke="rgba(235,238,224,0.07)" />
+        <ContourLayer stroke="rgba(21,23,28,0.06)" />
         <div className="relative aspect-[16/10] w-full max-w-5xl">
           {/* eslint-disable-next-line @next/next/no-img-element -- paire
               pixel-verrouillee : les deux couches doivent etre rendues a
@@ -432,7 +430,7 @@ export default function WreckRevealHero({
           {/* eslint-disable-next-line @next/next/no-img-element -- idem */}
           <img src={revealSrc} alt="" width={1600} height={1000} className="absolute inset-0 h-full w-full object-cover" draggable={false} />
         </div>
-        <div className="absolute left-6 top-24 text-[#EBEEE0]">
+        <div className="absolute left-6 top-24 text-[#15171C]">
           <p className="text-2xl tracking-wide" style={{ fontFamily: 'var(--font-instrument), serif', fontStyle: 'italic' }}>
             {brandTop}
           </p>
@@ -469,7 +467,7 @@ export default function WreckRevealHero({
             transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
           >
             <motion.div className="h-full w-full bg-[#DDE1D2]" style={{ opacity: lightPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }} />
-            <motion.div className="-mt-[48vh] h-full w-full bg-[#3B3C38]" style={{ opacity: darkPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }} />
+            <motion.div className="-mt-[48vh] h-full w-full bg-[#E8EADF]" style={{ opacity: darkPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }} />
           </motion.div>
         </motion.div>
         <motion.div
@@ -483,7 +481,7 @@ export default function WreckRevealHero({
             transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
           >
             <motion.div className="h-full w-full bg-[#DDE1D2]" style={{ opacity: lightPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }} />
-            <motion.div className="-mt-[40vh] h-full w-full bg-[#3B3C38]" style={{ opacity: darkPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }} />
+            <motion.div className="-mt-[40vh] h-full w-full bg-[#E8EADF]" style={{ opacity: darkPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }} />
           </motion.div>
         </motion.div>
 
@@ -559,9 +557,12 @@ export default function WreckRevealHero({
               </motion.div>
             </motion.div>
 
-            {/* Teinte olive de la phase carte. */}
+            {/* Teinte de la phase carte. Theme CLAIR : une teinte TRES claire
+                (#eef1e6) — en multiply sur blanc elle est quasi invisible, au
+                lieu de l'ancien olive sombre qui dessinait une boite grise sur
+                le fond blanc. */}
             <motion.div
-              className="pointer-events-none absolute inset-0 bg-[#282C20]"
+              className="pointer-events-none absolute inset-0 bg-[#eef1e6]"
               style={{ opacity: tintOpacity, mixBlendMode: 'multiply' }}
             />
 
@@ -594,7 +595,7 @@ export default function WreckRevealHero({
                 style={{ opacity: inkOpacity, pointerEvents: inkPointer }}
                 aria-hidden="true"
               >
-                <InkReveal maskColor={[11, 17, 25]} />
+                <InkReveal maskColor={[255, 255, 255]} />
               </motion.div>
             )}
           </motion.div>
@@ -625,7 +626,7 @@ export default function WreckRevealHero({
           />
         </div>
         <motion.div
-          className="absolute inset-x-0 bottom-[7%] z-30 flex flex-col items-center gap-1 text-[#EBEEE0]"
+          className="absolute inset-x-0 bottom-[7%] z-30 flex flex-col items-center gap-1 text-[#15171C]"
           style={{ opacity: laurelOpacity }}
         >
           <LaurelIcon className="h-6 w-6" />
