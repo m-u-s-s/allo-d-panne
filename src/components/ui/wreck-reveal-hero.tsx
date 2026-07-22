@@ -345,6 +345,10 @@ export default function WreckRevealHero({
   const blobX = useTransform(springNX, (v) => v * 24);
   const blobY = useTransform(springNY, (v) => v * 24);
   const blobXInv = useTransform(springNX, (v) => v * -24);
+  // Parallaxe souris du fond topographique (sens inverse des nappes, plus
+  // ample : la carte glisse sous le curseur).
+  const topoX = useTransform(springNX, (v) => v * -30);
+  const topoY = useTransform(springNY, (v) => v * -30);
 
   /* ----- Theme, carte, signature : memes fenetres que le hero
      precedent — l'architecture landonorris est inchangee. ----------- */
@@ -456,12 +460,26 @@ export default function WreckRevealHero({
             depanneuse : lignes de niveau en noir sur alpha (le blanc a ete
             rendu transparent), elles flottent sur le fond clair anime du
             hero. z-0 = couche la plus profonde, sous les marquees, la scene
-            et le chrome. Remplace l'ancien MorphingContours anime. */}
-        <div
+            et le chrome. Remplace l'ancien MorphingContours anime — il BOUGE
+            donc lui aussi : parallaxe souris (couche externe) + derive lente
+            continue (couche interne, boucle infinie). inset negatif : reserve
+            du debord pour que la derive/le zoom ne montrent jamais les bords. */}
+        <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center opacity-90"
-          style={{ backgroundImage: 'url(/hero-topo.webp)' }}
-        />
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+          style={{ x: topoX, y: topoY }}
+        >
+          <motion.div
+            className="absolute inset-[-10%] bg-cover bg-center opacity-90 will-change-transform"
+            style={{ backgroundImage: 'url(/hero-topo.webp)' }}
+            animate={{
+              x: ['-2.2%', '2.2%', '-2.2%'],
+              y: ['1.6%', '-1.6%', '1.6%'],
+              scale: [1.06, 1.16, 1.06],
+            }}
+            transition={{ duration: 34, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </motion.div>
 
         {/* Nappes sauge (parallaxe + derive + deformation). */}
         <motion.div
