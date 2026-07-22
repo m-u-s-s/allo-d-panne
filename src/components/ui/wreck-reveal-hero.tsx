@@ -20,6 +20,7 @@ import {
   PhoneIcon,
 } from './scroll-assembly-hero';
 import { MarqueeRow } from './scroll-assembly-hero';
+import InkReveal from './ink-reveal';
 
 /**
  * WreckRevealHero — hero au scroll (architecture landonorris) dont la
@@ -124,6 +125,15 @@ export default function WreckRevealHero({
   const imgARef = React.useRef<HTMLImageElement>(null);
   const imgBRef = React.useRef<HTMLImageElement>(null);
   const reduced = useReducedMotion();
+
+  // Voile d'ENCRE a essuyer a la souris (retour client) : n'a de sens que sur
+  // pointeur fin AVEC survol. Au tactile on ne peut pas essuyer — le hero
+  // resterait voile —, donc on ne l'active pas et la scene s'affiche normale.
+  const [inkOn, setInkOn] = React.useState(false);
+  React.useEffect(() => {
+    if (reduced) return;
+    setInkOn(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+  }, [reduced]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -347,6 +357,13 @@ export default function WreckRevealHero({
   // fond du composant matche le bord sombre de la nouvelle image voiture,
   // pour que le retrait de la carte plein cadre → carte ne montre pas de
   // saut de couleur ; le chrome passe clair (il etait encre sur creme).
+  // Voile d'encre : opaque au repos (scroll 0), s'efface des le debut du
+  // defilement pour ne pas masquer la choregraphie carte/marquees/signature.
+  const inkOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  const inkPointer = useTransform(inkOpacity, (v) =>
+    v < 0.05 ? 'none' : 'auto',
+  );
+
   const backgroundColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
@@ -558,6 +575,25 @@ export default function WreckRevealHero({
                 className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
                 style={qa === 'diff' ? { mixBlendMode: 'difference' } : undefined}
               />
+            )}
+
+            {/* Voile d'ENCRE (retour client) : dernier enfant de la scene,
+                il la recouvre d'un aplat couleur fond. On l'ESSUIE a la
+                souris — et comme le halo suit le meme curseur, les coups de
+                pinceau revelent la depanneuse dessous ; le voile se referme.
+                Il vit DANS la scene : ses evenements pointeur remontent au
+                conteneur (le halo se declenche), il retrecit avec la carte,
+                et l'opacite tombe des le debut du scroll (inkOpacity) pour
+                liberer la choregraphie. Chrome (logo/CTA/carte) au-dessus,
+                donc toujours cliquable. Tactile / reduced-motion : absent. */}
+            {inkOn && (
+              <motion.div
+                className="absolute inset-0 z-[5]"
+                style={{ opacity: inkOpacity, pointerEvents: inkPointer }}
+                aria-hidden="true"
+              >
+                <InkReveal maskColor={[11, 17, 25]} />
+              </motion.div>
             )}
           </motion.div>
         </div>
