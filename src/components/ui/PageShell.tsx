@@ -23,17 +23,24 @@ export function PageShell({
   path,
   locale,
   children,
+  hideFooter = false,
 }: {
   /** Chemin sans prefixe de langue (ex. '/', '/tarifs'). */
   path: string;
   locale: Locale;
   children: React.ReactNode;
+  /**
+   * L'accueil se clot par le panneau HeroAlo, qui porte deja sa propre
+   * navigation, ses reseaux, ses mentions et son copyright : le footer
+   * global ferait doublon. Les autres pages gardent SiteFooter.
+   */
+  hideFooter?: boolean;
 }) {
   return (
     <>
       <SiteHeader locale={locale} path={path} />
       {children}
-      <SiteFooter locale={locale} />
+      {!hideFooter && <SiteFooter locale={locale} />}
       <StickyCallBar locale={locale} />
     </>
   );

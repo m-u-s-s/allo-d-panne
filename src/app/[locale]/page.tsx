@@ -7,7 +7,7 @@ import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import Image from 'next/image';
 import { ExpandableGallery } from '@/components/ui/expandable-gallery';
-import { FinalCta } from '@/components/ui/FinalCta';
+import { HeroAlo } from '@/components/ui/HeroAlo';
 import WreckRevealHero from '@/components/ui/wreck-reveal-hero';
 import { PageShell } from '@/components/ui/PageShell';
 import { PHONE_NATIONAL, TEL_HREF } from '@/lib/phone';
@@ -107,7 +107,7 @@ export default async function HomePage({
   );
 
   return (
-    <PageShell path="/" locale={l}>
+    <PageShell path="/" locale={l} hideFooter>
       {/*
         data-stage : contrat avec la couche motion (ScrollExperience).
         Chaque etage recoit les transitions d'entree/sortie scrubbed en
@@ -255,9 +255,12 @@ export default async function HomePage({
             hors piste horizontale. */}
         <ExpandableGallery />
 
-        <div data-stage="">
-          <FinalCta locale={l} videoReveal />
-        </div>
+        {/* Section finale « plein cadre » (retour client, calquee sur
+            landonorris.com) : remplace l'ancien CTA video. Panneau sombre a
+            encoche, titre collage, depanneuse, colonnes, frise et CTA a
+            cheval sur le bord bas. Composant autonome, hors data-stage (il
+            porte sa propre choregraphie d'entree). */}
+        <HeroAlo locale={l} />
       </main>
     </PageShell>
   );

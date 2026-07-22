@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Instrument_Serif, Inter, Syncopate } from 'next/font/google';
+import { Anton, Instrument_Serif, Inter, Syncopate } from 'next/font/google';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -24,6 +24,15 @@ const syncopate = Syncopate({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-syncopate',
+  display: 'swap',
+});
+
+/* Grotesque condensee tres grasse (facon Druk/Anton) : titre du panneau
+   final « HeroAlo » calque sur la reference landonorris. Poids unique. */
+const anton = Anton({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-anton',
   display: 'swap',
 });
 
@@ -104,7 +113,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${syncopate.variable} ${instrument.variable}`}
+      className={`${inter.variable} ${syncopate.variable} ${instrument.variable} ${anton.variable}`}
       suppressHydrationWarning
     >
       {/*
