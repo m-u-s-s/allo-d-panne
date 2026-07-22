@@ -357,8 +357,12 @@ export default function WreckRevealHero({
     [0.4, 0.55],
     ['#EBEEE0', '#EBEEE0'],
   );
-  const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 0]);
-  const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 1]);
+  // Images du hero desormais DETOUREES (fond transparent) : les nappes
+  // claires #DDE1D2 transparaissaient a travers → taches cremes sur le
+  // theme sombre. On ne garde que les nappes SOMBRES (#3B3C38), ambiance
+  // discrete sur #0a0e14.
+  const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 0]);
+  const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 1]);
   const cardOpacity = useTransform(scrollYProgress, [0.4, 0.5], [1, 0]);
 
   const wVw = useTransform(scrollYProgress, [0.42, 0.58], [100, 46]);
