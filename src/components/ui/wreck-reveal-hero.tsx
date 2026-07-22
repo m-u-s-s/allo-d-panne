@@ -15,7 +15,6 @@ import {
 } from 'framer-motion';
 import { LaurelIcon, PhoneIcon } from './scroll-assembly-hero';
 import { MarqueeRow } from './scroll-assembly-hero';
-import InkReveal from './ink-reveal';
 
 /**
  * WreckRevealHero — hero au scroll (architecture landonorris) dont la
@@ -120,15 +119,6 @@ export default function WreckRevealHero({
   const imgARef = React.useRef<HTMLImageElement>(null);
   const imgBRef = React.useRef<HTMLImageElement>(null);
   const reduced = useReducedMotion();
-
-  // Voile d'ENCRE a essuyer a la souris (retour client) : n'a de sens que sur
-  // pointeur fin AVEC survol. Au tactile on ne peut pas essuyer — le hero
-  // resterait voile —, donc on ne l'active pas et la scene s'affiche normale.
-  const [inkOn, setInkOn] = React.useState(false);
-  React.useEffect(() => {
-    if (reduced) return;
-    setInkOn(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
-  }, [reduced]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -342,11 +332,7 @@ export default function WreckRevealHero({
     window.addEventListener('pointermove', onMove);
     return () => window.removeEventListener('pointermove', onMove);
   }, [mouseNX, mouseNY, reduced]);
-  const blobX = useTransform(springNX, (v) => v * 24);
-  const blobY = useTransform(springNY, (v) => v * 24);
-  const blobXInv = useTransform(springNX, (v) => v * -24);
-  // Parallaxe souris du fond topographique (sens inverse des nappes, plus
-  // ample : la carte glisse sous le curseur).
+  // Parallaxe souris du fond topographique : la carte glisse sous le curseur.
   const topoX = useTransform(springNX, (v) => v * -30);
   const topoY = useTransform(springNY, (v) => v * -30);
 
@@ -354,16 +340,9 @@ export default function WreckRevealHero({
      precedent — l'architecture landonorris est inchangee. ----------- */
   // Studio CLAIR (bascule theme clair 2026-07-22, retour client « hero clair,
   // panneau HeroAlo sombre ») : fond blanc, chrome ENCRE sombre (#15171C),
-  // marquees et nappes reteintes pour le clair. La depanneuse detouree pose
-  // parfaitement sur blanc.
-  // Voile LEGER a essuyer : desormais un voile CLAIR ([255,255,255]) — sur
-  // fond blanc il fond dans le fond (brume) et l'essuyage revele la
-  // depanneuse. 0.4 au repos, tombe a 0 des le debut du scroll.
-  const inkOpacity = useTransform(scrollYProgress, [0, 0.12], [0.4, 0]);
-  const inkPointer = useTransform(inkOpacity, (v) =>
-    v < 0.05 ? 'none' : 'auto',
-  );
-
+  // marquees reteintes pour le clair. La depanneuse detouree pose
+  // parfaitement sur blanc (effets de lumiere retires : plus de voile ni de
+  // nappes).
   const backgroundColor = useTransform(
     scrollYProgress,
     [0.4, 0.55],
@@ -374,11 +353,6 @@ export default function WreckRevealHero({
     [0.4, 0.55],
     ['#15171C', '#15171C'],
   );
-  // Nappes ambiantes (blur) : en theme clair on garde une nappe TRES claire
-  // (#E8EADF), ambiance discrete sur blanc (l'ancienne nappe sombre aurait
-  // fait des taches grises).
-  const lightPattern = useTransform(scrollYProgress, [0.4, 0.55], [0, 0]);
-  const darkPattern = useTransform(scrollYProgress, [0.4, 0.55], [1, 1]);
   const cardOpacity = useTransform(scrollYProgress, [0.4, 0.5], [1, 0]);
 
   const wVw = useTransform(scrollYProgress, [0.42, 0.58], [100, 46]);
@@ -481,35 +455,8 @@ export default function WreckRevealHero({
           />
         </motion.div>
 
-        {/* Nappes sauge (parallaxe + derive + deformation). */}
-        <motion.div
-          className="absolute left-[-6%] top-[12%] h-[48vh] w-[42vw]"
-          style={{ x: blobX, y: blobY }}
-          aria-hidden="true"
-        >
-          <motion.div
-            className="h-full w-full blur-3xl"
-            animate={{ x: [0, 120, 0], scaleX: [1, 1.14, 1], scaleY: [1, 0.92, 1] }}
-            transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <motion.div className="h-full w-full bg-[#DDE1D2]" style={{ opacity: lightPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }} />
-            <motion.div className="-mt-[48vh] h-full w-full bg-[#E8EADF]" style={{ opacity: darkPattern, borderRadius: '58% 42% 55% 45% / 48% 55% 45% 52%' }} />
-          </motion.div>
-        </motion.div>
-        <motion.div
-          className="absolute bottom-[6%] right-[-4%] h-[40vh] w-[34vw]"
-          style={{ x: blobXInv, y: blobY }}
-          aria-hidden="true"
-        >
-          <motion.div
-            className="h-full w-full blur-3xl"
-            animate={{ x: [0, -100, 0], scaleX: [1, 0.9, 1], scaleY: [1, 1.12, 1] }}
-            transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <motion.div className="h-full w-full bg-[#DDE1D2]" style={{ opacity: lightPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }} />
-            <motion.div className="-mt-[40vh] h-full w-full bg-[#E8EADF]" style={{ opacity: darkPattern, borderRadius: '44% 56% 40% 60% / 55% 42% 58% 45%' }} />
-          </motion.div>
-        </motion.div>
+        {/* (Nappes de lumiere ambiantes retirees — retour client « enleve les
+            effets de lumiere » : plus de halos flous derriere la scene.) */}
 
         {/* Marquees (phase C), derriere la carte. */}
         <div className="absolute inset-x-0 top-1/2 z-10 -translate-y-1/2">
@@ -606,24 +553,9 @@ export default function WreckRevealHero({
               />
             )}
 
-            {/* Voile d'ENCRE (retour client) : dernier enfant de la scene,
-                il la recouvre d'un aplat couleur fond. On l'ESSUIE a la
-                souris — et comme le halo suit le meme curseur, les coups de
-                pinceau revelent la depanneuse dessous ; le voile se referme.
-                Il vit DANS la scene : ses evenements pointeur remontent au
-                conteneur (le halo se declenche), il retrecit avec la carte,
-                et l'opacite tombe des le debut du scroll (inkOpacity) pour
-                liberer la choregraphie. Chrome (logo/CTA/carte) au-dessus,
-                donc toujours cliquable. Tactile / reduced-motion : absent. */}
-            {inkOn && (
-              <motion.div
-                className="absolute inset-0 z-[5]"
-                style={{ opacity: inkOpacity, pointerEvents: inkPointer }}
-                aria-hidden="true"
-              >
-                <InkReveal maskColor={[255, 255, 255]} />
-              </motion.div>
-            )}
+            {/* (Voile d'encre / brume a essuyer retire — retour client
+                « enleve les effets de lumiere » : la depanneuse s'affiche
+                nette, sans halo ni brume par-dessus.) */}
           </motion.div>
         </div>
 
