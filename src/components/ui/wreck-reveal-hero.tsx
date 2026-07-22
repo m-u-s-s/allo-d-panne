@@ -411,12 +411,16 @@ export default function WreckRevealHero({
   const sig3Vis = useTransform(sig3, (v) => (v < 0.004 ? 0 : 1));
   const laurelOpacity = useTransform(scrollYProgress, [0.78, 0.86], [0, 1]);
   const barScale = useTransform(scrollYProgress, [0.82, 0.92], [0, 1]);
-  // Constat metier (retour client) : derniere respiration de la sequence.
-  // Il monte APRES le laurier « dispo 24/7 » (0.78-0.86) — la scene resolue
-  // laisse la phrase poser le probleme, juste avant le mur de chevrons plus
-  // bas. Fondu + montee legere sur la toute fin du scroll.
-  const constatOpacity = useTransform(scrollYProgress, [0.86, 0.95], [0, 1]);
-  const constatY = useTransform(scrollYProgress, [0.86, 0.95], [24, 0]);
+  // Constat metier (retour client) : c'est un BEAT SEPARE, plus bas au
+  // scroll. La sequence se lit signature -> laurier « dispo 24/7 » (fini a
+  // 0.86) -> [la scene resolue TIENT un instant] -> puis on scrolle encore
+  // et le constat monte (0.90-0.95) et TIENT jusqu'a la fin (clamp). Le
+  // palier de maintien avant [0.86-0.90] et le maintien plein apres [0.95-1]
+  // ont besoin de course : la section est allongee (min-h-[380vh]) pour que
+  // ces trois temps se separent nettement a la molette au lieu de se
+  // superposer dans une seule image finale.
+  const constatOpacity = useTransform(scrollYProgress, [0.9, 0.95], [0, 1]);
+  const constatY = useTransform(scrollYProgress, [0.9, 0.95], [24, 0]);
 
   /* ----- Mode QA (?heroQA=1) : hors chemin pointeur/scroll. -------- */
   const [qa, setQa] = React.useState<'hidden' | 'off' | 'show' | 'diff'>(
@@ -477,7 +481,7 @@ export default function WreckRevealHero({
   }
 
   return (
-    <section ref={sectionRef} className={`relative min-h-[300vh] ${className}`}>
+    <section ref={sectionRef} className={`relative min-h-[380vh] ${className}`}>
       <motion.div
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor, contain: 'layout paint' }}
