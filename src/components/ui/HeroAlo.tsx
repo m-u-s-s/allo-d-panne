@@ -190,7 +190,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
       className="relative isolate w-full overflow-hidden px-3 pb-20 pt-3 sm:px-5 sm:pt-5"
       style={{ background: 'linear-gradient(180deg, #F2F4E6 0%, #E7EEC4 100%)' }}
     >
-      <div className="relative mx-auto flex min-h-[94vh] w-full max-w-[1440px] flex-col overflow-hidden rounded-[40px] bg-[#171912] text-[#F4F4F4]">
+      <div className="relative mx-auto flex min-h-[92vh] w-full max-w-[1440px] flex-col overflow-hidden rounded-[28px] bg-[#171912] text-[#F4F4F4] sm:rounded-[40px] lg:min-h-[94vh]">
         {/* Encoche concave organique au centre du bord haut : un bombe
             descendant rempli de la couleur du fond clair « creuse » le
             panneau (SVG, pas un simple border-radius). */}
@@ -258,30 +258,15 @@ export function HeroAlo({ locale }: { locale: Locale }) {
           </div>
         </header>
 
-        {/* ---- Zone centrale : titre (haut) + depanneuse (bas) ---- */}
-        <div className="relative z-10 min-h-0 flex-1">
-          {/* Depanneuse : emerge du bas, DERRIERE le titre. */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 flex justify-center">
-            <motion.div
-              initial={reduced ? false : { opacity: 0, y: 40 }}
-              whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="relative aspect-[3/2] w-[min(64%,660px)]"
-            >
-              <Image
-                src="/hero-truck-loaded.webp"
-                alt=""
-                fill
-                sizes="(max-width: 768px) 88vw, 660px"
-                className="object-contain object-bottom"
-              />
-            </motion.div>
-          </div>
-
-          {/* Titre + signature : cale en HAUT de la zone (le sujet emerge
-              dessous, seule la base des lettres le chevauche). */}
-          <div className="absolute inset-x-0 top-[7%] z-10 px-6 text-center">
+        {/* ---- Zone centrale : titre + depanneuse + CTA (mobile) ----
+            Mobile : flux vertical centre (titre -> sujet -> CTA) ; la barre
+            d'appel fixe occupe deja le tout bas, donc le CTA vit ICI dans le
+            flux plutot qu'a cheval sur le bord (sinon il chevauchait la
+            barre). Desktop (lg) : composition absolue — titre en haut, sujet
+            emergeant du bas, CTA a cheval (hors de cette zone). */}
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-5 lg:block lg:gap-0">
+          {/* Titre + signature. */}
+          <div className="relative z-10 w-full px-6 text-center lg:absolute lg:inset-x-0 lg:top-[7%]">
             {/* Signature reelle, overlay au-dessus du titre, ~ -3°. */}
             <motion.img
               src="/signature-ad.webp"
@@ -292,7 +277,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
               whileInView={reduced ? undefined : { clipPath: 'inset(0 0% 0 0)' }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 1.1, ease: [0.65, 0.05, 0, 1], delay: 0.35 }}
-              className="pointer-events-none absolute -top-[4.5rem] left-[54%] w-[min(38%,300px)] -translate-x-1/2 -rotate-3 select-none sm:-top-[5.5rem]"
+              className="pointer-events-none absolute -top-[3rem] left-1/2 w-[min(40%,160px)] -translate-x-1/2 -rotate-3 select-none lg:-top-[5.5rem] lg:left-[54%] lg:w-[min(38%,300px)]"
             />
 
             <motion.h2
@@ -307,7 +292,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
                       show: { transition: { staggerChildren: 0.08 } },
                     },
                   })}
-              className="mx-auto max-w-[14ch] text-[13vw] uppercase leading-[0.9] tracking-[-0.02em] sm:text-[10vw] md:text-[clamp(3rem,8.6vw,7.2rem)]"
+              className="mx-auto max-w-[13ch] text-[12vw] uppercase leading-[0.9] tracking-[-0.02em] sm:max-w-[14ch] sm:text-[9vw] md:text-[clamp(3rem,8.6vw,7.2rem)]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {t.title.map((part, i) => (
@@ -337,6 +322,43 @@ export function HeroAlo({ locale }: { locale: Locale }) {
                 </motion.span>
               ))}
             </motion.h2>
+          </div>
+
+          {/* Depanneuse : sous le titre (mobile) / emergeant du bas (lg),
+              DERRIERE le titre. */}
+          <div className="pointer-events-none relative z-0 flex w-full justify-center lg:absolute lg:inset-x-0 lg:bottom-0">
+            <motion.div
+              initial={reduced ? false : { opacity: 0, y: 40 }}
+              whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative aspect-[3/2] w-[96%] max-w-[440px] sm:w-[74%] sm:max-w-none lg:w-[min(64%,660px)]"
+            >
+              <Image
+                src="/hero-truck-loaded.webp"
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 92vw, 660px"
+                className="object-contain object-bottom"
+              />
+            </motion.div>
+          </div>
+
+          {/* CTA d'urgence — MOBILE uniquement, dans le flux (le desktop a
+              son CTA a cheval sur le bord ; ici on evite la barre d'appel
+              fixe du bas). Pleine largeur, cible tactile confortable. */}
+          <div className="flex w-full justify-center px-6 lg:hidden">
+            <a
+              href={TEL_HREF}
+              className="inline-flex min-h-[48px] w-full max-w-[360px] items-center justify-center gap-3 rounded-full px-6 text-sm font-bold uppercase tracking-widest text-[#171912] shadow-lg transition-transform duration-200 active:scale-[0.98]"
+              style={{ backgroundColor: ACCENT }}
+            >
+              <span>{t.ctaLabel}</span>
+              <span className="font-mono tabular-nums">{PHONE_NATIONAL}</span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
           </div>
         </div>
 
@@ -422,10 +444,12 @@ export function HeroAlo({ locale }: { locale: Locale }) {
         </footer>
       </div>
 
-      {/* ---- CTA pilule a cheval sur le bord bas du panneau ---- */}
+      {/* ---- CTA pilule a cheval sur le bord bas (DESKTOP) ----
+          Masque sur mobile : la barre d'appel fixe occupe le bas et le CTA
+          mobile vit dans le flux du panneau. */}
       <a
         href={TEL_HREF}
-        className="absolute bottom-[calc(5rem-1.4rem)] left-1/2 z-40 inline-flex min-h-[44px] -translate-x-1/2 items-center gap-3 rounded-full px-7 text-sm font-bold uppercase tracking-widest text-[#171912] shadow-lg transition-transform duration-200 hover:scale-[1.04]"
+        className="absolute bottom-[calc(5rem-1.4rem)] left-1/2 z-40 hidden min-h-[44px] -translate-x-1/2 items-center gap-3 rounded-full px-7 text-sm font-bold uppercase tracking-widest text-[#171912] shadow-lg transition-transform duration-200 hover:scale-[1.04] lg:inline-flex"
         style={{ backgroundColor: ACCENT }}
       >
         <span>{t.ctaLabel}</span>
