@@ -41,15 +41,16 @@ export default async function HomePage({
   const c = getContent(l);
 
   // Index horizontal : un theme par panneau. `href` → page dediee ouverte
-  // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre. Le
-  // premier panneau est l'intro du site (pas de lien).
+  // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre.
+  // (Le constat « personne ne prevoit... » a quitte le carrousel : il est
+  // remonte en section fixe entre le hero et le mur de chevrons — voir plus
+  // bas. Tous les panneaux restants portent donc un lien de mission.)
   const panels: {
     title: string;
     sub?: string;
     href?: string;
     photo?: string;
   }[] = [
-    { title: c.problem.title, sub: c.problem.body, photo: '/missions/accident.jpg' },
     {
       title: c.servicesSection.title,
       href: '/services',
@@ -152,6 +153,26 @@ export default async function HomePage({
           callLabel={c.hero.callCta}
           callNumber={PHONE_NATIONAL}
         />
+
+        {/*
+          Le constat metier — sorti du carrousel de verre (retour client) :
+          il n'est plus le premier panneau horizontal, il devient la
+          RESPIRATION entre le hero et le mur de chevrons. Une phrase pleine
+          largeur qui pose le probleme juste avant que la galerie ne deroule
+          les reponses. data-stage : il herite du vocabulaire d'entree /
+          sortie en profondeur des sections (reveal simple en Lite, rien en
+          Static — le texte rendu serveur suffit deja).
+        */}
+        <div data-stage="">
+          <section className="flex min-h-[70svh] flex-col items-center justify-center bg-bg px-6 py-24 text-center">
+            <h2 className="font-display text-4xl font-bold tracking-tight text-text md:text-6xl">
+              {c.problem.title}
+            </h2>
+            <p className="mx-auto mt-6 max-w-[46ch] text-lg leading-relaxed text-muted md:text-xl">
+              {c.problem.body}
+            </p>
+          </section>
+        </div>
 
         {/*
           Index horizontal (retour client). Chaque panneau est une PILE de
