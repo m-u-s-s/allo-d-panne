@@ -45,7 +45,7 @@ export function EuropeRoutesStatic({
             y1={HUB.y}
             x2={city.x}
             y2={city.y}
-            stroke="#F97316"
+            stroke="#2DFF00"
             strokeWidth={1}
             strokeOpacity={0.5}
             strokeDasharray="3 3"
@@ -58,7 +58,7 @@ export function EuropeRoutesStatic({
               cx={city.x}
               cy={city.y}
               r={city.name === HUB.name ? 6 : 3}
-              fill={city.name === HUB.name ? '#F97316' : '#94A3B8'}
+              fill={city.name === HUB.name ? '#2DFF00' : '#94A3B8'}
             />
             <text
               x={city.x + 9}

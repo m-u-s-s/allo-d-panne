@@ -73,7 +73,7 @@ import InkReveal from './ink-reveal';
  * Adaptations projet (memes raisons que scroll-assembly-hero) :
  * framer-motion, Inter, Instrument Serif deja en place, pas de lucide,
  * pilule lime = bouton d'APPEL, tokens calibres sur le vrai site
- * (#D2FF00/#EFEFE5), reduced-motion = un ecran statique restaure.
+ * (#2DFF00/#EFEFE5), reduced-motion = un ecran statique restaure.
  */
 
 interface WreckRevealHeroProps {
@@ -440,7 +440,7 @@ export default function WreckRevealHero({
         </div>
         <a
           href={callHref}
-          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
+          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#2DFF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
         >
           <PhoneIcon />
           {callLabel} <span className="font-mono tabular-nums">{callNumber}</span>
@@ -630,7 +630,7 @@ export default function WreckRevealHero({
         >
           <LaurelIcon className="h-6 w-6" />
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]">{caption}</p>
-          <motion.div className="h-0.5 w-24 origin-left bg-[#D2FF00]" style={{ scaleX: barScale }} />
+          <motion.div className="h-0.5 w-24 origin-left bg-[#2DFF00]" style={{ scaleX: barScale }} />
         </motion.div>
 
         {/* Chrome fixe (sous le header sticky du site : top-24). */}
@@ -642,7 +642,7 @@ export default function WreckRevealHero({
         </motion.div>
         <motion.a
           href={callHref}
-          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
+          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#2DFF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300, damping: 18 }}
         >
@@ -683,7 +683,7 @@ export default function WreckRevealHero({
                 type="button"
                 onClick={() => setQa(mode)}
                 className={`rounded-md px-3 py-1.5 text-xs font-bold uppercase ${
-                  qa === mode ? 'bg-[#D2FF00] text-[#111112]' : 'bg-black/60 text-white'
+                  qa === mode ? 'bg-[#2DFF00] text-[#111112]' : 'bg-black/60 text-white'
                 }`}
               >
                 {mode}

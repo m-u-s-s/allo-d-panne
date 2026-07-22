@@ -512,7 +512,7 @@ export default function ScrollAssemblyHero({
         </div>
         <a
           href={callHref}
-          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
+          className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#2DFF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
         >
           <PhoneIcon />
           {callLabel} <span className="font-mono tabular-nums">{callNumber}</span>
@@ -652,17 +652,17 @@ export default function ScrollAssemblyHero({
           >
             <motion.path
               d="M40 150 C 60 60 90 40 100 70 C 108 92 96 128 82 150 C 70 168 60 160 66 140 L 150 60 C 160 50 168 54 162 70 L 130 150 C 126 160 132 164 140 156 C 168 130 200 120 210 140 C 222 162 200 186 178 178 C 160 172 164 148 186 142"
-              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
+              stroke="#2DFF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig1, opacity: sig1Vis }}
             />
             <motion.path
               d="M30 200 C 120 230 260 220 330 180"
-              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
+              stroke="#2DFF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig2, opacity: sig2Vis }}
             />
             <motion.path
               d="M360 70 C 380 50 404 56 404 76 C 404 96 372 108 360 124 L 408 124 M446 60 L 424 104 L 462 104 M452 84 L 452 128 M486 130 L 512 56 M520 60 L 560 60 L 534 130"
-              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round"
+              stroke="#2DFF00" strokeWidth="10" strokeLinecap="round"
               style={{ pathLength: sig3, opacity: sig3Vis }}
             />
           </svg>
@@ -674,7 +674,7 @@ export default function ScrollAssemblyHero({
           <LaurelIcon className="h-6 w-6" />
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]">{caption}</p>
           <motion.div
-            className="h-0.5 w-24 origin-left bg-[#D2FF00]"
+            className="h-0.5 w-24 origin-left bg-[#2DFF00]"
             style={{ scaleX: barScale }}
           />
         </motion.div>
@@ -697,7 +697,7 @@ export default function ScrollAssemblyHero({
 
         <motion.a
           href={callHref}
-          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#D2FF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
+          className="absolute right-6 top-24 z-40 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#2DFF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300, damping: 18 }}
         >

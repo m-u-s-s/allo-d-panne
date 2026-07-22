@@ -7,9 +7,9 @@ export const tokens = {
   surface: '#141A23',
   text: '#F8FAFC',
   muted: '#94A3B8',
-  cta: '#F97316',
+  cta: '#2DFF00',
   ctaFg: '#0A0E14',
-  secondary: '#3B82F6',
+  secondary: '#2DFF00',
   border: '#1E293B',
 } as const;
 

@@ -19,9 +19,10 @@ import { ContourLayer } from './scroll-assembly-hero';
  * (pages / reseaux), frise de reassurance, CTA pilule a cheval sur le bord
  * bas, et un pied de section fin.
  *
- * Palette B « neon » (choisie) : panneau olive tres sombre #171912, accent
- * lime #C6EE2A, texte #F4F4F4 / secondaire #9A9A9A — coherente avec la lime
- * deja presente dans le hero du haut et la signature (#D0F000).
+ * Palette « neon » : panneau olive tres sombre #171912, accent VERT #2DFF00
+ * (couleur principale du site, retour client 2026-07-22 — remplace l'ancien
+ * lime/orange), texte #F4F4F4 / secondaire #9A9A9A. La signature et tous les
+ * accents du site partagent desormais ce meme vert.
  *
  * Composant autonome et TRILINGUE : sa copie vit dans COPY[locale] plutot
  * que dans le systeme de contenu partage (il ne sert qu'ici). Les liens
@@ -155,7 +156,7 @@ const COPY: Record<
   },
 };
 
-const ACCENT = '#C6EE2A';
+const ACCENT = '#2DFF00';
 const PANEL_BG = '#F2F4E6'; // couleur du fond clair au niveau du bord haut (encoche)
 
 export function HeroAlo({ locale }: { locale: Locale }) {
@@ -377,7 +378,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
               <li key={p.href}>
                 <a
                   href={linkFor(p.href)}
-                  className="text-lg font-extrabold uppercase tracking-tight text-[#F4F4F4] transition-colors hover:text-[#C6EE2A]"
+                  className="text-lg font-extrabold uppercase tracking-tight text-[#F4F4F4] transition-colors hover:text-[#2DFF00]"
                 >
                   {p.label}
                 </a>
@@ -410,7 +411,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
                   href={isResolved(s.field) ? s.field.value : '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-lg font-extrabold uppercase tracking-tight text-[#F4F4F4] transition-colors hover:text-[#C6EE2A]"
+                  className="text-lg font-extrabold uppercase tracking-tight text-[#F4F4F4] transition-colors hover:text-[#2DFF00]"
                 >
                   {s.label}
                 </a>
