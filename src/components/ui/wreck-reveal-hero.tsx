@@ -395,15 +395,15 @@ export default function WreckRevealHero({
   const cardFilter = useMotionTemplate`grayscale(${gray})`;
   const tintOpacity = useTransform(scrollYProgress, [0.42, 0.58], [0, 0.4]);
 
-  const sig1 = useTransform(scrollYProgress, [0.58, 0.74], [0, 1]);
-  const sig2 = useTransform(scrollYProgress, [0.68, 0.8], [0, 1]);
-  const sig3 = useTransform(scrollYProgress, [0.74, 0.86], [0, 1]);
-  // pathLength 0 + linecap round = un POINT peint a chaque commande M
-  // (constate : constellation lime avant le trace). On cache le trait
-  // tant qu'il n'a pas commence.
-  const sig1Vis = useTransform(sig1, (v) => (v < 0.004 ? 0 : 1));
-  const sig2Vis = useTransform(sig2, (v) => (v < 0.004 ? 0 : 1));
-  const sig3Vis = useTransform(sig3, (v) => (v < 0.004 ? 0 : 1));
+  // Signature REELLE du client (AD, fournie en PSD) : revelee par un
+  // ESSUYAGE masque de gauche a droite synchronise au scroll — le trait
+  // « s'ecrit » comme l'ancienne signature dessinee, mais c'est la vraie.
+  // Le front part a -8 % (rien de visible avant 0.58) et depasse 100 %
+  // pour finir pleinement peinte ; front2 = front + 8 % de plume (bord
+  // fondu, effet encre). 90deg = de gauche a droite.
+  const sigWipe = useTransform(scrollYProgress, [0.58, 0.86], [-8, 108]);
+  const sigWipe2 = useTransform(sigWipe, (v) => v + 8);
+  const sigMask = useMotionTemplate`linear-gradient(90deg, #000 ${sigWipe}%, transparent ${sigWipe2}%)`;
   const laurelOpacity = useTransform(scrollYProgress, [0.78, 0.86], [0, 1]);
   const barScale = useTransform(scrollYProgress, [0.82, 0.92], [0, 1]);
 
@@ -600,19 +600,29 @@ export default function WreckRevealHero({
           </motion.div>
         </div>
 
-        {/* Signature + lauriers (phase C). */}
+        {/* Signature (phase C) — la VRAIE signature du client (PSD fourni),
+            remplace le trace SVG « Alo 24/7 ». Essuyage masque gauche->droite
+            (sigMask) synchronise au scroll : elle se peint comme si on
+            l'ecrivait. Lime deja dans l'asset (#D0F000). */}
         <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
-          <svg viewBox="0 0 600 260" className="w-[min(64vw,780px)] overflow-visible" fill="none" aria-hidden="true">
-            <motion.path
-              d="M40 150 C 60 60 90 40 100 70 C 108 92 96 128 82 150 C 70 168 60 160 66 140 L 150 60 C 160 50 168 54 162 70 L 130 150 C 126 160 132 164 140 156 C 168 130 200 120 210 140 C 222 162 200 186 178 178 C 160 172 164 148 186 142"
-              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round" style={{ pathLength: sig1, opacity: sig1Vis }}
-            />
-            <motion.path d="M30 200 C 120 230 260 220 330 180" stroke="#D2FF00" strokeWidth="10" strokeLinecap="round" style={{ pathLength: sig2, opacity: sig2Vis }} />
-            <motion.path
-              d="M360 70 C 380 50 404 56 404 76 C 404 96 372 108 360 124 L 408 124 M446 60 L 424 104 L 462 104 M452 84 L 452 128 M486 130 L 512 56 M520 60 L 560 60 L 534 130"
-              stroke="#D2FF00" strokeWidth="10" strokeLinecap="round" style={{ pathLength: sig3, opacity: sig3Vis }}
-            />
-          </svg>
+          {/* motion.img (pas next/image) : le masque anime a besoin d'un
+              element image direct, et next/image reencoderait le trait fin
+              en salissant l'alpha ; asset WebP deja optimise (16 ko). */}
+          <motion.img
+            src="/signature-ad.webp"
+            alt=""
+            width={485}
+            height={239}
+            draggable={false}
+            aria-hidden="true"
+            className="w-[min(58vw,640px)] select-none"
+            style={{
+              WebkitMaskImage: sigMask,
+              maskImage: sigMask,
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+            }}
+          />
         </div>
         <motion.div
           className="absolute inset-x-0 bottom-[7%] z-30 flex flex-col items-center gap-1 text-[#EBEEE0]"
