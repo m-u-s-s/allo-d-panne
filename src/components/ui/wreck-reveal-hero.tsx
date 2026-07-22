@@ -357,9 +357,11 @@ export default function WreckRevealHero({
   // fond du composant matche le bord sombre de la nouvelle image voiture,
   // pour que le retrait de la carte plein cadre → carte ne montre pas de
   // saut de couleur ; le chrome passe clair (il etait encre sur creme).
-  // Voile d'encre : opaque au repos (scroll 0), s'efface des le debut du
-  // defilement pour ne pas masquer la choregraphie carte/marquees/signature.
-  const inkOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  // Voile d'encre LEGER (retour client : la depanneuse doit rester visible,
+  // l'encre juste par-dessus). 0.4 au repos → le camion transparait sous le
+  // voile ; l'essuyage l'eclaircit a fond le long des coups de pinceau. Tombe
+  // a 0 des le debut du scroll pour liberer la choregraphie.
+  const inkOpacity = useTransform(scrollYProgress, [0, 0.12], [0.4, 0]);
   const inkPointer = useTransform(inkOpacity, (v) =>
     v < 0.05 ? 'none' : 'auto',
   );
