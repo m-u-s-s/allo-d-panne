@@ -6,6 +6,7 @@ import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import Image from 'next/image';
+import { ExpandableGallery } from '@/components/ui/expandable-gallery';
 import { FinalCta } from '@/components/ui/FinalCta';
 import WreckRevealHero from '@/components/ui/wreck-reveal-hero';
 import { PageShell } from '@/components/ui/PageShell';
@@ -219,6 +220,11 @@ export default async function HomePage({
             ))}
           </div>
         </div>
+
+        {/* Galerie de missions « pile → grille » (composant 21st.dev adapte)
+            juste avant le CTA final. Client component autonome (framer-motion),
+            hors piste horizontale. */}
+        <ExpandableGallery />
 
         <div data-stage="">
           <FinalCta locale={l} videoReveal />
