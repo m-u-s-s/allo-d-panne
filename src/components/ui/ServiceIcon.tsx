@@ -19,7 +19,7 @@ export function ServiceIcon({ id }: { id: ServiceId }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-6 w-6 text-cta"
+      className="h-6 w-6 text-secondary"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.5}

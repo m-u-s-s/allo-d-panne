@@ -22,7 +22,7 @@ export function CoverageSection({ locale }: { locale: Locale }) {
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <article className="rounded-lg border border-cta/40 bg-surface p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-cta">
+          <p className="text-xs font-semibold uppercase tracking-widest text-secondary">
             {c.hero.eyebrow}
           </p>
           <h3 className="mt-2 font-display text-lg font-bold">

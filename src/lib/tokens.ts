@@ -3,14 +3,18 @@
  * les memes valeurs. Ratios verifies par tokens.test.ts, pas estimes.
  */
 export const tokens = {
-  bg: '#0A0E14',
-  surface: '#141A23',
-  text: '#F8FAFC',
-  muted: '#94A3B8',
+  // Theme CLAIR (retour client 2026-07-22) : fond blanc, texte sombre,
+  // accent vert vif #2DFF00 en REMPLISSAGE (texte sombre par-dessus — le
+  // vert sur blanc est illisible en texte, cf. tokens.test.ts). Le vert
+  // "lisible" pour du texte (secondary) est une declinaison foncee.
+  bg: '#FFFFFF',
+  surface: '#F1F3EA',
+  text: '#15171C',
+  muted: '#555B65',
   cta: '#2DFF00',
   ctaFg: '#0A0E14',
-  secondary: '#2DFF00',
-  border: '#1E293B',
+  secondary: '#157A00',
+  border: '#E4E6DB',
 } as const;
 
 export type TokenName = keyof typeof tokens;

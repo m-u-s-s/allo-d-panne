@@ -87,7 +87,7 @@ export function QuoteForm({ locale }: { locale: Locale }) {
           <span className="text-secondary">{c.contactPage.success}</span>
         ) : null}
         {state.status === 'error' ? (
-          <span className="text-cta">
+          <span className="font-semibold text-text">
             {state.field === 'smtp'
               ? c.contactPage.error
               : c.contactPage.invalidFields}

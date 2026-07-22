@@ -34,7 +34,7 @@ export function PendingDataNotice({
     >
       <h2
         id="pending-data-notice-title"
-        className="font-display text-base font-bold text-cta"
+        className="font-display text-base font-bold text-secondary"
       >
         {title}
       </h2>

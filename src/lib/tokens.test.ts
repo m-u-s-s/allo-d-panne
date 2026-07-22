@@ -21,23 +21,20 @@ describe('Contraste WCAG des tokens', () => {
     expect(contrastRatio(tokens.muted, tokens.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 
-  it('CTA sur fond passe AA', () => {
-    expect(contrastRatio(tokens.cta, tokens.bg)).toBeGreaterThanOrEqual(AA_NORMAL);
-  });
-
   /**
-   * Le lien telephone du footer (SiteFooter.tsx) utilise text-cta sur
-   * bg-surface, pas bg-bg. Cette paire (~6,23:1) n'etait verrouillee par
-   * aucun test — seule cta-vs-bg l'etait. Sans ce test, un futur
-   * changement de token pourrait faire regresser silencieusement le lien
-   * telephone du footer sous le seuil AA.
+   * THEME CLAIR : le CTA vert vif (#2DFF00) est un REMPLISSAGE (fond de
+   * bouton) avec texte sombre par-dessus — jamais du texte vert sur blanc
+   * (~1,4:1, illisible). Le contraste qui compte est ctaFg-sur-cta (teste
+   * plus bas). Pour du TEXTE vert lisible (ex. message de succes du
+   * formulaire), c'est `secondary`, une declinaison FONCEE du vert — verte
+   * pour rester dans la marque, foncee pour passer AA sur blanc/surface.
    */
-  it('CTA sur surface passe AA', () => {
-    expect(contrastRatio(tokens.cta, tokens.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
+  it('vert lisible (secondary) sur fond passe AA', () => {
+    expect(contrastRatio(tokens.secondary, tokens.bg)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 
-  it('secondaire sur fond passe AA', () => {
-    expect(contrastRatio(tokens.secondary, tokens.bg)).toBeGreaterThanOrEqual(AA_NORMAL);
+  it('vert lisible (secondary) sur surface passe AA', () => {
+    expect(contrastRatio(tokens.secondary, tokens.surface)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 });
 

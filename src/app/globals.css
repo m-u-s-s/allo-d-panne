@@ -5,14 +5,17 @@
  * src/lib/tokens.ts, qui est la source verifiee par les tests.
  */
 @theme {
-  --color-bg: #0a0e14;
-  --color-surface: #141a23;
-  --color-text: #f8fafc;
-  --color-muted: #94a3b8;
+  /* Theme CLAIR (retour client 2026-07-22) : fond blanc, texte sombre,
+     accent vert vif en remplissage (texte sombre par-dessus). Doit rester
+     synchrone avec src/lib/tokens.ts (verifie par tokens.test.ts). */
+  --color-bg: #ffffff;
+  --color-surface: #f1f3ea;
+  --color-text: #15171c;
+  --color-muted: #555b65;
   --color-cta: #2dff00;
   --color-cta-fg: #0a0e14;
-  --color-secondary: #2dff00;
-  --color-border: #1e293b;
+  --color-secondary: #157a00;
+  --color-border: #e4e6db;
 
   /* Alias facon shadcn : les composants integres depuis des bibliotheques
      externes (ex. wireframe-dotted-tow-truck) utilisent bg-background,
@@ -36,7 +39,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -47,9 +50,12 @@ body {
   line-height: 1.6;
 }
 
-/* Focus visible sur tout element interactif (regle a11y CRITICAL) */
+/* Focus visible sur tout element interactif (regle a11y CRITICAL). Encre
+   sombre : sur theme clair le vert vif (#2DFF00) donnait un anneau a ~1,4:1,
+   invisible ; le texte sombre passe partout (blanc, surfaces claires, et
+   sur les remplissages verts a texte sombre). */
 :focus-visible {
-  outline: 2px solid var(--color-cta);
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 

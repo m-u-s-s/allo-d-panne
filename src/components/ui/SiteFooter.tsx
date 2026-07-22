@@ -26,7 +26,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </p>
           <a
             href={TEL_HREF}
-            className="mt-3 inline-block min-h-[44px] text-lg text-cta transition-opacity duration-200 hover:opacity-80"
+            className="mt-3 inline-block min-h-[44px] text-lg text-secondary transition-opacity duration-200 hover:opacity-80"
           >
             {PHONE_NATIONAL}
           </a>

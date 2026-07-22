@@ -27,7 +27,7 @@ export function PricingSection({ locale }: { locale: Locale }) {
               className="flex flex-wrap items-baseline justify-between gap-2 py-4"
             >
               <dt className="text-text">{row.label}</dt>
-              <dd className="font-display text-xl font-bold text-cta">
+              <dd className="font-display text-xl font-bold text-secondary">
                 {row.value}
               </dd>
             </div>
