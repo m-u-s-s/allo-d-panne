@@ -13,12 +13,7 @@ import {
   useVelocity,
   type AnimationPlaybackControls,
 } from 'framer-motion';
-import {
-  ContourLayer,
-  LaurelIcon,
-  MorphingContours,
-  PhoneIcon,
-} from './scroll-assembly-hero';
+import { LaurelIcon, PhoneIcon } from './scroll-assembly-hero';
 import { MarqueeRow } from './scroll-assembly-hero';
 import InkReveal from './ink-reveal';
 
@@ -421,8 +416,12 @@ export default function WreckRevealHero({
       <section
         className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-[#ffffff] ${className}`}
       >
-        <ContourLayer stroke="rgba(21,23,28,0.06)" />
-        <div className="relative aspect-[16/10] w-full max-w-5xl">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center opacity-90"
+          style={{ backgroundImage: 'url(/hero-topo.webp)' }}
+        />
+        <div className="relative z-10 aspect-[16/10] w-full max-w-5xl">
           {/* eslint-disable-next-line @next/next/no-img-element -- paire
               pixel-verrouillee : les deux couches doivent etre rendues a
               l'identique, hors de tout pipeline d'optimisation. */}
@@ -453,7 +452,16 @@ export default function WreckRevealHero({
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor, contain: 'layout paint' }}
       >
-        <MorphingContours progress={scrollYProgress} />
+        {/* Fond TOPOGRAPHIQUE (image fournie par le client) DERRIERE la
+            depanneuse : lignes de niveau en noir sur alpha (le blanc a ete
+            rendu transparent), elles flottent sur le fond clair anime du
+            hero. z-0 = couche la plus profonde, sous les marquees, la scene
+            et le chrome. Remplace l'ancien MorphingContours anime. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center opacity-90"
+          style={{ backgroundImage: 'url(/hero-topo.webp)' }}
+        />
 
         {/* Nappes sauge (parallaxe + derive + deformation). */}
         <motion.div
