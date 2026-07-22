@@ -153,9 +153,34 @@ export default async function HomePage({
           callHref={TEL_HREF}
           callLabel={c.hero.callCta}
           callNumber={PHONE_NATIONAL}
-          problemTitle={c.problem.title}
-          problemBody={c.problem.body}
         />
+
+        {/*
+          Constat metier — cadre MANIFESTE (reference landonorris fournie en
+          video par le client). Meme mecanique que la reference : le hero
+          (portrait / depanneuse epinglee) se libere, puis CETTE section
+          plein cadre defile par-dessous — grand bloc de texte CENTRE qui
+          remplit l'ecran sur le fond sombre. On ne l'a PAS mis dans le hero
+          epingle : la progression framer d'une piste GSAP-pin culmine puis
+          REDESCEND avant d'atteindre 1.0 tant qu'elle est visible, donc un
+          fondu interne ne tenait jamais plein a l'ecran. Une section
+          autonome, elle, defile de maniere fiable (flux natif), exactement
+          comme le manifeste de la reference qui suit le portrait.
+
+          data-stage : reveal en profondeur en palier Full, fondu simple en
+          Lite, rien en Static (le texte rendu serveur suffit). h2 : reprend
+          la hierarchie apres le h1 sr-only.
+        */}
+        <div data-stage="">
+          <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-bg px-6 py-24 text-center">
+            <h2 className="max-w-[15ch] font-display text-5xl font-bold leading-[0.95] tracking-tight text-text sm:text-6xl md:text-7xl lg:text-[7rem]">
+              {c.problem.title}
+            </h2>
+            <p className="mt-8 max-w-[52ch] text-base leading-relaxed text-muted md:text-lg">
+              {c.problem.body}
+            </p>
+          </section>
+        </div>
 
         {/*
           Index horizontal (retour client). Chaque panneau est une PILE de
