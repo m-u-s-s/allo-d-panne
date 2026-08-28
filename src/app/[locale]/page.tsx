@@ -42,8 +42,9 @@ export default async function HomePage({
 
   // Index horizontal : un theme par panneau. `href` → page dediee ouverte
   // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre
-  // (vraies photos fournies par le client, public/slider/*.webp — les
-  // placeholders IA de public/missions/ ne servent plus qu'a la galerie).
+  // (vraies photos fournies par le client, public/slider/*.webp ; la
+  // galerie a les siennes dans public/gallery/ — dossiers separes a dessein,
+  // pour que changer les images d'une section ne touche pas l'autre).
   // (Le constat « personne ne prevoit... » a quitte le carrousel : il est
   // remonte DANS le hero, en derniere respiration de la sequence — voir
   // WreckRevealHero.problemTitle/Body. Tous les panneaux restants portent

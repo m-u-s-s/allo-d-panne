@@ -30,18 +30,23 @@ type Photo = {
   zIndex?: number;
 };
 
-// Photos de missions (public/missions). Les trois premieres forment la pile
-// visible au repos (rotation/decalage/z), les six autres completent la grille.
+// Photos de missions (public/gallery) : ONZE vraies photos fournies par le
+// client, dans l'ordre qu'il a donne. Les trois premieres forment la pile
+// visible au repos (rotation/decalage/z) — le trio premium ouvre la section ;
+// les huit autres completent la grille. Elles remplacent les placeholders IA
+// de public/missions/, supprimes (plus aucune reference).
 const PHOTOS: Photo[] = [
-  { id: 'remorquage', src: '/missions/remorquage.jpg', alt: 'Remorquage de nuit sous la pluie', rotation: -15, x: -90, y: 10, zIndex: 10 },
-  { id: 'depannage', src: '/missions/depannage.jpg', alt: 'Dépannage sur le bord de la route', rotation: -3, x: -10, y: -15, zIndex: 20 },
-  { id: 'accident', src: '/missions/accident.jpg', alt: 'Enlèvement après accident', rotation: 12, x: 75, y: 5, zIndex: 30 },
-  { id: 'transport', src: '/missions/transport.jpg', alt: 'Transport de véhicule sur autoroute' },
-  { id: 'ville', src: '/missions/ville.jpg', alt: 'Intervention de dépannage en ville' },
-  { id: 'moto', src: '/missions/moto.jpg', alt: 'Remorquage de moto' },
-  { id: 'camionnette', src: '/missions/camionnette.jpg', alt: 'Assistance à une camionnette' },
-  { id: 'hiver', src: '/missions/hiver.jpg', alt: 'Dépannage hivernal sous la neige' },
-  { id: 'poids-lourd', src: '/missions/poids-lourd.jpg', alt: 'Dépannage de poids lourd' },
+  { id: 'supercar-fourgon', src: '/gallery/supercar-fourgon.webp', alt: 'Supercar chargee dans un camion de transport ferme', rotation: -15, x: -90, y: 10, zIndex: 10 },
+  { id: 'supercar-plateau', src: '/gallery/supercar-plateau.webp', alt: 'Chargement d’une supercar sur le plateau par deux operateurs', rotation: -3, x: -10, y: -15, zIndex: 20 },
+  { id: 'sportive-sanglee', src: '/gallery/sportive-sanglee.webp', alt: 'Voiture de sport sanglee sur le plateau avant transport', rotation: 12, x: 75, y: 5, zIndex: 30 },
+  { id: 'utilitaire-plateau', src: '/gallery/utilitaire-plateau.webp', alt: 'Utilitaire de livraison remorque sur un plateau' },
+  { id: 'grue-citadine', src: '/gallery/grue-citadine.webp', alt: 'Citadine levee a la grue par une depanneuse' },
+  { id: 'accidentee-treuil', src: '/gallery/accidentee-treuil.webp', alt: 'Voiture accidentee treuillee sur le plateau' },
+  { id: 'choc-avant', src: '/gallery/choc-avant.webp', alt: 'Vehicule immobilise sur la route apres un choc frontal' },
+  { id: 'accident-route', src: '/gallery/accident-route.webp', alt: 'Voiture accidentee et debris sur la chaussee' },
+  { id: 'remorquage-nuit', src: '/gallery/remorquage-nuit.webp', alt: 'SUV charge sur un plateau dans une rue pavee, de nuit' },
+  { id: 'remorquage-pluie', src: '/gallery/remorquage-pluie.webp', alt: 'Remorquage sous la pluie, de nuit, en ville' },
+  { id: 'plateau-jour', src: '/gallery/plateau-jour.webp', alt: 'Depanneuse transportant une berline sur la route, en journee' },
 ];
 
 const transition = {
