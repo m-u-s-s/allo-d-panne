@@ -12,8 +12,83 @@ export const nl: SiteContent = {
     // menselijke versie, bewust ongewijzigd gelaten (zie het commentaar
     // daar).
     description:
-      'Pechverhelping en takeldienst 24/7 in Brussel en omgeving. Batterij, lekke band, brandstofpech, voertuig openen. Voertuigtransport in heel Europa.',
+      'Pechverhelping en takeldienst 24/7 in Brussel en omgeving: batterij, lekke band, brandstofpech, voertuig openen. Bel 0467 78 64 56.',
   },
+  seo: {
+    services: {
+      title: 'Pechverhelping en takelen in Brussel',
+      description:
+        'Takelen, batterij, lekke band, brandstofpech, voertuig openen, vrachtwagens en ongevalvoertuigen: pechverhelping 24/7 in Brussel en omgeving.',
+    },
+    zones: {
+      title: 'Interventiezone Brussel en de Rand',
+      description:
+        'Dringende pechverhelping in de 19 gemeenten van Brussel en in de Rand, 24/7. Voertuigtransport in heel Europa. Eén telefoontje: 0467 78 64 56.',
+    },
+    why: {
+      title: 'Erkende en verzekerde takeldienst',
+      description:
+        'Erkend bedrijf, verzekerde interventie, dag en nacht bereikbaar, ook in het weekend en op feestdagen: waarom u uw voertuig aan ons toevertrouwt.',
+    },
+    transport: {
+      title: 'Voertuigtransport in heel Europa',
+      description:
+        'Transport van uw auto, oldtimer of bestelwagen vanuit Brussel naar Parijs, Amsterdam, Berlijn, Milaan, Madrid en heel Europa. Prijs op aanvraag.',
+    },
+    pricing: {
+      title: 'Tarieven takelen vanaf € 50',
+      description:
+        'Interventie in Brussel van € 50 tot € 250, + € 2 per kilometer buiten Brussel, transport op aanvraag. Prijzen vooraf aangekondigd en bevestigd.',
+    },
+    contact: {
+      title: 'Contact en offerte pechverhelping',
+      description:
+        'Pech, een ongeval of een voertuig te verplaatsen? Bel 0467 78 64 56, 24/7, of vraag online een offerte aan. Brussel en omgeving.',
+    },
+    legalNotice: {
+      title: 'Wettelijke vermeldingen',
+      description:
+        'Wettelijke vermeldingen van Allo-Dépannage: uitgever van de website, contactgegevens en gegevens die nog door het bedrijf bevestigd worden.',
+    },
+    terms: {
+      title: 'Algemene voorwaarden',
+      description:
+        'Algemene voorwaarden van Allo-Dépannage: hoe de prijs tot stand komt, de kilometertoeslag buiten Brussel en de bevestiging vóór elke verplaatsing.',
+    },
+    privacy: {
+      title: 'Privacybeleid',
+      description:
+        'Privacybeleid van Allo-Dépannage: geen analytische cookies, geen advertentietracking en formuliergegevens die nooit aan derden worden doorgegeven.',
+    },
+  },
+  /* Zoektermen van het Nederlands, MET SCHRIJFFOUTEN (klantvraag). Zie
+     het commentaar bij fr.searchTerms: ze blijven buiten de zichtbare
+     tekst. */
+  searchTerms: [
+    'takeldienst Brussel',
+    'pechverhelping Brussel',
+    'takelwagen Brussel',
+    'sleepdienst Brussel',
+    'autopech Brussel',
+    'takelen 24/7 Brussel',
+    'batterij leeg hulp Brussel',
+    'lekke band hulp Brussel',
+    'voertuig openen sleutels binnen',
+    'ongevalvoertuig berging',
+    'vrachtwagen takelen Brussel',
+    'voertuigtransport Europa',
+    'auto transporteren naar het buitenland',
+    'depannage brussel',
+    'depanage brussel',
+    'dépanage brussel',
+    'takeldiens brussel',
+    'takelwage brussel',
+    'sleepdiens brussel',
+    'pechverhelpin brussel',
+    'allo depannage',
+    'allo depanage',
+    'alo depannage brussel',
+  ],
   nav: {
     home: 'Home',
     transport: 'Transport Europa',
@@ -96,6 +171,9 @@ export const nl: SiteContent = {
   },
   coverage: {
     title: 'Waar wij actief zijn',
+    communesTitle: 'De 19 Brusselse gemeenten',
+    communesBody:
+      'Onze takelwagens komen in het hele Brussels Hoofdstedelijk Gewest en de onmiddellijke Rand, dag en nacht.',
     emergency: {
       scope: 'brussels-region',
       title: 'Dringend — Brussel en omgeving',

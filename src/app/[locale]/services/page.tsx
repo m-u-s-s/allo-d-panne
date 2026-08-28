@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { PageShell } from '@/components/ui/PageShell';
 import { ServicesSection } from '@/components/ui/ServicesSection';
@@ -18,10 +18,11 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
   return {
-    title: c.servicesSection.title,
-    description: c.servicesSection.subtitle,
+    title: c.seo.services.title,
+    description: c.seo.services.description,
     alternates: alternatesFor('/services', locale as Locale),
-    openGraph: openGraphFor(c, '/services', locale as Locale),
+    openGraph: openGraphFor(c, '/services', locale as Locale, 'services'),
+    twitter: twitterFor(c, 'services'),
   };
 }
 

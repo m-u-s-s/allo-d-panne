@@ -11,8 +11,81 @@ export const en: SiteContent = {
     // stays factual and useful; ProofSection carries the human-facing
     // version, deliberately left as-is (see its comment).
     description:
-      'Car breakdown assistance and towing, 24/7, in Brussels and surroundings. Battery, flat tyre, out of fuel, vehicle unlocking. Vehicle transport across Europe.',
+      'Breakdown assistance and towing 24/7 in Brussels and surroundings: battery, flat tyre, out of fuel, vehicle unlocking. Call 0467 78 64 56.',
   },
+  seo: {
+    services: {
+      title: 'Breakdown assistance and towing',
+      description:
+        'Towing, battery, flat tyre, out of fuel, vehicle unlocking, heavy goods vehicles and accident recovery: breakdown assistance 24/7 in Brussels.',
+    },
+    zones: {
+      title: 'Service area: Brussels and around',
+      description:
+        'Emergency breakdown assistance across the 19 Brussels communes and the surrounding area, 24/7. Vehicle transport across Europe, priced on request.',
+    },
+    why: {
+      title: 'Approved and insured tow service',
+      description:
+        'Approved company, insured call-outs, reachable day and night, weekends and public holidays included: why drivers in Brussels call Allo-Dépannage.',
+    },
+    transport: {
+      title: 'Vehicle transport across Europe',
+      description:
+        'Transport of your car, classic vehicle or van from Brussels to Paris, Amsterdam, Berlin, Milan, Madrid and anywhere in Europe. Priced on request.',
+    },
+    pricing: {
+      title: 'Towing prices from €50 in Brussels',
+      description:
+        'Call-out in Brussels from €50 to €250, plus €2 per kilometre outside Brussels, transport priced on request. Prices stated upfront and confirmed.',
+    },
+    contact: {
+      title: 'Contact and breakdown quote',
+      description:
+        'Broken down, in an accident, or a vehicle to move? Call 0467 78 64 56, 24/7, or request a quote online. Brussels and surroundings.',
+    },
+    legalNotice: {
+      title: 'Legal notice',
+      description:
+        'Legal notice for Allo-Dépannage: website publisher, contact details and the information still pending confirmation by the company.',
+    },
+    terms: {
+      title: 'Terms and conditions',
+      description:
+        'Terms and conditions for Allo-Dépannage: how the price is set, the per-kilometre supplement outside Brussels and confirmation before any journey.',
+    },
+    privacy: {
+      title: 'Privacy policy',
+      description:
+        'Privacy policy for Allo-Dépannage: no analytics cookies, no advertising tracking, and form data that is never shared with third parties.',
+    },
+  },
+  /* English search terms, MISSPELLINGS INCLUDED (client request). See the
+     comment on fr.searchTerms: they stay out of the visible copy. */
+  searchTerms: [
+    'towing Brussels',
+    'tow truck Brussels',
+    'breakdown assistance Brussels',
+    'car recovery Brussels',
+    'roadside assistance Brussels',
+    '24/7 towing Belgium',
+    'flat battery help Brussels',
+    'flat tyre assistance Brussels',
+    'car unlocking service Brussels',
+    'accident recovery Brussels',
+    'heavy goods vehicle towing',
+    'vehicle transport Europe',
+    'car shipping from Belgium',
+    'depannage brussels',
+    'depanage brussels',
+    'towing bruxelles',
+    'tow truck brussel',
+    'breakdown assistence brussels',
+    'car recovry brussels',
+    'allo depannage',
+    'allo depanage',
+    'alo depannage brussels',
+  ],
   nav: {
     home: 'Home',
     transport: 'Europe transport',
@@ -95,6 +168,9 @@ export const en: SiteContent = {
   },
   coverage: {
     title: 'Where we operate',
+    communesTitle: 'The 19 Brussels communes',
+    communesBody:
+      'Our tow trucks cover the whole Brussels-Capital Region and its immediate outskirts, day and night.',
     emergency: {
       scope: 'brussels-region',
       title: 'Emergency — Brussels and surroundings',

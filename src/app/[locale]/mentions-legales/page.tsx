@@ -8,7 +8,7 @@ import { routing, type Locale } from '@/i18n/routing';
 import { PageShell } from '@/components/ui/PageShell';
 import { PendingDataNotice } from '@/components/ui/PendingDataNotice';
 import { PHONE_INTERNATIONAL } from '@/lib/phone';
-import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 
 export async function generateMetadata({
   params,
@@ -19,13 +19,15 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
   return {
-    title: c.legal.noticeTitle,
+    title: c.seo.legalNotice.title,
+    description: c.seo.legalNotice.description,
     alternates: alternatesFor('/mentions-legales', locale as Locale),
-    openGraph: openGraphFor(c, '/mentions-legales', locale as Locale),
+    openGraph: openGraphFor(c, '/mentions-legales', locale as Locale, 'legalNotice'),
     // noindex tant que la page est incomplete : une page de mentions
     // legales fausse, indexee, est pire qu'absente. Meme predicat que le
     // sitemap (qui exclut cette page tant qu'elle est incomplete).
     robots: isLegalComplete() ? undefined : { index: false, follow: false },
+    twitter: twitterFor(c, 'legalNotice'),
   };
 }
 

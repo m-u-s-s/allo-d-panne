@@ -1,4 +1,6 @@
 import type { SiteContent } from '@/content';
+import type { SeoPage } from '@/content/types';
+import { PHONE_NATIONAL } from '@/lib/phone';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
@@ -49,16 +51,68 @@ export function alternatesFor(path: string, locale: Locale) {
  * chaque page emet un openGraph complet et auto-referent plutot que de
  * dependre d'un heritage partiel qui ne fonctionne pas pour cette cle.
  */
-export function openGraphFor(c: SiteContent, path: string, locale: Locale) {
+export function openGraphFor(
+  c: SiteContent,
+  path: string,
+  locale: Locale,
+  page?: SeoPage,
+) {
+  const { title, description } = titleAndDescription(c, page);
   return {
-    title: c.meta.title,
-    description: c.meta.description,
+    title,
+    description,
     url: absoluteUrl(path, locale),
     siteName: company.displayName,
     locale: ogLocaleFor(locale),
     type: 'website' as const,
+    images: [OG_IMAGE],
   };
 }
+
+/**
+ * Carte Twitter/X. Meme raison d'etre que openGraphFor : Next REMPLACE
+ * l'objet du layout des qu'une page definit le sien, donc chaque page emet
+ * le sien en entier plutot que d'heriter d'un titre d'accueil.
+ */
+export function twitterFor(c: SiteContent, page?: SeoPage) {
+  const { title, description } = titleAndDescription(c, page);
+  return {
+    card: 'summary_large_image' as const,
+    title,
+    description,
+    images: [OG_IMAGE.url],
+  };
+}
+
+/**
+ * Couple titre/description d'une page — celui de `seo`, ou celui du site
+ * pour l'accueil (qui n'a pas d'entree dedans).
+ */
+function titleAndDescription(c: SiteContent, page?: SeoPage) {
+  if (!page) return { title: c.meta.title, description: c.meta.description };
+  const entry = c.seo[page];
+  // Le titre partage (`%s — Allo-Dépannage`) est ajoute par Next dans
+  // l'onglet ; pour les reseaux sociaux, la marque doit etre dans l'image
+  // partagee ET dans le titre, sinon un partage isole ne dit pas de qui
+  // il parle.
+  return {
+    title: `${entry.title} — ${company.displayName}`,
+    description: entry.description,
+  };
+}
+
+/**
+ * Visuel de partage (1200x630, le format attendu par Facebook, LinkedIn,
+ * WhatsApp et X). Il porte la marque, la zone, le numero et la vraie
+ * depanneuse du client : un lien partage sans image passe inapercu dans
+ * un fil, et un lien avec une image sans numero fait perdre l'appel.
+ */
+export const OG_IMAGE = {
+  url: '/og-cover.webp',
+  width: 1200,
+  height: 630,
+  alt: `${company.displayName} — Bruxelles 24/7 — ${PHONE_NATIONAL}`,
+};
 
 /**
  * Open Graph attend language_TERRITORY, pas une simple langue. La societe

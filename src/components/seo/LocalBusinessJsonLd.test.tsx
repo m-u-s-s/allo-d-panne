@@ -11,7 +11,8 @@ describe('LocalBusinessJsonLd', () => {
   it('declare un AutoRepair avec telephone', () => {
     const { container } = render(<LocalBusinessJsonLd locale="fr" />);
     const data = parse(container);
-    expect(data['@type']).toBe('AutoRepair');
+    expect(data['@type']).toContain('AutoRepair');
+    expect(data['@type']).toContain('EmergencyService');
     expect(data.telephone).toBe('+32467786456');
   });
 
@@ -37,6 +38,48 @@ describe('LocalBusinessJsonLd', () => {
     const data = parse(container);
     expect(data.vatID).toBeUndefined();
     expect(data.taxID).toBeUndefined();
+  });
+
+  it('donne les autres graphies du nom, fautes comprises', () => {
+    // Demande client : etre trouve meme quand le nom est mal ecrit. La
+    // place correcte est alternateName — PAS le texte visible, qu'un
+    // autre test garde propre.
+    const { container } = render(<LocalBusinessJsonLd locale="fr" />);
+    const data = parse(container);
+    expect(data.alternateName).toContain('Alo Depannage');
+    expect(data.alternateName).toContain('Allo Depanage');
+    expect(data.alternateName.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('liste les communes bruxelloises, dans leurs deux graphies', () => {
+    const { container } = render(<LocalBusinessJsonLd locale="fr" />);
+    const data = parse(container);
+    const zones = JSON.stringify(data.areaServed);
+    for (const commune of [
+      'Schaerbeek',
+      'Schaarbeek',
+      'Ixelles',
+      'Elsene',
+      'Uccle',
+      'Molenbeek-Saint-Jean',
+    ]) {
+      expect(zones).toContain(commune);
+    }
+  });
+
+  it('publie le catalogue de services dans la langue de la page', () => {
+    // Temoin positif : le catalogue doit CHANGER avec la langue, sinon
+    // il est fige sur le francais sans que personne s'en apercoive.
+    const fr = render(<LocalBusinessJsonLd locale="fr" />);
+    const dataFr = parse(fr.container);
+    expect(dataFr.hasOfferCatalog.itemListElement).toHaveLength(8);
+    expect(JSON.stringify(dataFr.hasOfferCatalog)).toContain('Remorquage');
+    fr.unmount();
+
+    const nl = render(<LocalBusinessJsonLd locale="nl" />);
+    const dataNl = parse(nl.container);
+    expect(JSON.stringify(dataNl.hasOfferCatalog)).toContain('Takelen');
+    expect(JSON.stringify(dataNl.hasOfferCatalog)).not.toContain('Remorquage');
   });
 
   it('declare la zone desservie pour l urgence, pas toute l Europe', () => {

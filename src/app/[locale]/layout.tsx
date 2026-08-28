@@ -11,7 +11,7 @@ import { getContent } from '@/content';
 import { company } from '@/content/company';
 import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
-import { ogLocaleFor, SITE_URL } from '@/lib/seo';
+import { OG_IMAGE, ogLocaleFor, SITE_URL, twitterFor } from '@/lib/seo';
 import '../globals.css';
 
 const inter = Inter({
@@ -64,6 +64,12 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: { default: c.meta.title, template: `%s — ${company.displayName}` },
     description: c.meta.description,
+    // Variantes de recherche de la langue, fautes de frappe comprises
+    // (demande client). A savoir : Google IGNORE cette balise depuis 2009
+    // et corrige lui-meme les fautes ; ce qui porte vraiment ces requetes,
+    // ce sont les titres/descriptions par page et les `alternateName` du
+    // schema.org. Elle ne coute rien et sert les moteurs secondaires.
+    keywords: c.searchTerms,
     // Pas d'`alternates` ici : le layout ne connait que la locale, jamais
     // le chemin de la page enfant. Les 7 pages feuilles fixent chacune leur
     // propre canonical/hreflang auto-referent via alternatesFor(path,
@@ -91,7 +97,10 @@ export async function generateMetadata({
       siteName: company.displayName,
       locale: ogLocaleFor(locale as Locale),
       type: 'website',
+      images: [OG_IMAGE],
     },
+    // Carte X/Twitter : sans elle, un partage n'affiche qu'un lien nu.
+    twitter: twitterFor(c),
   };
 }
 

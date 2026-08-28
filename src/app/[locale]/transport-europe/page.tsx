@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 import { CallButton } from '@/components/ui/CallButton';
 import { EuropeRadar } from '@/components/ui/EuropeRadar';
 import { PageShell } from '@/components/ui/PageShell';
@@ -18,10 +18,11 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
   return {
-    title: c.transportPage.title,
-    description: c.transportPage.intro,
+    title: c.seo.transport.title,
+    description: c.seo.transport.description,
     alternates: alternatesFor('/transport-europe', locale as Locale),
-    openGraph: openGraphFor(c, '/transport-europe', locale as Locale),
+    openGraph: openGraphFor(c, '/transport-europe', locale as Locale, 'transport'),
+    twitter: twitterFor(c, 'transport'),
   };
 }
 

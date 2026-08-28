@@ -11,8 +11,95 @@ export const fr: SiteContent = {
     // reste factuel et utile ; ProofSection porte la version humaine,
     // volontairement laissee telle quelle (voir son commentaire).
     description:
-      "Dépannage auto et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie. Batterie, crevaison, panne de carburant, ouverture de véhicule. Transport de véhicule dans toute l’Europe.",
+      "Dépannage et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie : batterie, crevaison, panne de carburant, ouverture de véhicule. Appelez le 0467 78 64 56.",
   },
+  seo: {
+    services: {
+      title: 'Dépannage et remorquage à Bruxelles',
+      description:
+        "Remorquage, batterie, crevaison, panne de carburant, ouverture de véhicule, poids lourds et véhicules accidentés : dépannage 24h/24 à Bruxelles.",
+    },
+    zones: {
+      title: 'Zones d’intervention à Bruxelles',
+      description:
+        "Dépannage d’urgence dans les 19 communes de Bruxelles et en périphérie, 24h/24. Transport de véhicule partout en Europe. Un appel : 0467 78 64 56.",
+    },
+    why: {
+      title: 'Dépanneur agréé et assuré 24h/24',
+      description:
+        "Entreprise agréée, intervention assurée, joignable jour et nuit, week-ends et jours fériés compris : pourquoi confier votre véhicule à Allo-Dépannage.",
+    },
+    transport: {
+      title: 'Transport de véhicule en Europe',
+      description:
+        "Transport de voiture, de véhicule de collection ou d’utilitaire au départ de Bruxelles vers Paris, Amsterdam, Berlin, Milan, Madrid et toute l’Europe.",
+    },
+    pricing: {
+      title: 'Tarifs dépannage dès 50 € à Bruxelles',
+      description:
+        "Dépannage à Bruxelles de 50 € à 250 €, + 2 € par kilomètre hors Bruxelles, transport sur devis. Prix annoncés à l’avance, confirmés avant déplacement.",
+    },
+    contact: {
+      title: 'Contact et devis dépannage',
+      description:
+        "Une panne, un accident, un véhicule à transporter ? Appelez le 0467 78 64 56, 24h/24, ou demandez un devis en ligne. Bruxelles et périphérie.",
+    },
+    legalNotice: {
+      title: 'Mentions légales',
+      description:
+        "Mentions légales d’Allo-Dépannage : éditeur du site, coordonnées de contact et informations en attente de confirmation par l’entreprise.",
+    },
+    terms: {
+      title: 'Conditions générales',
+      description:
+        "Conditions générales d’Allo-Dépannage : formation du prix, supplément kilométrique hors Bruxelles et confirmation du tarif avant tout déplacement.",
+    },
+    privacy: {
+      title: 'Politique de confidentialité',
+      description:
+        "Politique de confidentialité d’Allo-Dépannage : aucun cookie de mesure d’audience, aucun suivi publicitaire, données du formulaire jamais cédées.",
+    },
+  },
+  /*
+   * Variantes de recherche du francais, FAUTES COMPRISES (« depanage »,
+   * « remorcage », « alo depannage ») : c’est la demande client. Elles
+   * restent HORS du texte visible — une faute affichee coute la
+   * crédibilité, et Google corrige déjà les fautes de frappe tout seul.
+   */
+  searchTerms: [
+    'dépannage voiture Bruxelles',
+    'dépanneur Bruxelles',
+    'dépanneuse Bruxelles',
+    'remorquage Bruxelles',
+    'remorquage voiture 24h/24',
+    'dépannage auto 24h/24 Bruxelles',
+    'assistance dépannage autoroute',
+    'panne de batterie Bruxelles',
+    'crevaison dépannage Bruxelles',
+    'panne de carburant',
+    'ouverture de véhicule Bruxelles',
+    'clés enfermées dans la voiture',
+    'enlèvement véhicule accidenté',
+    'dépannage poids lourd Bruxelles',
+    'transport de véhicule Europe',
+    'rapatriement de véhicule',
+    'depannage bruxelles',
+    'depanage bruxelles',
+    'dépanage bruxelles',
+    'depannage voiture bruxelle',
+    'depanneur bruxelles',
+    'depaneur bruxelles',
+    'depanneuse bruxelles',
+    'depaneuse bruxelles',
+    'remorcage bruxelles',
+    'remorquage bruxelle',
+    'epannage voiture',
+    'allo depannage',
+    'allo depanage',
+    'alo depannage',
+    'allo dépanage bruxelles',
+    'allo-depannage bruxelles',
+  ],
   nav: {
     home: 'Accueil',
     transport: 'Transport Europe',
@@ -97,6 +184,9 @@ export const fr: SiteContent = {
   },
   coverage: {
     title: 'Où nous intervenons',
+    communesTitle: 'Les 19 communes de Bruxelles',
+    communesBody:
+      'Nos dépanneuses interviennent dans toute la Région de Bruxelles-Capitale et sa périphérie immédiate, de jour comme de nuit.',
     emergency: {
       scope: 'brussels-region',
       title: 'Urgence — Bruxelles et périphérie',

@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 import { PageShell } from '@/components/ui/PageShell';
 
 export async function generateMetadata({
@@ -16,9 +16,11 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
   return {
-    title: c.legal.termsTitle,
+    title: c.seo.terms.title,
+    description: c.seo.terms.description,
     alternates: alternatesFor('/cgv', locale as Locale),
-    openGraph: openGraphFor(c, '/cgv', locale as Locale),
+    openGraph: openGraphFor(c, '/cgv', locale as Locale, 'terms'),
+    twitter: twitterFor(c, 'terms'),
   };
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routing } from '@/i18n/routing';
+import { routing, type Locale } from '@/i18n/routing';
 import { getContent, SERVICE_IDS } from './index';
 
 const LOCALES = routing.locales;
@@ -52,6 +52,15 @@ describe('Completude du contenu', () => {
   });
 
   it('les trois langues ont exactement la meme forme', () => {
+    /*
+     * `searchTerms` est EXCLU : c'est la liste des requetes tapees dans
+     * chaque langue, fautes comprises. Le francais en a plus que le
+     * neerlandais parce qu'il s'ecrit mal de plus de facons — exiger le
+     * meme nombre de termes par langue serait une contrainte inventee.
+     * Sa presence et son contenu sont couverts par seo.test.ts. Tout le
+     * reste, y compris les 8 services et les 9 entrees seo, doit
+     * toujours correspondre exactement.
+     */
     const shape = (node: unknown): unknown => {
       if (Array.isArray(node)) return node.map(shape);
       if (node && typeof node === 'object') {
@@ -64,9 +73,15 @@ describe('Completude du contenu', () => {
       return typeof node;
     };
 
-    const fr = shape(getContent('fr'));
+    const withoutSearchTerms = (locale: Locale) => {
+      const { searchTerms, ...rest } = getContent(locale);
+      void searchTerms;
+      return shape(rest);
+    };
+
+    const fr = withoutSearchTerms('fr');
     for (const locale of LOCALES) {
-      expect(shape(getContent(locale))).toEqual(fr);
+      expect(withoutSearchTerms(locale)).toEqual(fr);
     }
   });
 });

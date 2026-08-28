@@ -1,3 +1,4 @@
+import { BreadcrumbJsonLd } from '@/components/seo/BreadcrumbJsonLd';
 import type { Locale } from '@/i18n/routing';
 import { SiteFooter } from './SiteFooter';
 import { SiteHeader } from './SiteHeader';
@@ -38,6 +39,11 @@ export function PageShell({
 }) {
   return (
     <>
+      {/* Fil d’Ariane machine-lisible. Il vit ICI parce que PageShell
+          est le seul endroit qui connaisse a la fois la langue ET le
+          chemin : le layout ignore le chemin, et le repeter page par page
+          serait neuf occasions de l’oublier. */}
+      <BreadcrumbJsonLd locale={locale} path={path} />
       <SiteHeader locale={locale} path={path} />
       {children}
       {!hideFooter && <SiteFooter locale={locale} />}

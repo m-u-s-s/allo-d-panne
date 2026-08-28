@@ -17,11 +17,64 @@ export type Service = {
   description: string;
 };
 
+/**
+ * Pages qui portent leur PROPRE titre et leur PROPRE description de
+ * recherche. L'accueil n'est pas dans la liste : son couple vit dans
+ * `meta`, qui sert aussi de valeur par defaut au layout et de description
+ * au schema.org.
+ */
+export const SEO_PAGES = [
+  'services',
+  'zones',
+  'why',
+  'transport',
+  'pricing',
+  'contact',
+  'legalNotice',
+  'terms',
+  'privacy',
+] as const;
+
+export type SeoPage = (typeof SEO_PAGES)[number];
+
+export type SeoEntry = {
+  /**
+   * Titre de l'onglet et du resultat de recherche. Le layout y ajoute
+   * « — Allo-Dépannage » (template Next) pour toute page qui n'est pas
+   * l'accueil : viser 42 caracteres au plus, sinon Google tronque.
+   */
+  title: string;
+  /**
+   * Description affichee sous le lien dans les resultats. Elle ne
+   * classe pas la page, elle decide du CLIC : verbe d'action, ville,
+   * disponibilite, et le numero quand il tient. Google coupe vers 155 —
+   * viser 158 caracteres au plus.
+   */
+  description: string;
+};
+
 export type SiteContent = {
   meta: {
     title: string;
     description: string;
   };
+  /**
+   * Titres et descriptions de recherche, page par page. Avant, chaque
+   * page reutilisait un titre d'interface (« Ce qu'on fait ») et un
+   * bout de copie comme description — trois pages legales partageaient
+   * meme la description du site, ce que les moteurs comptent comme du
+   * contenu duplique.
+   */
+  seo: Record<SeoPage, SeoEntry>;
+  /**
+   * Termes de recherche de la langue, VARIANTES ET FAUTES COMPRISES
+   * (« depanage », « remorcage »…). Ils alimentent la balise keywords.
+   * A savoir : Google l'ignore depuis 2009 et corrige lui-meme les
+   * fautes de frappe — ce sont `alternateName` du schema.org et la
+   * qualite des titres qui font le travail. Cette liste ne coute rien
+   * et couvre les moteurs secondaires ; elle ne remplace rien.
+   */
+  searchTerms: string[];
   nav: {
     home: string;
     transport: string;
@@ -65,6 +118,15 @@ export type SiteContent = {
   };
   coverage: {
     title: string;
+    /**
+     * Bloc « communes desservies » de la page /zones. Il rend VISIBLE ce
+     * que le schema.org declare deja dans areaServed : un habitant
+     * cherche « depannage Schaerbeek », pas « depannage Region de
+     * Bruxelles-Capitale ». La liste elle-meme vit dans content/communes.ts
+     * (source unique partagee avec le schema.org).
+     */
+    communesTitle: string;
+    communesBody: string;
     emergency: {
       scope: 'brussels-region';
       title: string;

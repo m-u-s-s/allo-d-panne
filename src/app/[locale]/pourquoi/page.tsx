@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
-import { alternatesFor, openGraphFor } from '@/lib/seo';
+import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
 import { PageShell } from '@/components/ui/PageShell';
 import { ProofSection } from '@/components/ui/ProofSection';
@@ -18,12 +18,11 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {};
   const c = getContent(locale as Locale);
   return {
-    title: c.proof.title,
-    description: [c.proof.approved, c.proof.insured, c.proof.available].join(
-      ' · ',
-    ),
+    title: c.seo.why.title,
+    description: c.seo.why.description,
     alternates: alternatesFor('/pourquoi', locale as Locale),
-    openGraph: openGraphFor(c, '/pourquoi', locale as Locale),
+    openGraph: openGraphFor(c, '/pourquoi', locale as Locale, 'why'),
+    twitter: twitterFor(c, 'why'),
   };
 }
 
