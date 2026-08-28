@@ -33,6 +33,17 @@ const QUOTE_SHORT: Record<Locale, string> = {
 };
 
 /*
+ * Fleches du carrousel de la descente. Elles n'ont pas de libelle visible
+ * (les glyphes ‹ et ›), donc leur aria-label EST leur seul nom : il doit
+ * suivre la langue de la page. Il etait fige en francais.
+ */
+const CAROUSEL_NAV: Record<Locale, { prev: string; next: string }> = {
+  fr: { prev: 'Précédent', next: 'Suivant' },
+  nl: { prev: 'Vorige', next: 'Volgende' },
+  en: { prev: 'Previous', next: 'Next' },
+};
+
+/*
  * Glyphes de marque des reseaux (traces pleins, contre-formes en
  * evenodd — le pipeline extrude respecte les trous : zero particule
  * dans le point du « in » LinkedIn ou le combine WhatsApp).
@@ -121,6 +132,8 @@ export default async function ContactPage({
       */}
       <DescentFooterMount
         ariaLabel={c.contactPage.title}
+        prevLabel={CAROUSEL_NAV[l].prev}
+        nextLabel={CAROUSEL_NAV[l].next}
         items={[
           {
             id: 'phone',
@@ -132,7 +145,7 @@ export default async function ContactPage({
             ? [
                 {
                   id: 'email',
-                  label: 'Email',
+                  label: 'E-mail',
                   href: `mailto:${company.email.value}`,
                   svg: GLYPH_MAIL,
                 },

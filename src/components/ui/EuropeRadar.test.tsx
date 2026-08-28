@@ -23,7 +23,12 @@ beforeAll(() => {
 describe('EuropeRadar', () => {
   it('expose un role image avec un label accessible', () => {
     render(
-      <EuropeRadar alt="Carte des trajets" fromLabel="Depuis" toLabel="vers" />,
+      <EuropeRadar
+        alt="Carte des trajets"
+        fromLabel="Depuis"
+        toLabel="vers"
+        locale="fr"
+      />,
     );
     expect(
       screen.getByRole('img', { name: /carte des trajets/i }),
@@ -37,11 +42,13 @@ describe('EuropeRadar', () => {
     // sr-only est donc L'UNIQUE alternative textuelle. L'assertion porte
     // specifiquement sur lui (via selector) : un test qui passerait encore
     // apres suppression du figcaption ne vaudrait rien.
-    render(<EuropeRadar alt="Carte" fromLabel="Depuis" toLabel="vers" />);
+    render(
+      <EuropeRadar alt="Carte" fromLabel="Depuis" toLabel="vers" locale="fr" />,
+    );
     // Liste importee du composant (CITIES exporte), pas dupliquee ici : une
     // ville ajoutee/retiree dans EuropeRadar.tsx ne peut plus faire diverger
     // silencieusement ce test de la realite du composant.
-    for (const city of CITIES.map((c) => c.name)) {
+    for (const city of CITIES.map((c) => c.names.fr)) {
       expect(
         screen.getByText(new RegExp(city, 'i'), { selector: 'figcaption' }),
       ).toBeInTheDocument();
@@ -54,12 +61,35 @@ describe('EuropeRadar', () => {
     // l'ecran ne montrerait plus qu'un scope vide. Correspondance EXACTE :
     // le figcaption, lui, est une longue phrase qui contient les memes noms
     // — seule la tuile correspond mot pour mot.
-    render(<EuropeRadar alt="Carte" fromLabel="Depuis" toLabel="vers" />);
-    for (const city of CITIES.slice(1).map((c) => c.name)) {
+    render(
+      <EuropeRadar alt="Carte" fromLabel="Depuis" toLabel="vers" locale="fr" />,
+    );
+    for (const city of CITIES.slice(1).map((c) => c.names.fr)) {
       expect(screen.getByText(city)).toBeInTheDocument();
     }
     // Le hub porte sa propre pastille au centre du scope.
-    expect(screen.getByText(CITIES[0].name)).toBeInTheDocument();
+    expect(screen.getByText(CITIES[0].names.fr)).toBeInTheDocument();
+  });
+
+  it('traduit les NOMS DE VILLES — pas de « Vienne » sur /nl ni /en', () => {
+    // L'ancienne carte listait les villes en francais dans les trois
+    // langues. Une ville a son exonyme : Vienne / Wenen / Vienna. Ce test
+    // echouerait si l'on revenait a une liste unique.
+    const { unmount } = render(
+      <EuropeRadar alt="Kaart" fromLabel="Ritten vanuit" toLabel="naar" locale="nl" />,
+    );
+    expect(screen.getByText('Wenen')).toBeInTheDocument();
+    expect(screen.getByText('Keulen')).toBeInTheDocument();
+    expect(screen.getByText('Brussel')).toBeInTheDocument();
+    expect(screen.queryByText('Vienne')).not.toBeInTheDocument();
+    unmount();
+
+    render(
+      <EuropeRadar alt="Map" fromLabel="Trips from" toLabel="to" locale="en" />,
+    );
+    expect(screen.getByText('Vienna')).toBeInTheDocument();
+    expect(screen.getByText('Brussels')).toBeInTheDocument();
+    expect(screen.queryByText('Vienne')).not.toBeInTheDocument();
   });
 
   it('localise le texte connectif du figcaption — pas de francais fige sur /en', () => {
@@ -69,7 +99,9 @@ describe('EuropeRadar', () => {
     // toLabel viennent de SiteContent (transportPage.routesCaptionFrom/To) ;
     // ce test verifie qu'ils s'affichent verbatim, pas les connecteurs
     // francais historiques.
-    render(<EuropeRadar alt="Map" fromLabel="Trips from" toLabel="to" />);
+    render(
+      <EuropeRadar alt="Map" fromLabel="Trips from" toLabel="to" locale="en" />,
+    );
     const figcaption = screen.getByText(/trips from/i, {
       selector: 'figcaption',
     });

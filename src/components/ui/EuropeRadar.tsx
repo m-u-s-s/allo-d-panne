@@ -21,6 +21,7 @@
  */
 
 import { IconContainer, Radar } from './radar-effect';
+import type { Locale } from '@/i18n/routing';
 
 /**
  * Bruxelles en tete : c'est le HUB, pose au centre du radar. Les suivantes
@@ -28,16 +29,21 @@ import { IconContainer, Radar } from './radar-effect';
  * haut, loin du centre), 1 = les plus proches (juste au-dessus du scope).
  * L'eloignement a l'ecran rejoue l'eloignement reel : la disposition porte
  * du sens, elle n'est pas decorative.
+ *
+ * Les noms sont donnes DANS LES TROIS LANGUES : une ville a son exonyme
+ * (Vienne / Wenen / Vienna, Cologne / Keulen / Cologne). Ecrire « Vienne »
+ * sur /nl et /en, comme le faisait l'ancienne carte, c'est du francais
+ * servi a un lecteur qui ne l'a pas demande.
  */
 export const CITIES = [
-  { name: 'Bruxelles', ring: 0 },
-  { name: 'Madrid', ring: 3 },
-  { name: 'Vienne', ring: 3 },
-  { name: 'Milan', ring: 3 },
-  { name: 'Berlin', ring: 2 },
-  { name: 'Paris', ring: 2 },
-  { name: 'Amsterdam', ring: 1 },
-  { name: 'Cologne', ring: 1 },
+  { names: { fr: 'Bruxelles', nl: 'Brussel', en: 'Brussels' }, ring: 0 },
+  { names: { fr: 'Madrid', nl: 'Madrid', en: 'Madrid' }, ring: 3 },
+  { names: { fr: 'Vienne', nl: 'Wenen', en: 'Vienna' }, ring: 3 },
+  { names: { fr: 'Milan', nl: 'Milaan', en: 'Milan' }, ring: 3 },
+  { names: { fr: 'Berlin', nl: 'Berlijn', en: 'Berlin' }, ring: 2 },
+  { names: { fr: 'Paris', nl: 'Parijs', en: 'Paris' }, ring: 2 },
+  { names: { fr: 'Amsterdam', nl: 'Amsterdam', en: 'Amsterdam' }, ring: 1 },
+  { names: { fr: 'Cologne', nl: 'Keulen', en: 'Cologne' }, ring: 1 },
 ] as const;
 
 const HUB = CITIES[0];
@@ -68,18 +74,20 @@ function CityRow({
   ring,
   maxWidth,
   delayFrom,
+  locale,
 }: {
   ring: number;
   maxWidth: string;
   delayFrom: number;
+  locale: Locale;
 }) {
   return (
     <div className={`mx-auto w-full ${maxWidth}`}>
       <div className="flex w-full items-start justify-center gap-8 sm:justify-between sm:gap-0">
         {ringOf(ring).map((city, i) => (
           <IconContainer
-            key={city.name}
-            text={city.name}
+            key={city.names.en}
+            text={city.names[locale]}
             delay={delayFrom + i * 0.1}
             icon={<PinIcon />}
           />
@@ -93,6 +101,7 @@ export function EuropeRadar({
   alt,
   fromLabel,
   toLabel,
+  locale,
 }: {
   /** Alternative textuelle localisee du visuel entier. */
   alt: string;
@@ -100,6 +109,8 @@ export function EuropeRadar({
   fromLabel: string;
   /** Connecteur localise avant la liste des destinations ("vers"). */
   toLabel: string;
+  /** Langue de la page : choisit l'exonyme de chaque ville. */
+  locale: Locale;
 }) {
   return (
     <figure className="w-full">
@@ -118,15 +129,25 @@ export function EuropeRadar({
             'radial-gradient(120% 90% at 50% 100%, color-mix(in srgb, var(--color-cta) 10%, transparent) 0%, transparent 62%)',
         }}
       >
-        <CityRow ring={3} maxWidth="max-w-2xl" delayFrom={0.1} />
-        <CityRow ring={2} maxWidth="max-w-xs sm:max-w-sm" delayFrom={0.4} />
-        <CityRow ring={1} maxWidth="max-w-[15rem] sm:max-w-md" delayFrom={0.6} />
+        <CityRow ring={3} maxWidth="max-w-2xl" delayFrom={0.1} locale={locale} />
+        <CityRow
+          ring={2}
+          maxWidth="max-w-xs sm:max-w-sm"
+          delayFrom={0.4}
+          locale={locale}
+        />
+        <CityRow
+          ring={1}
+          maxWidth="max-w-[15rem] sm:max-w-md"
+          delayFrom={0.6}
+          locale={locale}
+        />
 
         {/* Le HUB, pose au centre du scope : remplissage vert + encre sombre,
             le seul contraste fort du visuel — l'oeil part de la. */}
         <div className="absolute bottom-3 left-1/2 z-50 -translate-x-1/2">
           <span className="inline-flex min-h-[28px] items-center rounded-full bg-cta px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-cta-fg">
-            {HUB.name}
+            {HUB.names[locale]}
           </span>
         </div>
 
@@ -144,9 +165,9 @@ export function EuropeRadar({
       </div>
 
       <figcaption className="sr-only">
-        {alt}. {fromLabel} {HUB.name} {toLabel}{' '}
+        {alt}. {fromLabel} {HUB.names[locale]} {toLabel}{' '}
         {CITIES.slice(1)
-          .map((c) => c.name)
+          .map((c) => c.names[locale])
           .join(', ')}
         .
       </figcaption>

@@ -54,6 +54,7 @@ export default async function TransportPage({
             alt={c.transportPage.mapAlt}
             fromLabel={c.transportPage.routesCaptionFrom}
             toLabel={c.transportPage.routesCaptionTo}
+            locale={l}
           />
         </div>
 

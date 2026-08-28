@@ -11,7 +11,7 @@ export const fr: SiteContent = {
     // reste factuel et utile ; ProofSection porte la version humaine,
     // volontairement laissee telle quelle (voir son commentaire).
     description:
-      "Dépannage auto et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie. Batterie, crevaison, panne de carburant, ouverture de véhicule. Transport de véhicule dans toute l'Europe.",
+      "Dépannage auto et remorquage 24h/24, 7j/7 à Bruxelles et en périphérie. Batterie, crevaison, panne de carburant, ouverture de véhicule. Transport de véhicule dans toute l’Europe.",
   },
   nav: {
     home: 'Accueil',
@@ -28,14 +28,14 @@ export const fr: SiteContent = {
   },
   hero: {
     eyebrow: 'Disponible 24h/24, 7j/7',
-    title: 'En panne ? On arrive.',
+    title: 'En panne ? On arrive.',
     subtitle:
       'Dépannage et remorquage à Bruxelles et en périphérie. Un appel suffit — on vous sort de là.',
     callCta: 'Appeler maintenant',
     quoteCta: 'Demander un devis',
     availability: 'Nuit, week-end et jours fériés compris',
     posterAlt:
-      "Route mouillée de nuit éclairée par le gyrophare ambre d'une dépanneuse",
+      "Route mouillée de nuit éclairée par le gyrophare ambre d’une dépanneuse",
   },
   problem: {
     title: 'Personne ne prévoit de tomber en panne',
@@ -70,13 +70,13 @@ export const fr: SiteContent = {
     {
       id: 'unlock',
       title: 'Ouverture de véhicule',
-      description: 'Clés enfermées à l’intérieur ? On ouvre sans casse.',
+      description: 'Clés enfermées à l’intérieur ? On ouvre sans casse.',
     },
     {
       id: 'transport',
       title: 'Transport de véhicule',
       description:
-        "Transport longue distance dans toute l'Europe, sur devis.",
+        "Transport longue distance dans toute l’Europe, sur devis.",
     },
     {
       id: 'heavy',
@@ -100,12 +100,12 @@ export const fr: SiteContent = {
     emergency: {
       scope: 'brussels-region',
       title: 'Urgence — Bruxelles et périphérie',
-      body: "Pour un dépannage d'urgence, nous intervenons à Bruxelles et dans sa périphérie. C'est la zone où nous pouvons arriver vite — et vite, c'est tout ce qui compte quand vous êtes immobilisé.",
+      body: "Pour un dépannage d’urgence, nous intervenons à Bruxelles et dans sa périphérie. C’est la zone où nous pouvons arriver vite — et vite, c’est tout ce qui compte quand vous êtes immobilisé.",
     },
     transport: {
       scope: 'europe',
-      title: "Transport — toute l'Europe",
-      body: "Pour le transport de véhicule, aucune limite de distance : nous livrons partout en Europe, sur devis.",
+      title: "Transport — toute l’Europe",
+      body: "Pour le transport de véhicule, aucune limite de distance : nous livrons partout en Europe, sur devis.",
     },
   },
   pricing: {
@@ -118,38 +118,38 @@ export const fr: SiteContent = {
       'Le prix final dépend du type d’intervention et de la distance. Il vous est confirmé avant tout déplacement.',
   },
   finalCta: {
-    title: 'Immobilisé ? Ne restez pas là.',
+    title: 'Immobilisé ? Ne restez pas là.',
     body: 'Un appel, et on est en route.',
     button: 'Appeler maintenant',
   },
   transportPage: {
-    title: "Transport de véhicule dans toute l'Europe",
+    title: "Transport de véhicule dans toute l’Europe",
     intro:
-      "Voiture achetée à l'étranger, véhicule de collection, engin à déplacer, flotte à repositionner : nous transportons partout en Europe. Chaque trajet fait l'objet d'un devis, calculé sur la distance et le type de véhicule.",
+      "Voiture achetée à l’étranger, véhicule de collection, engin à déplacer, flotte à repositionner : nous transportons partout en Europe. Chaque trajet fait l’objet d’un devis, calculé sur la distance et le type de véhicule.",
     mapAlt:
-      "Carte de l'Europe montrant les principaux trajets de transport au départ de Bruxelles",
+      "Carte de l’Europe montrant les principaux trajets de transport au départ de Bruxelles",
     routesTitle: 'Nos trajets fréquents',
-    ctaTitle: 'Un véhicule à déplacer ?',
+    ctaTitle: 'Un véhicule à déplacer ?',
     routesCaptionFrom: 'Trajets au départ de',
     routesCaptionTo: 'vers',
   },
   pricingPage: {
     title: 'Tarifs',
     intro:
-      "Nos prix sont annoncés à l'avance et confirmés avant tout déplacement. Pas de mauvaise surprise sur la facture.",
+      "Nos prix sont annoncés à l’avance et confirmés avant tout déplacement. Pas de mauvaise surprise sur la facture.",
   },
   contactPage: {
     title: 'Nous contacter',
-    intro: "Pour une urgence, appelez — c'est toujours plus rapide. Pour un devis de transport ou une question, le formulaire suffit.",
-    urgentTitle: 'C’est urgent ?',
+    intro: "Pour une urgence, appelez — c’est toujours plus rapide. Pour un devis de transport ou une question, le formulaire suffit.",
+    urgentTitle: 'C’est urgent ?',
     urgentBody: 'Ne remplissez pas le formulaire. Appelez, on décroche.',
     formTitle: 'Demander un devis',
     fields: {
       name: 'Votre nom',
       phone: 'Votre téléphone',
-      email: 'Votre email',
+      email: 'Votre e-mail',
       service: 'Type d’intervention',
-      location: 'Où êtes-vous ?',
+      location: 'Où êtes-vous ?',
       message: 'Détails',
     },
     submit: 'Envoyer la demande',
@@ -172,18 +172,18 @@ export const fr: SiteContent = {
     publisher: 'Éditeur du site',
     pendingTitle: 'Informations en attente de confirmation',
     pendingBody:
-      "Cette page est incomplète. Les informations ci-dessous doivent être confirmées par l'entreprise avant la mise en ligne publique du site.",
+      "Cette page est incomplète. Les informations ci-dessous doivent être confirmées par l’entreprise avant la mise en ligne publique du site.",
     privacyBody:
-      "Ce site ne dépose aucun cookie de mesure d'audience et ne pratique aucun suivi publicitaire. Les données transmises via le formulaire de devis (nom, téléphone, email, localisation) servent uniquement à traiter votre demande et ne sont jamais cédées à des tiers. Vous pouvez demander leur suppression par email à tout moment.",
+      "Ce site ne dépose aucun cookie de mesure d’audience et ne pratique aucun suivi publicitaire. Les données transmises via le formulaire de devis (nom, téléphone, e-mail, localisation) servent uniquement à traiter votre demande et ne sont jamais cédées à des tiers. Vous pouvez demander leur suppression par e-mail à tout moment.",
     termsBody:
-      "Le prix final d'une intervention dépend du type de dépannage et de la distance parcourue. Il est confirmé au client avant tout déplacement. Toute intervention hors de Bruxelles fait l'objet d'un supplément kilométrique.",
+      "Le prix final d’une intervention dépend du type de dépannage et de la distance parcourue. Il est confirmé au client avant tout déplacement. Toute intervention hors de Bruxelles fait l’objet d’un supplément kilométrique.",
     pendingVatLabel: 'Numéro de TVA',
     pendingAddressLabel: 'Adresse du siège',
     pendingMotorwayZoneLabel: 'Zone d’agrément autoroute',
-    publisherNameLabel: 'Nom : ',
-    publisherPhoneLabel: 'Téléphone : ',
-    publisherEmailLabel: 'Email : ',
-    publisherVatLabel: 'TVA : ',
-    publisherAddressLabel: 'Siège : ',
+    publisherNameLabel: 'Nom : ',
+    publisherPhoneLabel: 'Téléphone : ',
+    publisherEmailLabel: 'E-mail : ',
+    publisherVatLabel: 'TVA : ',
+    publisherAddressLabel: 'Siège : ',
   },
 };

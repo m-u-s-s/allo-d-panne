@@ -55,6 +55,11 @@ export interface DescentItem {
 interface TunnelPodiumFooterProps {
   items: DescentItem[];
   ariaLabel: string;
+  /** Libelles LOCALISES des fleches du carrousel : ils etaient ecrits en
+      francais en dur et partaient donc tels quels aux lecteurs d’ecran
+      sur /nl et /en. */
+  prevLabel: string;
+  nextLabel: string;
   className?: string;
 }
 
@@ -1189,6 +1194,8 @@ function Effects() {
 export default function TunnelPodiumFooter({
   items,
   ariaLabel,
+  prevLabel,
+  nextLabel,
   className = '',
 }: TunnelPodiumFooterProps) {
   const wrapper = useRef<HTMLDivElement>(null);
@@ -1361,7 +1368,7 @@ export default function TunnelPodiumFooter({
           <div className="flex items-center justify-center gap-2 font-mono text-sm uppercase tracking-widest">
             <button
               type="button"
-              aria-label="Précédent"
+              aria-label={prevLabel}
               onClick={() =>
                 setSelected((s) => (s + items.length - 1) % items.length)
               }
@@ -1392,7 +1399,7 @@ export default function TunnelPodiumFooter({
             ))}
             <button
               type="button"
-              aria-label="Suivant"
+              aria-label={nextLabel}
               onClick={() => setSelected((s) => (s + 1) % items.length)}
               className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center text-[#1e2733]/70 transition-colors hover:text-[#1e2733]"
             >

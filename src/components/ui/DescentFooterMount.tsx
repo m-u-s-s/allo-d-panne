@@ -22,9 +22,14 @@ const TunnelPodiumFooter = dynamic(
 export function DescentFooterMount({
   items,
   ariaLabel,
+  prevLabel,
+  nextLabel,
 }: {
   items: DescentItem[];
   ariaLabel: string;
+  /** Libelles localises des fleches du carrousel (palier Full). */
+  prevLabel: string;
+  nextLabel: string;
 }) {
   const tier = useTier();
 
@@ -52,5 +57,12 @@ export function DescentFooterMount({
     );
   }
 
-  return <TunnelPodiumFooter items={items} ariaLabel={ariaLabel} />;
+  return (
+    <TunnelPodiumFooter
+      items={items}
+      ariaLabel={ariaLabel}
+      prevLabel={prevLabel}
+      nextLabel={nextLabel}
+    />
+  );
 }

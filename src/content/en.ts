@@ -2,7 +2,7 @@ import type { SiteContent } from './types';
 
 export const en: SiteContent = {
   meta: {
-    title: 'Allo-Depannage — 24/7 breakdown and towing in Brussels',
+    title: 'Allo-Dépannage — 24/7 breakdown and towing in Brussels',
     // "Approved and insured" deliberately dropped: this closing sentence
     // of the description feeds schema.org (LocalBusinessJsonLd.description)
     // and search snippets — machine-readable surfaces. Belgian motorway
@@ -30,7 +30,7 @@ export const en: SiteContent = {
     eyebrow: 'Available 24/7',
     title: 'Broken down? We are on our way.',
     subtitle:
-      'Breakdown assistance and towing in Brussels and surroundings. One call is all it takes.',
+      'Breakdown assistance and towing in Brussels and surroundings. One call is all it takes — we will get you out of there.',
     callCta: 'Call now',
     quoteCta: 'Request a quote',
     availability: 'Nights, weekends and public holidays included',
@@ -39,7 +39,7 @@ export const en: SiteContent = {
   },
   problem: {
     title: 'Nobody plans a breakdown',
-    body: 'Dead battery on a Monday morning, flat tyre on the ring road, keys locked inside. It always happens at the worst moment. You call, we come — day or night, weekends included.',
+    body: 'Dead battery on a Monday morning, flat tyre on the ring road, keys locked inside. It always happens at the worst possible moment. You call, we come — day or night, weekends included.',
   },
   servicesSection: {
     title: 'What we do',
@@ -64,17 +64,17 @@ export const en: SiteContent = {
     {
       id: 'fuel',
       title: 'Out of fuel',
-      description: 'Delivered on site, petrol or diesel.',
+      description: 'Delivery on site, petrol or diesel.',
     },
     {
       id: 'unlock',
       title: 'Vehicle unlocking',
-      description: 'Keys locked inside? We open it without damage.',
+      description: 'Keys locked inside? We open the car without damage.',
     },
     {
       id: 'transport',
       title: 'Vehicle transport',
-      description: 'Long-distance transport across Europe, on quote.',
+      description: 'Long-distance transport across Europe, priced on request.',
     },
     {
       id: 'heavy',
@@ -90,7 +90,7 @@ export const en: SiteContent = {
   proof: {
     title: 'Why trust us',
     approved: 'Approved company',
-    insured: 'Insured intervention',
+    insured: 'Insured call-outs',
     available: 'Reachable 24/7',
   },
   coverage: {
@@ -103,20 +103,20 @@ export const en: SiteContent = {
     transport: {
       scope: 'europe',
       title: 'Transport — across Europe',
-      body: 'For vehicle transport there is no distance limit: we deliver anywhere in Europe, on quote.',
+      body: 'For vehicle transport there is no distance limit: we transport anywhere in Europe, priced on request.',
     },
   },
   pricing: {
     title: 'Our pricing',
     subtitle: 'Stated upfront. No surprises on the invoice.',
-    rangeLabel: 'Intervention in Brussels',
+    rangeLabel: 'Call-out in Brussels',
     perKmLabel: 'Outside Brussels',
     quoteLabel: 'Transport and special cases',
     disclaimer:
-      'The final price depends on the type of intervention and the distance. It is confirmed before we set off.',
+      'The final price depends on the type of call-out and the distance. It is confirmed before we set off.',
   },
   finalCta: {
-    title: 'Stranded? Do not stay there.',
+    title: 'Stranded? Do not wait there.',
     body: 'One call and we are on our way.',
     button: 'Call now',
   },
@@ -140,19 +140,19 @@ export const en: SiteContent = {
     title: 'Contact us',
     intro: 'For an emergency, call — it is always faster. For a transport quote or a question, the form is enough.',
     urgentTitle: 'Is it urgent?',
-    urgentBody: 'Do not fill in the form. Call us, we pick up.',
+    urgentBody: 'Do not fill in the form. Call us — we answer.',
     formTitle: 'Request a quote',
     fields: {
       name: 'Your name',
       phone: 'Your phone',
       email: 'Your email',
-      service: 'Type of intervention',
+      service: 'Type of service',
       location: 'Where are you?',
       message: 'Details',
     },
     submit: 'Send request',
     success: 'Request received. We will call you back shortly.',
-    error: 'Sending failed. Call us, it is safer.',
+    error: 'Sending failed. Call us — that is more reliable.',
     invalidFields: 'Please check the form fields.',
   },
   footer: {
@@ -174,7 +174,7 @@ export const en: SiteContent = {
     privacyBody:
       'This website sets no analytics cookies and performs no advertising tracking. Data submitted through the quote form (name, phone, email, location) is used solely to handle your request and is never shared with third parties. You may request its deletion by email at any time.',
     termsBody:
-      'The final price of an intervention depends on the type of assistance and the distance travelled. It is confirmed to the customer before any journey. Any intervention outside Brussels incurs a per-kilometre supplement.',
+      'The final price of a call-out depends on the type of assistance and the distance travelled. It is confirmed to the customer before any journey. Any call-out outside Brussels incurs a per-kilometre supplement.',
     pendingVatLabel: 'VAT number',
     pendingAddressLabel: 'Registered office address',
     pendingMotorwayZoneLabel: 'Motorway approval zone',

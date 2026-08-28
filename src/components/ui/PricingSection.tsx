@@ -2,13 +2,34 @@ import { company } from '@/content/company';
 import { getContent } from '@/content';
 import type { Locale } from '@/i18n/routing';
 
+/*
+ * La place du symbole € n'est PAS la meme dans les trois langues :
+ * « 50 € » en francais, « € 50 » en neerlandais, « €50 » en anglais. Le
+ * gabarit etait fige sur la forme francaise, donc /en et /nl affichaient
+ * un montant mal ecrit. Intl.NumberFormat connait ces regles ; les
+ * etiquettes BCP 47 sont les variantes belges, sauf l'anglais (en-IE,
+ * l'anglais de la zone euro).
+ */
+const MONEY_LOCALE: Record<Locale, string> = {
+  fr: 'fr-BE',
+  nl: 'nl-BE',
+  en: 'en-IE',
+};
+
 export function PricingSection({ locale }: { locale: Locale }) {
   const c = getContent(locale);
   const p = company.pricing;
 
+  const money = (amount: number) =>
+    new Intl.NumberFormat(MONEY_LOCALE[locale], {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+
   const rows = [
-    { label: c.pricing.rangeLabel, value: `${p.minEur} € – ${p.maxEur} €` },
-    { label: c.pricing.perKmLabel, value: `+ ${p.perKmOutsideBrusselsEur} € / km` },
+    { label: c.pricing.rangeLabel, value: `${money(p.minEur)} – ${money(p.maxEur)}` },
+    { label: c.pricing.perKmLabel, value: `+ ${money(p.perKmOutsideBrusselsEur)} / km` },
     { label: c.pricing.quoteLabel, value: c.hero.quoteCta },
   ];
 

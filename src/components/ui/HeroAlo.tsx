@@ -67,7 +67,7 @@ const COPY: Record<
     pages: [
       { label: 'ACCUEIL', href: '/' },
       { label: 'SERVICES', href: '/services' },
-      { label: "ZONE D'INTERVENTION", href: '/zones' },
+      { label: 'ZONE D’INTERVENTION', href: '/zones' },
       { label: 'TARIFS', href: '/tarifs' },
     ],
     urgence: 'URGENCE',
@@ -91,12 +91,12 @@ const COPY: Record<
   nl: {
     title: [
       { t: 'ALTIJD ' },
-      { t: 'ER', accent: true },
+      { t: 'PARAAT', accent: true },
       { t: ' ALS HET ' },
       { t: 'MISLOOPT', accent: true },
       { t: '.' },
     ],
-    pagesLabel: "PAGINA'S",
+    pagesLabel: 'PAGINA’S',
     pages: [
       { label: 'HOME', href: '/' },
       { label: 'DIENSTEN', href: '/services' },
@@ -109,7 +109,7 @@ const COPY: Record<
     menu: 'Menu',
     ctaLabel: 'NOODGEVAL',
     reassurance: [
-      '24U/24 · 7D/7',
+      '24/7 BEREIKBAAR',
       'VERZEKERDE INTERVENTIE',
       'GRATIS OFFERTE',
       'BRUSSEL & RAND',
@@ -143,7 +143,7 @@ const COPY: Record<
     ctaLabel: 'EMERGENCY',
     reassurance: [
       '24/7',
-      'INSURED INTERVENTION',
+      'FULLY INSURED',
       'FREE QUOTE',
       'BRUSSELS & AROUND',
       'EUROPE TRANSPORT',

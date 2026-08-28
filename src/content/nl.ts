@@ -2,7 +2,7 @@ import type { SiteContent } from './types';
 
 export const nl: SiteContent = {
   meta: {
-    title: 'Allo-Depannage — Pechverhelping en takeldienst 24/7 in Brussel',
+    title: 'Allo-Dépannage — Pechverhelping en takeldienst 24/7 in Brussel',
     // "Erkend en verzekerd" bewust weggelaten : deze zin uit de
     // beschrijving voedt schema.org (LocalBusinessJsonLd.description) en
     // zoekresultaten, machineleesbare oppervlakken. De Belgische
@@ -29,7 +29,7 @@ export const nl: SiteContent = {
   },
   hero: {
     eyebrow: '24/7 bereikbaar',
-    title: 'Panne? Wij komen eraan.',
+    title: 'Pech? Wij komen eraan.',
     subtitle:
       'Pechverhelping en takeldienst in Brussel en omgeving. Eén telefoontje volstaat — wij halen u eruit.',
     callCta: 'Bel nu',
@@ -39,8 +39,8 @@ export const nl: SiteContent = {
       'Natte weg bij nacht, verlicht door het oranje zwaailicht van een takelwagen',
   },
   problem: {
-    title: 'Niemand plant een panne in',
-    body: 'Lege batterij op maandagochtend, lekke band op de ring, sleutels in de auto. Het gebeurt altijd op het slechtste moment. U belt, wij komen — dag en nacht, weekend inbegrepen.',
+    title: 'Niemand plant pech in',
+    body: 'Lege batterij op maandagochtend, lekke band op de ring, sleutels opgesloten in de auto. Het gebeurt altijd op het slechtste moment. U belt, wij komen — dag en nacht, weekend inbegrepen.',
   },
   servicesSection: {
     title: 'Wat wij doen',
@@ -70,12 +70,12 @@ export const nl: SiteContent = {
     {
       id: 'unlock',
       title: 'Voertuig openen',
-      description: 'Sleutels binnen? Wij openen zonder schade.',
+      description: 'Sleutels opgesloten? Wij openen zonder schade.',
     },
     {
       id: 'transport',
       title: 'Voertuigtransport',
-      description: 'Langeafstandstransport in heel Europa, op offerte.',
+      description: 'Langeafstandstransport in heel Europa, op aanvraag.',
     },
     {
       id: 'heavy',
@@ -89,13 +89,13 @@ export const nl: SiteContent = {
     },
   ],
   proof: {
-    title: 'Waarom op ons vertrouwen',
+    title: 'Waarom u op ons kunt vertrouwen',
     approved: 'Erkend bedrijf',
     insured: 'Verzekerde interventie',
     available: '24/7 bereikbaar',
   },
   coverage: {
-    title: 'Waar wij komen',
+    title: 'Waar wij actief zijn',
     emergency: {
       scope: 'brussels-region',
       title: 'Dringend — Brussel en omgeving',
@@ -104,7 +104,7 @@ export const nl: SiteContent = {
     transport: {
       scope: 'europe',
       title: 'Transport — heel Europa',
-      body: 'Voor voertuigtransport geldt geen afstandsgrens: wij leveren overal in Europa, op offerte.',
+      body: 'Voor voertuigtransport geldt geen afstandsgrens: wij rijden tot overal in Europa, op aanvraag.',
     },
   },
   pricing: {
@@ -114,10 +114,10 @@ export const nl: SiteContent = {
     perKmLabel: 'Buiten Brussel',
     quoteLabel: 'Transport en bijzondere gevallen',
     disclaimer:
-      'De eindprijs hangt af van het type interventie en de afstand. Hij wordt bevestigd vóór elke verplaatsing.',
+      'De eindprijs hangt af van het type interventie en de afstand. Die wordt bevestigd vóór elke verplaatsing.',
   },
   finalCta: {
-    title: 'Staat u stil? Blijf daar niet.',
+    title: 'Staat u stil? Blijf daar niet staan.',
     body: 'Eén telefoontje en wij zijn onderweg.',
     button: 'Bel nu',
   },
@@ -139,7 +139,7 @@ export const nl: SiteContent = {
   },
   contactPage: {
     title: 'Contact',
-    intro: 'Bij een noodgeval belt u beter — dat gaat altijd sneller. Voor een transportofferte of een vraag volstaat het formulier.',
+    intro: 'Bij een noodgeval kunt u beter bellen — dat gaat altijd sneller. Voor een transportofferte of een vraag volstaat het formulier.',
     urgentTitle: 'Is het dringend?',
     urgentBody: 'Vul het formulier niet in. Bel ons, wij nemen op.',
     formTitle: 'Offerte aanvragen',
@@ -175,7 +175,7 @@ export const nl: SiteContent = {
     privacyBody:
       'Deze website plaatst geen analytische cookies en doet niet aan advertentietracking. De gegevens die via het offerteformulier worden verzonden (naam, telefoon, e-mail, locatie) dienen uitsluitend om uw aanvraag te behandelen en worden nooit aan derden doorgegeven. U kunt op elk moment per e-mail om verwijdering vragen.',
     termsBody:
-      'De eindprijs van een interventie hangt af van het type pechverhelping en de afgelegde afstand. Hij wordt aan de klant bevestigd vóór elke verplaatsing. Elke interventie buiten Brussel brengt een kilometertoeslag met zich mee.',
+      'De eindprijs van een interventie hangt af van het type pechverhelping en de afgelegde afstand. Die wordt aan de klant bevestigd vóór elke verplaatsing. Elke interventie buiten Brussel brengt een kilometertoeslag met zich mee.',
     pendingVatLabel: 'Btw-nummer',
     pendingAddressLabel: 'Adres van de maatschappelijke zetel',
     pendingMotorwayZoneLabel: 'Erkenningszone snelwegpechverhelping',

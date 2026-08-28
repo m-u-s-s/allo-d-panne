@@ -265,7 +265,7 @@ export default async function HomePage({
         {/* Galerie de missions « pile → grille » (composant 21st.dev adapte)
             juste avant le CTA final. Client component autonome (framer-motion),
             hors piste horizontale. */}
-        <ExpandableGallery />
+        <ExpandableGallery locale={l} />
 
         {/* Section finale « plein cadre » (retour client, calquee sur
             landonorris.com) : remplace l'ancien CTA video. Panneau sombre a

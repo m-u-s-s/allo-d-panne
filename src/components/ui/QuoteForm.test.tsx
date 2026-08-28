@@ -9,7 +9,7 @@ describe('QuoteForm', () => {
     render(<QuoteForm locale="fr" />);
     expect(screen.getByLabelText(/votre nom/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/votre téléphone/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/votre email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/votre e-?mail/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/type d/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/où êtes-vous/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/détails/i)).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe('QuoteForm', () => {
 
   it('le champ email utilise le bon type', () => {
     render(<QuoteForm locale="fr" />);
-    expect(screen.getByLabelText(/votre email/i)).toHaveAttribute('type', 'email');
+    expect(screen.getByLabelText(/votre e-?mail/i)).toHaveAttribute('type', 'email');
   });
 
   it('les champs obligatoires sont marques', () => {
