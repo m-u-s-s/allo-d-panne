@@ -67,7 +67,7 @@ export function parseQuote(formData: FormData): ParseResult {
  */
 export function renderQuoteEmail(q: Quote): string {
   return [
-    'Nouvelle demande de devis — alo-depannage.com',
+    'Nouvelle demande de devis — allo-depannage.com',
     '',
     `Nom        : ${q.name}`,
     `Telephone  : ${q.phone}`,

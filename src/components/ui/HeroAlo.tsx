@@ -82,7 +82,7 @@ const COPY: Record<
       'BRUXELLES & PÉRIPHÉRIE',
       'TRANSPORT EUROPE',
     ],
-    rights: '© 2026 Alo-Dépannage. Tous droits réservés.',
+    rights: '© 2026 Allo-Dépannage. Tous droits réservés.',
     legal: [
       { label: 'CONFIDENTIALITÉ', href: '/confidentialite' },
       { label: 'MENTIONS LÉGALES', href: '/mentions-legales' },
@@ -115,7 +115,7 @@ const COPY: Record<
       'BRUSSEL & RAND',
       'TRANSPORT EUROPA',
     ],
-    rights: '© 2026 Alo-Dépannage. Alle rechten voorbehouden.',
+    rights: '© 2026 Allo-Dépannage. Alle rechten voorbehouden.',
     legal: [
       { label: 'PRIVACY', href: '/confidentialite' },
       { label: 'JURIDISCHE INFO', href: '/mentions-legales' },
@@ -148,7 +148,7 @@ const COPY: Record<
       'BRUSSELS & AROUND',
       'EUROPE TRANSPORT',
     ],
-    rights: '© 2026 Alo-Dépannage. All rights reserved.',
+    rights: '© 2026 Allo-Dépannage. All rights reserved.',
     legal: [
       { label: 'PRIVACY', href: '/confidentialite' },
       { label: 'LEGAL', href: '/mentions-legales' },
@@ -187,7 +187,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
 
   return (
     <section
-      aria-label="Alo-Dépannage"
+      aria-label="Allo-Dépannage"
       className="relative isolate w-full overflow-hidden px-3 pb-20 pt-3 sm:px-5 sm:pt-5"
       style={{ background: 'linear-gradient(180deg, #F2F4E6 0%, #E7EEC4 100%)' }}
     >
@@ -229,7 +229,7 @@ export function HeroAlo({ locale }: { locale: Locale }) {
               className="block text-2xl font-normal tracking-[-0.02em] sm:text-3xl"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              ALO
+              ALLO
             </span>
             <span
               className="block text-2xl font-normal tracking-[-0.02em] sm:text-3xl"

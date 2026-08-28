@@ -156,7 +156,7 @@ export default async function HomePage({
         <WreckRevealHero
           wreckedSrc="/hero-truck-empty.webp"
           revealSrc="/hero-truck-loaded.webp"
-          marqueeSerif="Alo-Dépannage"
+          marqueeSerif="Allo-Dépannage"
           marqueeSans={c.hero.title}
           caption={c.hero.eyebrow}
           cardTitle="24/7"

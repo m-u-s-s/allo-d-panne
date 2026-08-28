@@ -45,13 +45,13 @@ export type Address = {
 };
 
 export const company = {
-  legalName: resolved('Alo-Dépannage'),
-  displayName: 'Alo-Dépannage',
+  legalName: resolved('Allo-Dépannage'),
+  displayName: 'Allo-Dépannage',
 
   phoneE164: PHONE_E164,
   phoneNational: PHONE_NATIONAL,
   phoneInternational: PHONE_INTERNATIONAL,
-  email: resolved('contact@alo-depannage.com'),
+  email: resolved('contact@allo-depannage.com'),
 
   available247: true,
 

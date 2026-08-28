@@ -2,7 +2,7 @@ import type { SiteContent } from './types';
 
 export const nl: SiteContent = {
   meta: {
-    title: 'Alo-Depannage — Pechverhelping en takeldienst 24/7 in Brussel',
+    title: 'Allo-Depannage — Pechverhelping en takeldienst 24/7 in Brussel',
     // "Erkend en verzekerd" bewust weggelaten : deze zin uit de
     // beschrijving voedt schema.org (LocalBusinessJsonLd.description) en
     // zoekresultaten, machineleesbare oppervlakken. De Belgische

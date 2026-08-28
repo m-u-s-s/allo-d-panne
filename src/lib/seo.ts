@@ -4,7 +4,7 @@ import type { Locale } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alo-depannage.com';
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://allo-depannage.com';
 
 /** URL absolue d'une page pour une locale donnee — factorise entre alternatesFor et openGraphFor. */
 function absoluteUrl(path: string, locale: Locale): string {

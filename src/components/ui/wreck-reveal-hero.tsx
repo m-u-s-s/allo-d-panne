@@ -102,7 +102,7 @@ export default function WreckRevealHero({
   revealSrc,
   revealRadius = 180,
   className = '',
-  marqueeSerif = 'Alo-Dépannage',
+  marqueeSerif = 'Allo-Dépannage',
   marqueeSans = 'En panne ? On arrive.',
   caption = 'Disponible 24h/24, 7j/7',
   cardTitle = '24/7',
@@ -110,7 +110,7 @@ export default function WreckRevealHero({
   callHref,
   callLabel,
   callNumber,
-  brandTop = 'Alo-',
+  brandTop = 'Allo-',
   brandBottom = 'Dépannage',
 }: WreckRevealHeroProps) {
   const sectionRef = React.useRef<HTMLElement>(null);
@@ -560,7 +560,7 @@ export default function WreckRevealHero({
         </div>
 
         {/* Signature (phase C) — la VRAIE signature du client (PSD fourni),
-            remplace le trace SVG « Alo 24/7 ». Essuyage masque gauche->droite
+            remplace le trace SVG « Allo 24/7 ». Essuyage masque gauche->droite
             (sigMask) synchronise au scroll : elle se peint comme si on
             l'ecrivait. Lime deja dans l'asset (#D0F000). */}
         <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">

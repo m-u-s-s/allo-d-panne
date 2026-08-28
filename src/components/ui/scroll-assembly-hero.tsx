@@ -389,7 +389,7 @@ export default function ScrollAssemblyHero({
   portraitSrc,
   helmetSrc,
   className = '',
-  marqueeSerif = 'Alo-Dépannage',
+  marqueeSerif = 'Allo-Dépannage',
   marqueeSans = 'En panne ? On arrive.',
   caption = 'Disponible 24h/24, 7j/7',
   cardTitle = '24/7',
@@ -397,7 +397,7 @@ export default function ScrollAssemblyHero({
   callHref,
   callLabel,
   callNumber,
-  brandTop = 'Alo-',
+  brandTop = 'Allo-',
   brandBottom = 'Dépannage',
 }: ScrollAssemblyHeroProps) {
   const sectionRef = React.useRef<HTMLElement>(null);

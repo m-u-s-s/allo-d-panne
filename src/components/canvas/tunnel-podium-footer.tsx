@@ -1345,7 +1345,7 @@ export default function TunnelPodiumFooter({
 
         {/* HUD decoratif */}
         <div className="pointer-events-none absolute inset-0 font-mono text-[10px] uppercase tracking-[0.2em] text-text/25">
-          <p className="absolute left-6 top-6">Alo-Dépannage — 24/7</p>
+          <p className="absolute left-6 top-6">Allo-Dépannage — 24/7</p>
           <p className="absolute right-6 top-6">SECT. BXL / RING</p>
           <p className="absolute left-6 bottom-6">FOG 0.045 · DPR 1.75</p>
         </div>

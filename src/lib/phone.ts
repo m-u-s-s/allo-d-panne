@@ -1,5 +1,5 @@
 /**
- * Le numero unique d'Alo-Depannage, sous ses trois formes.
+ * Le numero unique d'Allo-Depannage, sous ses trois formes.
  *
  * TEL_HREF est TOUJOURS en E.164 : les clients du transport europeen
  * appellent depuis l'etranger, un href au format national echouerait.
