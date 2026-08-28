@@ -96,7 +96,7 @@ export type SiteContent = {
     routesTitle: string;
     ctaTitle: string;
     /**
-     * Connecteurs du figcaption sr-only d'EuropeRoutesStatic : "{routesCaptionFrom} Bruxelles
+     * Connecteurs du figcaption sr-only d'EuropeRadar : "{routesCaptionFrom} Bruxelles
      * {routesCaptionTo} Paris, Amsterdam...". Les noms de villes restent
      * tels quels (exonymes hors perimetre) ; seuls ces connecteurs sont
      * localises pour eviter un figcaption moitie francais moitie NL/EN.

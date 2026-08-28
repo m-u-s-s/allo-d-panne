@@ -6,7 +6,7 @@ import { getContent } from '@/content';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor } from '@/lib/seo';
 import { CallButton } from '@/components/ui/CallButton';
-import { EuropeRoutesStatic } from '@/components/ui/EuropeRoutesStatic';
+import { EuropeRadar } from '@/components/ui/EuropeRadar';
 import { PageShell } from '@/components/ui/PageShell';
 
 export async function generateMetadata({
@@ -50,7 +50,7 @@ export default async function TransportPage({
           {c.transportPage.routesTitle}
         </h2>
         <div className="mt-6 rounded-lg border border-border bg-surface p-4">
-          <EuropeRoutesStatic
+          <EuropeRadar
             alt={c.transportPage.mapAlt}
             fromLabel={c.transportPage.routesCaptionFrom}
             toLabel={c.transportPage.routesCaptionTo}

@@ -251,6 +251,31 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
   opacity: 0.35; /* etat initial avant le premier cycle decale */
 }
 
+/*
+ * Balayage du radar (/transport-europe). L origine de transformation est
+ * posee a DROITE du trait : il pivote autour de son extremite, comme
+ * l aiguille d un scope, au lieu de tourner autour de son milieu. Le tour
+ * part de 20deg pour que la premiere image ne soit pas plate a l horizontale.
+ *
+ * Les keyframes vivent ici, pas dans une balise <style> du composant : une
+ * seule declaration pour toutes les instances, et surtout la regle
+ * prefers-reduced-motion ci-dessous les fige comme le reste des animations
+ * CSS du site (duree 0.01ms, un cycle) — le radar devient alors un schema
+ * fixe, parfaitement lisible.
+ */
+@keyframes radar-sweep {
+  from {
+    transform: rotate(20deg);
+  }
+  to {
+    transform: rotate(380deg);
+  }
+}
+
+.radar-sweep {
+  animation: radar-sweep 10s linear infinite;
+  will-change: transform;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
