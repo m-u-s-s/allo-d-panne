@@ -41,7 +41,9 @@ export default async function HomePage({
   const c = getContent(l);
 
   // Index horizontal : un theme par panneau. `href` → page dediee ouverte
-  // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre.
+  // au clic sur le titre ; `photo` → fond de mission DERRIERE le verre
+  // (vraies photos fournies par le client, public/slider/*.webp — les
+  // placeholders IA de public/missions/ ne servent plus qu'a la galerie).
   // (Le constat « personne ne prevoit... » a quitte le carrousel : il est
   // remonte DANS le hero, en derniere respiration de la sequence — voir
   // WreckRevealHero.problemTitle/Body. Tous les panneaux restants portent
@@ -55,15 +57,23 @@ export default async function HomePage({
     {
       title: c.servicesSection.title,
       href: '/services',
-      photo: '/missions/remorquage.jpg',
+      photo: '/slider/remorquage-nuit.webp',
     },
-    { title: c.proof.title, href: '/pourquoi', photo: '/missions/depannage.jpg' },
-    { title: c.coverage.title, href: '/zones', photo: '/missions/transport.jpg' },
+    {
+      title: c.proof.title,
+      href: '/pourquoi',
+      photo: '/slider/sportive-sanglee.webp',
+    },
+    {
+      title: c.coverage.title,
+      href: '/zones',
+      photo: '/slider/utilitaire-plateau.webp',
+    },
     {
       title: c.pricing.title,
       sub: c.pricing.subtitle,
       href: '/tarifs',
-      photo: '/missions/ville.jpg',
+      photo: '/slider/accident-route.webp',
     },
   ];
 
@@ -201,9 +211,10 @@ export default async function HomePage({
               <div data-panel="" key={p.title}>
                 <div className="relative h-full min-h-[100svh] w-full overflow-hidden">
                   {/* FOND (z-0) : la photo de mission, DERRIERE le verre.
-                      Placeholder « design » genere (IA) — a remplacer par
-                      de vraies photos. alt="" : decoratif, le titre porte
-                      le sens. */}
+                      Vraies photos du client (public/slider/), vues au
+                      travers du verre givre : la definition source (736 px)
+                      suffit, le backdrop-blur les adoucit de toute facon.
+                      alt="" : decoratif, le titre porte le sens. */}
                   {p.photo ? (
                     <Image
                       src={p.photo}
