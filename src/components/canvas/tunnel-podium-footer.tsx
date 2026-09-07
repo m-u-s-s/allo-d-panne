@@ -61,6 +61,8 @@ interface TunnelPodiumFooterProps {
   prevLabel: string;
   nextLabel: string;
   className?: string;
+  /** Palier lite (mobile) : moins de particules, pas de post-processing, DPR plafonne. */
+  lite?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -87,6 +89,7 @@ const PALETTE = {
 };
 
 const COUNT = 30000;
+const COUNT_LITE = 9000; // palier lite : lisible, ~3x moins de travail par frame
 const STAGGER = 0.6;
 const MORPH_SECONDS = 2.2; // retour client : morph ralenti (1.15 -> 2.2)
 const WORLD_SIZE = 3.8; // retour client : logos agrandis (3.2 -> 3.8)
@@ -269,10 +272,13 @@ function ParticleSculpture({
   items,
   selected,
   anchorRefs,
+  count,
 }: {
   items: DescentItem[];
   selected: number;
   anchorRefs: React.MutableRefObject<Array<HTMLAnchorElement | null>>;
+  /** Nombre de particules du palier courant (COUNT ou COUNT_LITE). */
+  count: number;
 }) {
   const points = useRef<THREE.Points>(null!);
   const groupRef = useRef<THREE.Group>(null!);
@@ -294,14 +300,14 @@ function ParticleSculpture({
   });
 
   const { geometry, material, rand } = React.useMemo(() => {
-    const first = sampleIcon(items[0].svg, COUNT);
+    const first = sampleIcon(items[0].svg, count);
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('aPositionFrom', new THREE.BufferAttribute(first.slice(), 3));
     geo.setAttribute('aPositionTo', new THREE.BufferAttribute(first.slice(), 3));
     // position requis par three pour le bounding — jamais lu par le shader
     geo.setAttribute('position', new THREE.BufferAttribute(first.slice(), 3));
-    const r = new Float32Array(COUNT * 4);
-    for (let i = 0; i < COUNT; i++) {
+    const r = new Float32Array(count * 4);
+    for (let i = 0; i < count; i++) {
       r[i * 4] = seeded(i, 1);
       r[i * 4 + 1] = seeded(i, 2);
       r[i * 4 + 2] = seeded(i, 3);
@@ -334,7 +340,7 @@ function ParticleSculpture({
       fog: true,
     });
     return { geometry: geo, material: mat, rand: r };
-  }, [items]);
+  }, [items, count]);
 
   // Le premier glyphe est echantillonne en synchrone (ci-dessus) ; les
   // suivants en requestIdleCallback pour ne pas bloquer l'arrivee.
@@ -352,7 +358,7 @@ function ParticleSculpture({
     const next = () => {
       if (cancelled || i >= items.length) return;
       const idx = i++;
-      clouds.current[idx] = sampleIcon(items[idx].svg, COUNT);
+      clouds.current[idx] = sampleIcon(items[idx].svg, count);
       idle(next);
     };
     idle(next);
@@ -372,7 +378,7 @@ function ParticleSculpture({
     const P = store.morphT;
     const fa = from.array as Float32Array;
     const ca = cur.array as Float32Array;
-    for (let i = 0; i < COUNT; i++) {
+    for (let i = 0; i < count; i++) {
       const t = ease(
         Math.min(1, Math.max(0, P * (1 + STAGGER) - STAGGER * rand[i * 4])),
       );
@@ -1197,6 +1203,7 @@ export default function TunnelPodiumFooter({
   prevLabel,
   nextLabel,
   className = '',
+  lite = false,
 }: TunnelPodiumFooterProps) {
   const wrapper = useRef<HTMLDivElement>(null);
   const anchorRefs = useRef<Array<HTMLAnchorElement | null>>([]);
@@ -1294,7 +1301,7 @@ export default function TunnelPodiumFooter({
           <Canvas
             aria-hidden="true"
             frameloop={visible ? 'always' : 'never'}
-            dpr={[1, 1.75]}
+            dpr={lite ? [1, 1.3] : [1, 1.75]}
             gl={{
               antialias: false,
               powerPreference: 'high-performance',
@@ -1330,8 +1337,12 @@ export default function TunnelPodiumFooter({
               items={items}
               selected={selected}
               anchorRefs={anchorRefs}
+              count={lite ? COUNT_LITE : COUNT}
             />
-            <Effects />
+            {/* Post-processing (Bloom, aberration, bruit, vignette) : le
+                poste de depense n1 sur mobile — supprime en lite, pas
+                degrade. Le tunnel reste net et lisible sans lui. */}
+            {!lite && <Effects />}
           </Canvas>
         )}
 

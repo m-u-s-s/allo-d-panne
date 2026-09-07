@@ -63,6 +63,7 @@ export function DescentFooterMount({
       ariaLabel={ariaLabel}
       prevLabel={prevLabel}
       nextLabel={nextLabel}
+      lite={tier === 'lite'}
     />
   );
 }
