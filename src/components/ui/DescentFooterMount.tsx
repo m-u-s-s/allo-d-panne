@@ -33,7 +33,7 @@ export function DescentFooterMount({
 }) {
   const tier = useTier();
 
-  if (tier !== 'static') {
+  if (tier === 'static') {
     return (
       <nav
         aria-label={ariaLabel}
