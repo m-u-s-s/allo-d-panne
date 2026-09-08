@@ -167,7 +167,7 @@ export function ScrollExperience() {
       // pilote le scrub, aucun travail par frame supplementaire. Seul
       // Static garde l'empilement vertical.
       let hscrollOn = false;
-      if (tier !== 'static') {
+      if (tier === 'full' || tier === 'lite') {
         const wrapper = document.querySelector<HTMLElement>('[data-hscroll]');
         const track = wrapper?.querySelector<HTMLElement>(
           '[data-hscroll-track]',
