@@ -418,7 +418,10 @@ export default function WreckRevealHero({
           className="absolute right-6 top-24 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#2DFF00] px-4 py-2 text-sm font-bold uppercase text-[#111112]"
         >
           <PhoneIcon />
-          {callLabel} <span className="font-mono tabular-nums">{callNumber}</span>
+          {/* Mobile : icone + numero seulement — le libelle complet ne
+              tient pas a cote du bloc marque sans chevaucher. */}
+          <span className="hidden sm:inline">{callLabel}</span>{' '}
+          <span className="font-mono tabular-nums">{callNumber}</span>
         </a>
       </section>
     );
@@ -606,10 +609,11 @@ export default function WreckRevealHero({
           transition={{ type: 'spring', stiffness: 300, damping: 18 }}
         >
           <PhoneIcon />
-          {callLabel} <span className="font-mono tabular-nums">{callNumber}</span>
+          <span className="hidden sm:inline">{callLabel}</span>{' '}
+          <span className="font-mono tabular-nums">{callNumber}</span>
         </motion.a>
         <motion.div
-          className="pointer-events-none absolute left-1/2 top-24 z-40 flex -translate-x-1/2 flex-col items-center gap-1"
+          className="pointer-events-none absolute left-1/2 top-24 z-40 hidden -translate-x-1/2 flex-col items-center gap-1 md:flex"
           style={{ color: chromeColor }}
         >
           <svg viewBox="0 0 24 16" className="h-4 w-6" aria-hidden="true">
