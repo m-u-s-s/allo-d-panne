@@ -276,4 +276,33 @@ export const fr: SiteContent = {
     publisherVatLabel: 'TVA : ',
     publisherAddressLabel: 'Siège : ',
   },
+  faq: {
+    title: 'Questions fréquentes',
+    items: [
+      {
+        q: 'Combien coûte un dépannage à Bruxelles ?',
+        a: 'Entre 50 € et 250 € selon l’intervention, plus 2 € par kilomètre hors de Bruxelles. Le prix est annoncé à l’avance et confirmé avant tout déplacement — aucune surprise à l’arrivée.',
+      },
+      {
+        q: 'Intervenez-vous la nuit, le week-end et les jours fériés ?',
+        a: 'Oui. Allo-Dépannage est joignable 24h/24 et 7j/7, week-ends et jours fériés compris, au 0467 78 64 56.',
+      },
+      {
+        q: 'Dans quelles communes intervenez-vous ?',
+        a: 'Dans les 19 communes de la Région de Bruxelles-Capitale et leur périphérie immédiate, de jour comme de nuit.',
+      },
+      {
+        q: 'Transportez-vous des véhicules hors de Belgique ?',
+        a: 'Oui : transport de voitures, véhicules de collection et utilitaires au départ de Bruxelles vers Paris, Amsterdam, Berlin, Milan, Madrid et toute l’Europe, sur devis.',
+      },
+      {
+        q: 'Êtes-vous une entreprise agréée ?',
+        a: 'Oui, Allo-Dépannage est une entreprise agréée et chaque intervention est assurée.',
+      },
+      {
+        q: 'En quelles langues puis-je vous appeler ?',
+        a: 'En français, en néerlandais et en anglais, à toute heure.',
+      },
+    ],
+  },
 };

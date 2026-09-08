@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { getContent } from '@/content';
+import { FaqJsonLd } from '@/components/seo/FaqJsonLd';
 import { routing, type Locale } from '@/i18n/routing';
 import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
 import { FinalCta } from '@/components/ui/FinalCta';
@@ -52,6 +53,23 @@ export default async function PricingPage({
           <PricingSection locale={l} />
         </div>
         <FinalCta locale={l} />
+        {/* FAQ visible + schema.org FAQPage : les questions que tapent
+            reellement les gens (« combien coute un depannage a bruxelles »)
+            deviennent des reponses candidates aux resultats enrichis et
+            aux requetes vocales. Le balisage reflete ce texte, rien
+            d'autre. */}
+        <section className="mx-auto mt-16 max-w-7xl px-4 pb-20">
+          <h2 className="font-display text-xl font-bold">{c.faq.title}</h2>
+          <dl className="mt-6 max-w-[70ch] space-y-6">
+            {c.faq.items.map((item) => (
+              <div key={item.q}>
+                <dt className="font-bold">{item.q}</dt>
+                <dd className="mt-1 text-muted">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+        <FaqJsonLd locale={l} />
       </main>
     </PageShell>
   );

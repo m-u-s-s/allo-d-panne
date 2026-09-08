@@ -260,4 +260,33 @@ export const en: SiteContent = {
     publisherVatLabel: 'VAT: ',
     publisherAddressLabel: 'Registered office: ',
   },
+  faq: {
+    title: 'Frequently asked questions',
+    items: [
+      {
+        q: 'How much does roadside assistance cost in Brussels?',
+        a: 'Between €50 and €250 depending on the job, plus €2 per kilometre outside Brussels. The price is quoted upfront and confirmed before we set off — no surprises.',
+      },
+      {
+        q: 'Do you operate at night, on weekends and public holidays?',
+        a: 'Yes. Allo-Dépannage is reachable 24/7, weekends and public holidays included, on 0467 78 64 56.',
+      },
+      {
+        q: 'Which municipalities do you cover?',
+        a: 'All 19 municipalities of the Brussels-Capital Region and the immediate outskirts, day and night.',
+      },
+      {
+        q: 'Do you transport vehicles outside Belgium?',
+        a: 'Yes: transport of cars, classic cars and vans from Brussels to Paris, Amsterdam, Berlin, Milan, Madrid and all of Europe, on quotation.',
+      },
+      {
+        q: 'Are you an approved company?',
+        a: 'Yes, Allo-Dépannage is an approved company and every intervention is insured.',
+      },
+      {
+        q: 'Which languages can I call you in?',
+        a: 'French, Dutch and English, at any hour.',
+      },
+    ],
+  },
 };

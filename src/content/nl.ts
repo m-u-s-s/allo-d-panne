@@ -263,4 +263,33 @@ export const nl: SiteContent = {
     publisherVatLabel: 'Btw: ',
     publisherAddressLabel: 'Zetel: ',
   },
+  faq: {
+    title: 'Veelgestelde vragen',
+    items: [
+      {
+        q: 'Hoeveel kost pechverhelping in Brussel?',
+        a: 'Tussen 50 € en 250 € afhankelijk van de interventie, plus 2 € per kilometer buiten Brussel. De prijs wordt vooraf meegedeeld en bevestigd voor vertrek — geen verrassingen.',
+      },
+      {
+        q: 'Komen jullie ook ’s nachts, in het weekend en op feestdagen?',
+        a: 'Ja. Allo-Dépannage is 24/7 bereikbaar, ook in het weekend en op feestdagen, op 0467 78 64 56.',
+      },
+      {
+        q: 'In welke gemeenten komen jullie?',
+        a: 'In de 19 gemeenten van het Brussels Hoofdstedelijk Gewest en de onmiddellijke rand, dag en nacht.',
+      },
+      {
+        q: 'Vervoeren jullie voertuigen buiten België?',
+        a: 'Ja: transport van auto’s, oldtimers en bestelwagens vanuit Brussel naar Parijs, Amsterdam, Berlijn, Milaan, Madrid en heel Europa, op offerte.',
+      },
+      {
+        q: 'Zijn jullie een erkend bedrijf?',
+        a: 'Ja, Allo-Dépannage is een erkend bedrijf en elke interventie is verzekerd.',
+      },
+      {
+        q: 'In welke talen kan ik jullie bellen?',
+        a: 'In het Frans, Nederlands en Engels, op elk uur.',
+      },
+    ],
+  },
 };

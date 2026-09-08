@@ -221,4 +221,9 @@ export type SiteContent = {
     publisherVatLabel: string;
     publisherAddressLabel: string;
   };
+  /** FAQ visible (page tarifs) + source du schema.org FAQPage. */
+  faq: {
+    title: string;
+    items: { q: string; a: string }[];
+  };
 };

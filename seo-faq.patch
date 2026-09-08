@@ -1,0 +1,205 @@
+diff --git a/src/app/[locale]/tarifs/page.tsx b/src/app/[locale]/tarifs/page.tsx
+index a7a5ee3..30c304d 100644
+--- a/src/app/[locale]/tarifs/page.tsx
++++ b/src/app/[locale]/tarifs/page.tsx
+@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
+ import { hasLocale } from 'next-intl';
+ import { setRequestLocale } from 'next-intl/server';
+ import { getContent } from '@/content';
++import { FaqJsonLd } from '@/components/seo/FaqJsonLd';
+ import { routing, type Locale } from '@/i18n/routing';
+ import { alternatesFor, openGraphFor, twitterFor } from '@/lib/seo';
+ import { FinalCta } from '@/components/ui/FinalCta';
+@@ -52,6 +53,23 @@ export default async function PricingPage({
+           <PricingSection locale={l} />
+         </div>
+         <FinalCta locale={l} />
++        {/* FAQ visible + schema.org FAQPage : les questions que tapent
++            reellement les gens (« combien coute un depannage a bruxelles »)
++            deviennent des reponses candidates aux resultats enrichis et
++            aux requetes vocales. Le balisage reflete ce texte, rien
++            d'autre. */}
++        <section className="mx-auto mt-16 max-w-7xl px-4 pb-20">
++          <h2 className="font-display text-xl font-bold">{c.faq.title}</h2>
++          <dl className="mt-6 max-w-[70ch] space-y-6">
++            {c.faq.items.map((item) => (
++              <div key={item.q}>
++                <dt className="font-bold">{item.q}</dt>
++                <dd className="mt-1 text-muted">{item.a}</dd>
++              </div>
++            ))}
++          </dl>
++        </section>
++        <FaqJsonLd locale={l} />
+       </main>
+     </PageShell>
+   );
+diff --git a/src/components/seo/FaqJsonLd.tsx b/src/components/seo/FaqJsonLd.tsx
+new file mode 100644
+index 0000000..c76c8a8
+--- /dev/null
++++ b/src/components/seo/FaqJsonLd.tsx
+@@ -0,0 +1,35 @@
++import { getContent } from '@/content';
++import type { Locale } from '@/i18n/routing';
++
++/**
++ * schema.org FAQPage — emis UNIQUEMENT sur la page qui affiche la FAQ
++ * visible (regle Google : le balisage doit refleter un contenu present a
++ * l'ecran, jamais un contenu fantome). Les questions/reponses viennent de
++ * la meme source que le texte affiche : une seule verite, pas deux copies
++ * qui divergent.
++ */
++export function FaqJsonLd({ locale }: { locale: Locale }) {
++  const c = getContent(locale);
++
++  const data = {
++    '@context': 'https://schema.org',
++    '@type': 'FAQPage',
++    mainEntity: c.faq.items.map((item) => ({
++      '@type': 'Question',
++      name: item.q,
++      acceptedAnswer: {
++        '@type': 'Answer',
++        text: item.a,
++      },
++    })),
++  };
++
++  return (
++    <script
++      type="application/ld+json"
++      // Contenu statique issu de notre propre code, jamais d'entree
++      // utilisateur : pas de vecteur d'injection ici.
++      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
++    />
++  );
++}
+diff --git a/src/content/en.ts b/src/content/en.ts
+index e4a997c..ad5c575 100644
+--- a/src/content/en.ts
++++ b/src/content/en.ts
+@@ -260,4 +260,33 @@ export const en: SiteContent = {
+     publisherVatLabel: 'VAT: ',
+     publisherAddressLabel: 'Registered office: ',
+   },
++  faq: {
++    title: 'Frequently asked questions',
++    items: [
++      {
++        q: 'How much does roadside assistance cost in Brussels?',
++        a: 'Between €50 and €250 depending on the job, plus €2 per kilometre outside Brussels. The price is quoted upfront and confirmed before we set off — no surprises.',
++      },
++      {
++        q: 'Do you operate at night, on weekends and public holidays?',
++        a: 'Yes. Allo-Dépannage is reachable 24/7, weekends and public holidays included, on 0467 78 64 56.',
++      },
++      {
++        q: 'Which municipalities do you cover?',
++        a: 'All 19 municipalities of the Brussels-Capital Region and the immediate outskirts, day and night.',
++      },
++      {
++        q: 'Do you transport vehicles outside Belgium?',
++        a: 'Yes: transport of cars, classic cars and vans from Brussels to Paris, Amsterdam, Berlin, Milan, Madrid and all of Europe, on quotation.',
++      },
++      {
++        q: 'Are you an approved company?',
++        a: 'Yes, Allo-Dépannage is an approved company and every intervention is insured.',
++      },
++      {
++        q: 'Which languages can I call you in?',
++        a: 'French, Dutch and English, at any hour.',
++      },
++    ],
++  },
+ };
+diff --git a/src/content/fr.ts b/src/content/fr.ts
+index 4fa3b6f..5d00012 100644
+--- a/src/content/fr.ts
++++ b/src/content/fr.ts
+@@ -276,4 +276,33 @@ export const fr: SiteContent = {
+     publisherVatLabel: 'TVA : ',
+     publisherAddressLabel: 'Siège : ',
+   },
++  faq: {
++    title: 'Questions fréquentes',
++    items: [
++      {
++        q: 'Combien coûte un dépannage à Bruxelles ?',
++        a: 'Entre 50 € et 250 € selon l’intervention, plus 2 € par kilomètre hors de Bruxelles. Le prix est annoncé à l’avance et confirmé avant tout déplacement — aucune surprise à l’arrivée.',
++      },
++      {
++        q: 'Intervenez-vous la nuit, le week-end et les jours fériés ?',
++        a: 'Oui. Allo-Dépannage est joignable 24h/24 et 7j/7, week-ends et jours fériés compris, au 0467 78 64 56.',
++      },
++      {
++        q: 'Dans quelles communes intervenez-vous ?',
++        a: 'Dans les 19 communes de la Région de Bruxelles-Capitale et leur périphérie immédiate, de jour comme de nuit.',
++      },
++      {
++        q: 'Transportez-vous des véhicules hors de Belgique ?',
++        a: 'Oui : transport de voitures, véhicules de collection et utilitaires au départ de Bruxelles vers Paris, Amsterdam, Berlin, Milan, Madrid et toute l’Europe, sur devis.',
++      },
++      {
++        q: 'Êtes-vous une entreprise agréée ?',
++        a: 'Oui, Allo-Dépannage est une entreprise agréée et chaque intervention est assurée.',
++      },
++      {
++        q: 'En quelles langues puis-je vous appeler ?',
++        a: 'En français, en néerlandais et en anglais, à toute heure.',
++      },
++    ],
++  },
+ };
+diff --git a/src/content/nl.ts b/src/content/nl.ts
+index b8d1f4b..90dc4b7 100644
+--- a/src/content/nl.ts
++++ b/src/content/nl.ts
+@@ -263,4 +263,33 @@ export const nl: SiteContent = {
+     publisherVatLabel: 'Btw: ',
+     publisherAddressLabel: 'Zetel: ',
+   },
++  faq: {
++    title: 'Veelgestelde vragen',
++    items: [
++      {
++        q: 'Hoeveel kost pechverhelping in Brussel?',
++        a: 'Tussen 50 € en 250 € afhankelijk van de interventie, plus 2 € per kilometer buiten Brussel. De prijs wordt vooraf meegedeeld en bevestigd voor vertrek — geen verrassingen.',
++      },
++      {
++        q: 'Komen jullie ook ’s nachts, in het weekend en op feestdagen?',
++        a: 'Ja. Allo-Dépannage is 24/7 bereikbaar, ook in het weekend en op feestdagen, op 0467 78 64 56.',
++      },
++      {
++        q: 'In welke gemeenten komen jullie?',
++        a: 'In de 19 gemeenten van het Brussels Hoofdstedelijk Gewest en de onmiddellijke rand, dag en nacht.',
++      },
++      {
++        q: 'Vervoeren jullie voertuigen buiten België?',
++        a: 'Ja: transport van auto’s, oldtimers en bestelwagens vanuit Brussel naar Parijs, Amsterdam, Berlijn, Milaan, Madrid en heel Europa, op offerte.',
++      },
++      {
++        q: 'Zijn jullie een erkend bedrijf?',
++        a: 'Ja, Allo-Dépannage is een erkend bedrijf en elke interventie is verzekerd.',
++      },
++      {
++        q: 'In welke talen kan ik jullie bellen?',
++        a: 'In het Frans, Nederlands en Engels, op elk uur.',
++      },
++    ],
++  },
+ };
+diff --git a/src/content/types.ts b/src/content/types.ts
+index 8fea05c..45122e6 100644
+--- a/src/content/types.ts
++++ b/src/content/types.ts
+@@ -221,4 +221,9 @@ export type SiteContent = {
+     publisherVatLabel: string;
+     publisherAddressLabel: string;
+   };
++  /** FAQ visible (page tarifs) + source du schema.org FAQPage. */
++  faq: {
++    title: string;
++    items: { q: string; a: string }[];
++  };
+ };
