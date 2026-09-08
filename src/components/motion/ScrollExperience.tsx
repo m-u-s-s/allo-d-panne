@@ -163,7 +163,11 @@ export function ScrollExperience() {
       // piste est epinglee le temps de sa traversee ; la distance de
       // scroll vertical consommee egale la distance horizontale
       // parcourue, donc la vitesse percue reste celle de la molette.
-      if (tier === 'full') {
+      // Lite (mobile) : meme experience que Full — le scroll natif
+      // pilote le scrub, aucun travail par frame supplementaire. Seul
+      // Static garde l'empilement vertical.
+      let hscrollOn = false;
+      if (tier !== 'static') {
         const wrapper = document.querySelector<HTMLElement>('[data-hscroll]');
         const track = wrapper?.querySelector<HTMLElement>(
           '[data-hscroll-track]',
@@ -175,6 +179,7 @@ export function ScrollExperience() {
           // defaut, pas un repli.
           wrapper.setAttribute('data-hscroll', 'on');
           teardown.push(() => wrapper.setAttribute('data-hscroll', ''));
+          hscrollOn = true;
 
           // Fonctionnel + invalidateOnRefresh : recalcule au resize, la
           // piste ne se decadre jamais.
@@ -330,9 +335,9 @@ export function ScrollExperience() {
         }
       }
 
-      // Lite : la piste reste verticale (pas de scrub par frame), mais
-      // chaque panneau garde le vocabulaire d'entree, joue une fois.
-      if (tier === 'lite') {
+      // Lite SANS piste horizontale (page sans [data-hscroll]) : chaque
+      // panneau garde le vocabulaire d'entree, joue une fois.
+      if (tier === 'lite' && !hscrollOn) {
         for (const el of panels) {
           tweens.push(
             gsap.from(el, {

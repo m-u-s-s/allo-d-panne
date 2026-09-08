@@ -286,3 +286,15 @@ header[data-tone='light'][data-scrolled='false'] .text-muted {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Mur de chevrons sur ecran tactile : le backdrop-blur large (jusqu'a
+   blur-lg) est le poste de rendu le plus cher d'un panneau sur mobile.
+   On plafonne le flou a 4px — le givre reste lisible, la traversee
+   horizontale reste fluide. (Desktop non concerne : pointeur fin.) */
+@media (pointer: coarse) {
+  .chevron-marquee > div {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+}
